@@ -1,8 +1,11 @@
 package dao;
 
 import com.bw.payment.entity.Setting;
+import com.bw.payment.service.PaymentService;
 import com.google.inject.Inject;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import utils.TransactionManager;
@@ -12,9 +15,12 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class BaseDao {
     @Inject
-    TransactionManager transactionManager;
+    protected TransactionManager transactionManager;
+    @Inject
+    protected PaymentService paymentService;
 
-    public <T> T getById(Class<T> tClass, Long id) {
+
+    public <T> T getRecordById(Class<T> tClass, Long id) {
         return transactionManager.doForResult(session -> (T) session.createCriteria(tClass)
                 .add(Restrictions.eq("id", id))
                 .uniqueResult());
@@ -24,6 +30,37 @@ public class BaseDao {
         return transactionManager.doForResult(session -> (T) session.createCriteria(tClass)
                 .add(Restrictions.eq(propertyName, propertyValue))
                 .uniqueResult());
+    }
+
+    public <T> T getUniqueRecordByCriteria(Class<T> tClass, Criterion... restrictions) {
+        return transactionManager.doForResult(session -> {
+            Criteria criteria = session.createCriteria(tClass);
+            for (Criterion restriction : restrictions) {
+                criteria.add(restriction);
+            }
+            return (T) criteria.uniqueResult();
+        });
+    }
+
+    public <T> T getAllRecordByCriteria(Class<T> tClass, Criterion... restrictions) {
+        return transactionManager.doForResult(session -> {
+            Criteria criteria = session.createCriteria(tClass);
+            for (Criterion restriction : restrictions) {
+                criteria.add(restriction);
+            }
+            return (T) criteria.list();
+        });
+    }
+
+    public void setSettingsValue(String name, String value) {
+        transactionManager.doInTransaction(session -> {
+            Setting setting = new Setting();
+            setting.setName(name);
+            setting.setValue(value);
+            setting.setDescription(name);
+
+            session.save(setting);
+        });
     }
 
     public String getSettingsValue(String name, String defaultValue, boolean createIfNotExist, Session session) {
@@ -58,19 +95,15 @@ public class BaseDao {
         });
     }
 
-    public void setSettingsValue(String name, String value) {
-        transactionManager.doInTransaction(session -> {
-            Setting setting = new Setting();
-            setting.setName(name);
-            setting.setValue(value);
-            setting.setDescription(name);
-
-            session.save(setting);
-        });
-    }
-
     public <T> List<T> getAllRecords(Class<T> tClass) {
         return transactionManager.doForResult(session -> (List<T>) session.createCriteria(tClass)
+                .list());
+    }
+
+    public <T> List<T> getRecords(Class<T> tClass, int start, int length) {
+        return transactionManager.doForResult(session -> (List<T>) session.createCriteria(tClass)
+                .setFirstResult(start)
+                .setMaxResults(length)
                 .list());
     }
 

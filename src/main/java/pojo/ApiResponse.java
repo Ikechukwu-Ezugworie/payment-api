@@ -6,6 +6,9 @@ public class ApiResponse<T> {
     private int code;
     private T data;
 
+    public ApiResponse() {
+    }
+
     public ApiResponse(String status, String message, int code, T data) {
         this.status = status;
         this.message = message;
