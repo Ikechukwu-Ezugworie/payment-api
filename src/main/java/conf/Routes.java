@@ -18,11 +18,12 @@
 package conf;
 
 
+import controllers.ApplicationController;
 import controllers.CustomerValidationController;
+import controllers.MerchantController;
 import ninja.AssetsController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
-import controllers.ApplicationController;
 
 public class Routes implements ApplicationRoutes {
 
@@ -36,6 +37,11 @@ public class Routes implements ApplicationRoutes {
         // Customer validation
         ///////////////////////////////////////////////////////////////////////
         router.POST().route("/api/v1/customer/validate").with(CustomerValidationController::validateCustomer);
+
+        ///////////////////////////////////////////////////////////////////////
+        // Merchant controller
+        ///////////////////////////////////////////////////////////////////////
+        router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);
 
 
         ///////////////////////////////////////////////////////////////////////

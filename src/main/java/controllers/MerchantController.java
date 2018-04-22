@@ -35,13 +35,16 @@ package controllers;
 import com.google.inject.Singleton;
 import ninja.Result;
 import ninja.Results;
-import pojo.payDirect.CustomerInformationRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pojo.MerchantRequestPojo;
 
 
 @Singleton
-public class CustomerValidationController {
-    
-    public Result validateCustomer(CustomerInformationRequest request) {
-        return Results.xml().render(request);
+public class MerchantController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    public Result createMerchant(MerchantRequestPojo request) {
+        return Results.ok().json();
     }
 }

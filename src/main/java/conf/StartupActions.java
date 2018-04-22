@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
-import com.sun.xml.internal.txw2.annotation.XmlElement;
 import ninja.lifecycle.Start;
 import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;

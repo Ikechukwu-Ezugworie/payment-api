@@ -1,7 +1,4 @@
-package dto;
-
-import com.bw.payment.entity.PaymentProviderDetails;
-import com.bw.payment.enumeration.PaymentProviderConstant;
+package pojo;
 
 public class PaymentProviderDetailsPojo {
     private Long id;

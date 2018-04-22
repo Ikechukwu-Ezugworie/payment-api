@@ -1,6 +1,4 @@
-package dto;
-
-import com.bw.payment.entity.Merchant;
+package pojo;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

@@ -17,6 +17,8 @@
 
 package conf;
 
+import com.bw.payment.ServiceLocator;
+import com.bw.payment.service.PaymentService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
@@ -27,6 +29,10 @@ public class Module extends AbstractModule {
     protected void configure() {
         
         bind(StartupActions.class);
+        bind(PaymentService.class).toInstance(ServiceLocator.getInstance().getPaymentService());
+
+//        bind(ContextListener.class);
+//        bind(EmailService.class).to(NinjaMailImpl.class);
         
     }
 

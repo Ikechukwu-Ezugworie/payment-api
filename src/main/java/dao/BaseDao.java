@@ -1,33 +1,18 @@
 package dao;
 
-import com.bw.workorder.entity.ActivityType;
-import com.bw.workorder.entity.Setting;
-import com.bw.workorder.enumeration.ActivityTypeConstant;
-import com.bw.workorder.service.WorkOrderService;
+import com.bw.payment.entity.Setting;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.persist.Transactional;
-import ninja.jpa.UnitOfWork;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import utils.TransactionManager;
-import utils.sequence.SequenceService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class BaseDao {
     @Inject
     TransactionManager transactionManager;
-
-    @Inject
-    WorkOrderService workOrderService;
 
     public <T> T getById(Class<T> tClass, Long id) {
         return transactionManager.doForResult(session -> (T) session.createCriteria(tClass)
@@ -74,7 +59,7 @@ public class BaseDao {
     }
 
     public void setSettingsValue(String name, String value) {
-        transactionManager.doIntransaction(session -> {
+        transactionManager.doInTransaction(session -> {
             Setting setting = new Setting();
             setting.setName(name);
             setting.setValue(value);
@@ -108,23 +93,23 @@ public class BaseDao {
         return (T) session.save(obj);
     }
 
-    public ActivityType getActivityTypeFromConstant(ActivityTypeConstant activityTypeConstant){
-        return getUniqueRecordByProperty(ActivityType.class, "name", activityTypeConstant);
-    }
-
-
-    public String generateMembershipId() {
-        return transactionManager.doForResult(session -> {
-            SequenceService sequenceService = new SequenceService(session, "membership_id");
-            return sequenceService.getNextId("%010d");
-        });
-    }
-
-
-    public String generatePortalAccountId() {
-        return transactionManager.doForResult(session -> {
-            SequenceService sequenceService = new SequenceService(session, "portal_account_id");
-            return sequenceService.getNextId("%010d");
-        });
-    }
+//    public ActivityType getActivityTypeFromConstant(ActivityTypeConstant activityTypeConstant){
+//        return getUniqueRecordByProperty(ActivityType.class, "name", activityTypeConstant);
+//    }
+//
+//
+//    public String generateMembershipId() {
+//        return transactionManager.doForResult(session -> {
+//            SequenceService sequenceService = new SequenceService(session, "membership_id");
+//            return sequenceService.getNextId("%010d");
+//        });
+//    }
+//
+//
+//    public String generatePortalAccountId() {
+//        return transactionManager.doForResult(session -> {
+//            SequenceService sequenceService = new SequenceService(session, "portal_account_id");
+//            return sequenceService.getNextId("%010d");
+//        });
+//    }
 }
