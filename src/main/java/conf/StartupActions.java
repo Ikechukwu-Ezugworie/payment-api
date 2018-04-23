@@ -6,12 +6,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ninja.lifecycle.Start;
 import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.GeneralConstants;
 
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -25,6 +28,8 @@ public class StartupActions {
     private ObjectMapper objectMapper;
     @Inject
     private XmlMapper xmlMapper;
+    @Inject
+    private Provider<EntityManager> entityManagerProvider;
 
     @Inject
     public StartupActions(NinjaProperties ninjaProperties) {
@@ -38,7 +43,7 @@ public class StartupActions {
     @Start(order = 10)
     public void configureJsonMapper() {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(GeneralConstants.ISO_DATE_TIME_FORMAT);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         objectMapper.setDateFormat(dateFormat);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

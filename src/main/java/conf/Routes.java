@@ -32,12 +32,11 @@ public class Routes implements ApplicationRoutes {
     public void init(Router router) {  
         
         router.GET().route("/").with(ApplicationController::index);
-        router.GET().route("/hello_world.json").with(ApplicationController::helloWorldJson);
 
         ///////////////////////////////////////////////////////////////////////
         // Customer validation
         ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/customer/validate").with(CustomerValidationController::validateCustomer);
+        router.POST().route("/api/v1/customers/validate").with(CustomerValidationController::validateCustomer);
 
         ///////////////////////////////////////////////////////////////////////
         // Merchant controller
@@ -47,7 +46,9 @@ public class Routes implements ApplicationRoutes {
         ///////////////////////////////////////////////////////////////////////
         // Merchant controller
         ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/transaction").with(PaymentTransactionController::createPaymentTransaction);
+        router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
+        router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
+        router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
 
 
         ///////////////////////////////////////////////////////////////////////

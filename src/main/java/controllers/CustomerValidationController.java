@@ -40,8 +40,9 @@ import pojo.payDirect.CustomerInformationRequest;
 
 @Singleton
 public class CustomerValidationController {
-    
+
     public Result validateCustomer(CustomerInformationRequest request) {
+
         return Results.xml().render(request);
     }
 }

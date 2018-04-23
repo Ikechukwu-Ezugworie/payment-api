@@ -1,148 +1,106 @@
 package dao;
 
 import com.bw.payment.entity.Setting;
-import com.bw.payment.service.PaymentService;
 import com.google.inject.Inject;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import utils.TransactionManager;
+import com.google.inject.Provider;
+import services.MerchantIdentifierSequence;
+import services.PayerIdSequence;
+import services.TransactionIdSequence;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class BaseDao {
     @Inject
-    protected TransactionManager transactionManager;
+    protected TransactionIdSequence transactionIdSequence;
     @Inject
-    protected PaymentService paymentService;
+    protected MerchantIdentifierSequence merchantIdentifierSequence;
+    @Inject
+    protected PayerIdSequence payerIdSequence;
+    @Inject
+    protected Provider<EntityManager> entityManagerProvider;
 
 
     public <T> T getRecordById(Class<T> tClass, Long id) {
-        return transactionManager.doForResult(session -> (T) session.createCriteria(tClass)
-                .add(Restrictions.eq("id", id))
-                .uniqueResult());
+        return entityManagerProvider.get().find(tClass, id);
     }
 
     public <T> T getUniqueRecordByProperty(Class<T> tClass, String propertyName, Object propertyValue) {
-        return transactionManager.doForResult(session -> (T) session.createCriteria(tClass)
-                .add(Restrictions.eq(propertyName, propertyValue))
-                .uniqueResult());
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> clientCriteriaQuery = criteriaBuilder.createQuery(tClass);
+        Root<T> clientRoot = clientCriteriaQuery.from(tClass);
+        Predicate predicate = criteriaBuilder.equal(clientRoot.get(propertyName), propertyValue);
+        clientCriteriaQuery.where(predicate);
+
+        return uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
     }
 
-    public <T> T getUniqueRecordByCriteria(Class<T> tClass, Criterion... restrictions) {
-        return transactionManager.doForResult(session -> {
-            Criteria criteria = session.createCriteria(tClass);
-            for (Criterion restriction : restrictions) {
-                criteria.add(restriction);
-            }
-            return (T) criteria.uniqueResult();
-        });
+    <T> T uniqueResultOrNull(TypedQuery<T> tTypedQuery) {
+        try {
+            List<T> tList = tTypedQuery.getResultList();
+            return tList.isEmpty() ? null : tList.iterator().next();
+        } catch (NoResultException | NonUniqueResultException ignore) {
+            return null;
+        }
     }
 
-    public <T> T getAllRecordByCriteria(Class<T> tClass, Criterion... restrictions) {
-        return transactionManager.doForResult(session -> {
-            Criteria criteria = session.createCriteria(tClass);
-            for (Criterion restriction : restrictions) {
-                criteria.add(restriction);
-            }
-            return (T) criteria.list();
-        });
+    <T> List<T> resultsList(TypedQuery<T> tTypedQuery) {
+        try {
+            return tTypedQuery.getResultList();
+        } catch (NoResultException ignore) {
+            return new ArrayList<>();
+        }
     }
 
-    public void setSettingsValue(String name, String value) {
-        transactionManager.doInTransaction(session -> {
-            Setting setting = new Setting();
-            setting.setName(name);
-            setting.setValue(value);
-            setting.setDescription(name);
+    public String getSettingsValue(String name, String defaultValue, boolean createIfNotExist) {
+        EntityManager entityManager = entityManagerProvider.get();
 
-            session.save(setting);
-        });
-    }
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Setting> clientCriteriaQuery = criteriaBuilder.createQuery(Setting.class);
+        Root<Setting> clientRoot = clientCriteriaQuery.from(Setting.class);
+        Predicate predicate = criteriaBuilder.equal(clientRoot.get("name"), name);
+        clientCriteriaQuery.where(predicate);
 
-    public String getSettingsValue(String name, String defaultValue, boolean createIfNotExist, Session session) {
-        Setting setting = (Setting) session.createCriteria(Setting.class)
-                .add(Restrictions.eq("name", name))
-                .uniqueResult();
+        Setting setting = uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
 
         if (setting == null && createIfNotExist) {
+            setting = new Setting();
             setting.setName(name);
             setting.setValue(defaultValue);
-            session.save(setting);
+
+            entityManagerProvider.get().persist(setting);
         }
 
         return setting == null ? defaultValue : setting.getValue();
     }
 
-    public String getSettingsValue(String name, String defaultValue, boolean createIfNotExist) {
-        return transactionManager.doForResult(session -> {
-            Setting setting = (Setting) session.createCriteria(Setting.class)
-                    .add(Restrictions.eq("name", name))
-                    .uniqueResult();
-
-            if (setting == null && createIfNotExist) {
-                setting = new Setting();
-                setting.setName(name);
-                setting.setDescription(name);
-                setting.setValue(defaultValue);
-                session.save(setting);
-            }
-
-            return setting == null ? defaultValue : setting.getValue();
-        });
-    }
-
     public <T> List<T> getAllRecords(Class<T> tClass) {
-        return transactionManager.doForResult(session -> (List<T>) session.createCriteria(tClass)
-                .list());
-    }
+        EntityManager entityManager = entityManagerProvider.get();
 
-    public <T> List<T> getRecords(Class<T> tClass, int start, int length) {
-        return transactionManager.doForResult(session -> (List<T>) session.createCriteria(tClass)
-                .setFirstResult(start)
-                .setMaxResults(length)
-                .list());
-    }
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> clientCriteriaQuery = criteriaBuilder.createQuery(tClass);
+        Root<T> clientRoot = clientCriteriaQuery.from(tClass);
 
-    public <T> Long getAllRecordsCount(Class<T> tClass) {
-        return transactionManager.doForResult(session -> (Long) session.createCriteria(tClass)
-                .setProjection(Projections.rowCount())
-                .uniqueResult());
+        return resultsList(entityManager.createQuery(clientCriteriaQuery));
     }
 
     public <T> T saveObject(T obj) {
-        try {
-            return transactionManager.doForResult((session -> (T) session.save(obj)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        entityManagerProvider.get().persist(obj);
+        return obj;
     }
 
-    public <T> T saveObject(T obj, Session session) {
-        return (T) session.save(obj);
+    public <T> T updateObject(T obj) {
+        return entityManagerProvider.get().merge(obj);
     }
-
-//    public ActivityType getActivityTypeFromConstant(ActivityTypeConstant activityTypeConstant){
-//        return getUniqueRecordByProperty(ActivityType.class, "name", activityTypeConstant);
-//    }
-//
-//
-//    public String generateMembershipId() {
-//        return transactionManager.doForResult(session -> {
-//            SequenceService sequenceService = new SequenceService(session, "membership_id");
-//            return sequenceService.getNextId("%010d");
-//        });
-//    }
-//
-//
-//    public String generatePortalAccountId() {
-//        return transactionManager.doForResult(session -> {
-//            SequenceService sequenceService = new SequenceService(session, "portal_account_id");
-//            return sequenceService.getNextId("%010d");
-//        });
-//    }
 }

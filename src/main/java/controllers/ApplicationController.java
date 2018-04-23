@@ -32,10 +32,9 @@
 
 package controllers;
 
+import com.google.inject.Singleton;
 import ninja.Result;
 import ninja.Results;
-
-import com.google.inject.Singleton;
 
 
 @Singleton

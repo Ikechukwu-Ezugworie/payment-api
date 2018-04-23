@@ -5,12 +5,11 @@ import com.bw.payment.entity.MerchantProviderDetails;
 import com.bw.payment.entity.PaymentProviderDetails;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
-import org.hibernate.Session;
 import pojo.MerchantRequestPojo;
 import pojo.PaymentProviderDetailsPojo;
 import utils.PaymentUtil;
-import utils.SequenceService;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -19,15 +18,14 @@ import java.time.Instant;
  */
 public class MerchantDao extends BaseDao {
 
-
+    @Transactional
     public Merchant createMerchant(MerchantRequestPojo request) {
-        return transactionManager.doForResult(session -> {
             Merchant merchant = new Merchant();
-            merchant.setIdentifier(generateMerchantId(session));
+        merchant.setIdentifier(merchantIdentifierSequence.getNext());
             merchant.setName(request.getName());
             merchant.setDateCreated(Timestamp.from(Instant.now()));
 
-            session.save(merchant);
+        saveObject(merchant);
 
             for (PaymentProviderDetailsPojo paymentProviderDetailsPojo : request.getPaymentProviders()) {
                 PaymentProviderDetails paymentProviderDetails = new PaymentProviderDetails();
@@ -44,24 +42,10 @@ public class MerchantDao extends BaseDao {
                 merchantProviderDetails.setMerchant(merchant);
                 merchantProviderDetails.setPaymentProviderDetails(paymentProviderDetails);
 
-                session.save(paymentProviderDetails);
-                session.save(merchantProviderDetails);
+                saveObject(paymentProviderDetails);
+                saveObject(merchantProviderDetails);
             }
 
             return merchant;
-        });
-    }
-
-
-    public String generateMerchantId() {
-        return transactionManager.doForResult(session -> {
-            SequenceService sequenceService = new SequenceService(session, "merchant_identifier");
-            return sequenceService.getNextId("%09d");
-        });
-    }
-
-    public String generateMerchantId(Session session) {
-        SequenceService sequenceService = new SequenceService(session, "merchant_identifier");
-        return sequenceService.getNextId("%09d");
     }
 }

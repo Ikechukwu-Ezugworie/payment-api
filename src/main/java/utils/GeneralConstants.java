@@ -28,4 +28,5 @@ public class GeneralConstants {
     public static final String BW_ADMIN_USERNAME = "bwadmin";
     public static final String MERCHANT_IDENTIFIER_HEADER = "X-MERCH-ID";
     public static final String MERCHANT_CONTEXT_KEY = "_merch_key_";
+    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.Z";
 }

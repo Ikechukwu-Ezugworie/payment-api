@@ -19,6 +19,7 @@ public class TransactionRequestPojo {
     private String paymentChannel;
     private String serviceTypeId;
     private MerchantRequestPojo merchant;
+    private String paymentTransactionStatus;
     private PayerPojo payer;
     private List<ItemPojo> items;
 
@@ -139,5 +140,13 @@ public class TransactionRequestPojo {
             this.items = new ArrayList<>();
         }
         this.items.add(item);
+    }
+
+    public String getPaymentTransactionStatus() {
+        return paymentTransactionStatus;
+    }
+
+    public void setPaymentTransactionStatus(String paymentTransactionStatus) {
+        this.paymentTransactionStatus = paymentTransactionStatus;
     }
 }
