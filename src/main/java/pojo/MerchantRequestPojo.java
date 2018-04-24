@@ -1,14 +1,21 @@
 package pojo;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantRequestPojo {
     private Long id;
     private String identifier;
+    @NotBlank(message = "validation.not.blank")
     private String name;
     private String dateCreated;
     private String lastModified;
+    @NotNull
+    @Valid
     private List<PaymentProviderDetailsPojo> paymentProviders;
 
     public Long getId() {

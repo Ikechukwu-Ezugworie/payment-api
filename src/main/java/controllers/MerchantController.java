@@ -81,6 +81,7 @@ import dao.MerchantDao;
 import ninja.Context;
 import ninja.Result;
 import ninja.i18n.Messages;
+import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +98,7 @@ public class MerchantController {
     @Inject
     private MerchantDao merchantDao;
 
-    public Result createMerchant(MerchantRequestPojo request, Validation validation, Context context) {
+    public Result createMerchant(@JSR303Validation MerchantRequestPojo request, Validation validation, Context context) {
         if (validation.hasViolations()) {
             return ResponseUtil.returnJsonResult(Result.SC_400_BAD_REQUEST,
                     ValidationUtils.getFirstViolationMessage(context, messages, validation));

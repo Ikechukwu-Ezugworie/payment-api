@@ -48,7 +48,7 @@ public class PaymentTransactionController {
 
         PaymentTransaction paymentTransaction = null;
         try {
-            paymentTransaction = paymentTransactionDao.createTransaction(request, merchant);
+            paymentTransaction = paymentTransactionService.createTransaction(request, merchant);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.returnJsonResult(400, e.getMessage());

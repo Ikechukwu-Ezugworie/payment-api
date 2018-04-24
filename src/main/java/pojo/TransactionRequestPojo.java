@@ -1,5 +1,11 @@
 package pojo;
 
+import constraints.PaymentChannel;
+import constraints.PaymentProvider;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +17,23 @@ public class TransactionRequestPojo {
     private String transactionId;
     private String dateCreated;
     private String lastUpdated;
+    @NotBlank(message = "validation.not.null")
     private String merchantTransactionReferenceId;
+    @NotNull(message = "validation.not.null")
     private Long amountInKobo;
     private Boolean notifyOnStatusChange = false;
     private String notificationUrl;
+    @NotBlank(message = "validation.not.null")
+    @PaymentProvider
     private String paymentProvider;
+    @NotBlank(message = "validation.not.null")
+    @PaymentChannel
     private String paymentChannel;
     private String serviceTypeId;
     private MerchantRequestPojo merchant;
     private String paymentTransactionStatus;
+    @NotNull(message = "validation.not.null")
+    @Valid
     private PayerPojo payer;
     private List<ItemPojo> items;
 

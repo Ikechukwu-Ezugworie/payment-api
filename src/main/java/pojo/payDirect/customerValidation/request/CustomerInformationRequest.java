@@ -1,4 +1,4 @@
-package pojo.payDirect;
+package pojo.payDirect.customerValidation.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 

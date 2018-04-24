@@ -5,11 +5,12 @@ import com.bw.payment.entity.MerchantProviderDetails;
 import com.bw.payment.entity.PaymentProviderDetails;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.google.inject.persist.Transactional;
 import pojo.MerchantRequestPojo;
 import pojo.PaymentProviderDetailsPojo;
+import services.PasswordService;
 import utils.PaymentUtil;
 
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -25,7 +26,7 @@ public class MerchantDao extends BaseDao {
             merchant.setName(request.getName());
             merchant.setDateCreated(Timestamp.from(Instant.now()));
 
-        saveObject(merchant);
+        entityManagerProvider.get().persist(merchant);
 
             for (PaymentProviderDetailsPojo paymentProviderDetailsPojo : request.getPaymentProviders()) {
                 PaymentProviderDetails paymentProviderDetails = new PaymentProviderDetails();
@@ -34,7 +35,7 @@ public class MerchantDao extends BaseDao {
                 paymentProviderDetails.setApiKey(paymentProviderDetailsPojo.getApiKey());
                 paymentProviderDetails.setProviderUrl(paymentProviderDetailsPojo.getProviderUrl());
                 paymentProviderDetails.setServiceUsername(paymentProviderDetailsPojo.getServiceUsername());
-                paymentProviderDetails.setServicePassword(paymentProviderDetailsPojo.getServicePassword());
+                paymentProviderDetails.setServicePassword(PasswordService.hashPassword(paymentProviderDetailsPojo.getServicePassword()));
 
                 MerchantProviderDetails merchantProviderDetails = new MerchantProviderDetails();
                 merchantProviderDetails.setDateCreated(PaymentUtil.nowToTimeStamp());
@@ -42,8 +43,8 @@ public class MerchantDao extends BaseDao {
                 merchantProviderDetails.setMerchant(merchant);
                 merchantProviderDetails.setPaymentProviderDetails(paymentProviderDetails);
 
-                saveObject(paymentProviderDetails);
-                saveObject(merchantProviderDetails);
+                entityManagerProvider.get().persist(paymentProviderDetails);
+                entityManagerProvider.get().persist(merchantProviderDetails);
             }
 
             return merchant;

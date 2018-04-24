@@ -1,4 +1,4 @@
-package services;
+package services.sequence;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -7,16 +7,16 @@ import com.google.inject.Singleton;
 import javax.persistence.EntityManager;
 
 @Singleton
-public class PayerIdSequence extends SequenceService {
+public class MerchantIdentifierSequence extends SequenceService {
 
     @Inject
-    public PayerIdSequence(Provider<EntityManager> entityManagerProvider) {
+    public MerchantIdentifierSequence(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider, "provider");
     }
 
     @Override
     public String getNext() {
-        return String.format("%08d", getNextLong());
+        return String.format("M%08d", getNextLong());
     }
 
 }

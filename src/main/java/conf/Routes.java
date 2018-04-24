@@ -19,8 +19,8 @@ package conf;
 
 
 import controllers.ApplicationController;
-import controllers.CustomerValidationController;
 import controllers.MerchantController;
+import controllers.PayDirectController;
 import controllers.PaymentTransactionController;
 import ninja.AssetsController;
 import ninja.Router;
@@ -34,9 +34,11 @@ public class Routes implements ApplicationRoutes {
         router.GET().route("/").with(ApplicationController::index);
 
         ///////////////////////////////////////////////////////////////////////
-        // Customer validation
+        // Interswitch
         ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/customers/validate").with(CustomerValidationController::validateCustomer);
+//        router.POST().route("/api/v1/customers/validate").with(CustomerValidationController::validateCustomer);
+//        router.POST().route("/api/v1/payments/notification").with(PayDirectController::doPayDirectPaymentNotification);
+        router.POST().route("/api/v1/payments/interswitch/paydirect").with(PayDirectController::doPayDirectRequest);
 
         ///////////////////////////////////////////////////////////////////////
         // Merchant controller
@@ -44,7 +46,7 @@ public class Routes implements ApplicationRoutes {
         router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);
 
         ///////////////////////////////////////////////////////////////////////
-        // Merchant controller
+        // PaymentTransaction controller
         ///////////////////////////////////////////////////////////////////////
         router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
         router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);

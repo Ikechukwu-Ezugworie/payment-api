@@ -1,10 +1,15 @@
 package pojo;
 
+import constraints.PaymentProvider;
+import org.hibernate.validator.constraints.NotBlank;
+
 public class PaymentProviderDetailsPojo {
     private Long id;
+    @PaymentProvider
     private String name;
     private String merchantId;
     private String apiKey;
+    @NotBlank(message = "validation.not.blank")
     private String providerUrl;
     private String serviceUsername;
     private String servicePassword;

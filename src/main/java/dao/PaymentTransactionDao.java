@@ -5,8 +5,10 @@ import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.google.inject.persist.Transactional;
 import pojo.ItemPojo;
 import pojo.TransactionRequestPojo;
+import pojo.payDirect.paymentNotification.request.Payment;
 import utils.PaymentUtil;
 
 import javax.persistence.Query;
@@ -16,6 +18,7 @@ import java.util.List;
  * CREATED BY GIBAH
  */
 public class PaymentTransactionDao extends BaseDao {
+    @Transactional
     public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
         PaymentTransaction paymentTransaction = new PaymentTransaction();
         paymentTransaction.setTransactionId(transactionIdSequence.getNext());
@@ -65,7 +68,7 @@ public class PaymentTransactionDao extends BaseDao {
             }
         }
 
-        PaymentTransactionRequestLog paymentTransactionRequestLog = new PaymentTransactionRequestLog();
+        PaymentRequestLog paymentTransactionRequestLog = new PaymentRequestLog();
         paymentTransactionRequestLog.setRequestDump(PaymentUtil.toJSON(request));
         paymentTransactionRequestLog.setDateCreated(PaymentUtil.nowToTimeStamp());
         paymentTransactionRequestLog.setPaymentTransaction(paymentTransaction);
@@ -81,5 +84,34 @@ public class PaymentTransactionDao extends BaseDao {
         q.setParameter("id", id).setParameter("status", status.getValue());
 
         return (List<Item>) q.getResultList();
+    }
+
+    public boolean isDuplicateNotification(Payment request) {
+        Query q = entityManagerProvider.get().createQuery("select count(x) from PaymentResponseLog x where x.paymentLogId=:pLogId" +
+                " and x.amountInKobo=:amount and x.recieptNumber=:rNo and x.paymentReference=:pRef");
+        q.setParameter("pLogId", request.getPaymentLogId())
+                .setParameter("amount", PaymentUtil.getAmountInKobo(request.getAmount()))
+                .setParameter("rNo", request.getReceiptNo())
+                .setParameter("pRef", request.getPaymentReference());
+
+        return ((long) q.getSingleResult()) > 0;
+    }
+
+    public Merchant getMerchantByMerchantId(String merchantReference, PaymentProviderConstant paymentProvider) {
+        Query q = entityManagerProvider.get().createQuery("select m from Merchant m, MerchantProviderDetails mp where mp.paymentProviderDetails.merchantId=:mid" +
+                " and mp.paymentProviderDetails.name=:name and m.id=mp.merchant.id");
+
+        return (Merchant) q.setParameter("mid", merchantReference)
+                .setParameter("name", paymentProvider.getValue())
+                .getSingleResult();
+    }
+
+    public PaymentProviderDetails getMerchantPaymentProviderDetails(Long merchantId, PaymentProviderConstant provider) {
+        Query q = entityManagerProvider.get().createQuery("select ppd from PaymentProviderDetails ppd, MerchantProviderDetails mpd where" +
+                " mpd.merchant.id=:mid and mpd.paymentProviderDetails.name=:pp and mpd.paymentProviderDetails.id=ppd.id");
+
+        return (PaymentProviderDetails) q.setParameter("mid", merchantId)
+                .setParameter("pp", provider.getValue())
+                .getSingleResult();
     }
 }

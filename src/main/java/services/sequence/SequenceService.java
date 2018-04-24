@@ -1,4 +1,4 @@
-package services;
+package services.sequence;
 
 import com.google.inject.Provider;
 

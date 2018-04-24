@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+    <xs:element name="PaymentNotificationResponse" type="PaymentNotificationResponseType"/>
+    <xs:complexType name="PaymentType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="PaymentLogId"/>
+            <xs:element type="xs:string" name="Status"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PaymentNotificationResponseType">
+        <xs:sequence>
+            <xs:element type="PaymentsType" name="Payments"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PaymentsType">
+        <xs:sequence>
+            <xs:element type="PaymentType" name="Payment"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+    <xs:element name="PaymentNotificationRequest" type="PaymentNotificationRequestType"/>
+    <xs:complexType name="PaymentItemType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="ItemName"/>
+            <xs:element type="xs:string" name="ItemCode"/>
+            <xs:element type="xs:string" name="ItemAmount"/>
+            <xs:element type="xs:string" name="LeadBankCode"/>
+            <xs:element type="xs:string" name="LeadBankCbnCode"/>
+            <xs:element type="xs:string" name="LeadBankName"/>
+            <xs:element type="xs:string" name="CategoryCode"/>
+            <xs:element type="xs:string" name="CategoryName"/>
+            <xs:element type="xs:string" name="ItemQuantity"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PaymentItemsType">
+        <xs:sequence>
+            <xs:element type="PaymentItemType" name="PaymentItem"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PaymentType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="IsRepeated"/>
+            <xs:element type="xs:string" name="ProductGroupCode"/>
+            <xs:element type="xs:string" name="PaymentLogId"/>
+            <xs:element type="xs:string" name="CustReference"/>
+            <xs:element type="xs:string" name="AlternateCustReference"/>
+            <xs:element type="xs:string" name="Amount"/>
+            <xs:element type="xs:string" name="PaymentStatus"/>
+            <xs:element type="xs:string" name="PaymentMethod"/>
+            <xs:element type="xs:string" name="PaymentReference"/>
+            <xs:element type="xs:string" name="TerminalId"/>
+            <xs:element type="xs:string" name="ChannelName"/>
+            <xs:element type="xs:string" name="Location"/>
+            <xs:element type="xs:string" name="IsReversal"/>
+            <xs:element type="xs:string" name="PaymentDate"/>
+            <xs:element type="xs:string" name="SettlementDate"/>
+            <xs:element type="xs:string" name="InstitutionId"/>
+            <xs:element type="xs:string" name="InstitutionName"/>
+            <xs:element type="xs:string" name="BranchName"/>
+            <xs:element type="xs:string" name="BankName"/>
+            <xs:element type="xs:string" name="FeeName"/>
+            <xs:element type="xs:string" name="CustomerName"/>
+            <xs:element type="xs:string" name="OtherCustomerInfo"/>
+            <xs:element type="xs:string" name="ReceiptNo"/>
+            <xs:element type="xs:string" name="CollectionsAccount"/>
+            <xs:element type="xs:string" name="ThirdPartyCode"/>
+            <xs:element type="PaymentItemsType" name="PaymentItems"/>
+            <xs:element type="xs:string" name="BankCode"/>
+            <xs:element type="xs:string" name="CustomerAddress"/>
+            <xs:element type="xs:string" name="CustomerPhoneNumber"/>
+            <xs:element type="xs:string" name="DepositorName"/>
+            <xs:element type="xs:string" name="DepositSlipNumber"/>
+            <xs:element type="xs:string" name="PaymentCurrency"/>
+            <xs:element type="xs:string" name="OriginalPaymentLogId"/>
+            <xs:element type="xs:string" name="OriginalPaymentReference"/>
+            <xs:element type="xs:string" name="Teller"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PaymentNotificationRequestType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="ServiceUrl"/>
+            <xs:element type="xs:string" name="ServiceUsername"/>
+            <xs:element type="xs:string" name="ServicePassword"/>
+            <xs:element type="xs:string" name="FtpUrl"/>
+            <xs:element type="xs:string" name="FtpUsername"/>
+            <xs:element type="xs:string" name="FtpPassword"/>
+            <xs:element type="PaymentsType" name="Payments"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PaymentsType">
+        <xs:sequence>
+            <xs:element type="PaymentType" name="Payment"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

@@ -35,7 +35,7 @@ package controllers;
 import com.google.inject.Singleton;
 import ninja.Result;
 import ninja.Results;
-import pojo.payDirect.CustomerInformationRequest;
+import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 
 
 @Singleton

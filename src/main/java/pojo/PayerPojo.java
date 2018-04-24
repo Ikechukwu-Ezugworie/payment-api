@@ -1,14 +1,20 @@
 package pojo;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  * CREATED BY GIBAH
  */
 public class PayerPojo {
     private Long id;
     private String payerId;
+    @NotBlank(message = "validation.not.null")
     private String firstName;
+    @NotBlank(message = "validation.not.null")
     private String lastName;
+    @NotBlank(message = "validation.not.null")
     private String email;
+    @NotBlank(message = "validation.not.null")
     private String phoneNumber;
 
     public Long getId() {

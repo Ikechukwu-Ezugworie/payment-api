@@ -3,9 +3,9 @@ package dao;
 import com.bw.payment.entity.Setting;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import services.MerchantIdentifierSequence;
-import services.PayerIdSequence;
-import services.TransactionIdSequence;
+import services.sequence.MerchantIdentifierSequence;
+import services.sequence.PayerIdSequence;
+import services.sequence.TransactionIdSequence;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;

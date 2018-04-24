@@ -1,4 +1,4 @@
-package pojo.payDirect;
+package pojo.payDirect.customerValidation.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
@@ -18,11 +18,15 @@ public class Customer {
     @JacksonXmlProperty(localName = "Amount")
     private BigDecimal amount;
     @JacksonXmlProperty(localName = "CustReference")
-    private long custReference;
+    private String custReference;
     @JacksonXmlProperty(localName = "Status")
     private int status;
+    @JacksonXmlProperty(localName = "StatusMessage")
+    private String statusMessage;
     @JacksonXmlProperty(localName = "CustomerReferenceAlternate")
     private String customerReferenceAlternate;
+    @JacksonXmlProperty(localName = "PaymentItems")
+    private PaymentItems paymentItems;
 
     public String getFirstName() {
         return firstName;
@@ -78,11 +82,11 @@ public class Customer {
         return this;
     }
 
-    public long getCustReference() {
+    public String getCustReference() {
         return custReference;
     }
 
-    public Customer setCustReference(long custReference) {
+    public Customer setCustReference(String custReference) {
         this.custReference = custReference;
         return this;
     }
@@ -103,5 +107,21 @@ public class Customer {
     public Customer setCustomerReferenceAlternate(String customerReferenceAlternate) {
         this.customerReferenceAlternate = customerReferenceAlternate;
         return this;
+    }
+
+    public PaymentItems getPaymentItems() {
+        return paymentItems;
+    }
+
+    public void setPaymentItems(PaymentItems paymentItems) {
+        this.paymentItems = paymentItems;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 }

@@ -23,7 +23,10 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class PaymentUtil {
 
@@ -32,30 +35,8 @@ public class PaymentUtil {
     private static final Gson gson = new Gson();
     //    private static String sep = System.lineSeparator();
 
-    public static void main(String[] arg) {
-        // System.out.print(generateAPIKey(12));
-    }
-
-    public static long nairaToKobo(String amountInNaira) throws NumberFormatException {
-
-        long amountInKobo = 0l;
-
-        amountInNaira = amountInNaira.replace(",", "");
-        try {
-
-            if (amountInNaira == null) {
-                return amountInKobo;
-            }
-            Double.valueOf(amountInNaira);
-
-            BigDecimal bigAmount = new BigDecimal(amountInNaira);
-            bigAmount = bigAmount.multiply(new BigDecimal(String.valueOf(NAIRA_TO_KOBO)));
-            amountInKobo = bigAmount.longValue();
-        } catch (Exception e) {
-            e.getStackTrace();
-            return amountInKobo;
-
-        }
+    public static Long getAmountInKobo(BigDecimal amountInNaira) {
+        Long amountInKobo = (amountInNaira.multiply(new BigDecimal(GeneralConstants.NAIRA_TO_KOBO))).longValue();
         return amountInKobo;
     }
 
@@ -91,18 +72,6 @@ public class PaymentUtil {
 
         WordUtils.capitalizeFully(name);
         return name;
-    }
-
-    public static String getStringValue(String value) {
-
-        try {
-            if (value == null) {
-                return "";
-            }
-            return value;
-        } catch (Exception ex) {
-        }
-        return "";
     }
 
     public static Timestamp getMonthStartTimestampByMonthValue(int monthValue) {
@@ -1222,16 +1191,6 @@ public class PaymentUtil {
         }
     }
 
-    public static Date getActualDate(Timestamp timestamp) {
-        try {
-            Date d = new Date(timestamp.getTime());
-            return d;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
-
     public static Integer getHours(Timestamp timestamp) {
         try {
             Calendar calendar = Calendar.getInstance();
@@ -1255,19 +1214,6 @@ public class PaymentUtil {
         return rangeOfData;
     }
 
-    public static Set<Integer> stripOffDuplicates(ArrayList<Integer> inputData) {
-
-        Set<Integer> set = new HashSet<Integer>();
-
-        for (int num : inputData) {
-            set.add(num);
-        }
-
-        System.out.println("the set :" + set);
-
-        return set;
-    }
-
     public static String hidePhoneNumber(String phoneNumber) {
 
         try {
@@ -1286,5 +1232,11 @@ public class PaymentUtil {
             //e.printStackTrace();
         }
         return phoneNumber;
+    }
+
+    public static BigDecimal getAmountInNaira(Long amountInKobo) {
+        BigDecimal koboAmount = new BigDecimal(amountInKobo);
+        BigDecimal divisor = new BigDecimal(GeneralConstants.NAIRA_TO_KOBO);
+        return koboAmount.divide(divisor, GeneralConstants.NAIRA_TO_KOBO_SCALE, BigDecimal.ROUND_HALF_UP);
     }
 }
