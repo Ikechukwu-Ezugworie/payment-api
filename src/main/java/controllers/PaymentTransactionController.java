@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
+import extractors.ContentExtract;
 import extractors.Merch;
 import filters.MerchantFilter;
 import ninja.Context;
@@ -14,16 +15,20 @@ import ninja.Result;
 import ninja.i18n.Messages;
 import ninja.params.Param;
 import ninja.params.PathParam;
-import ninja.validation.JSR303Validation;
-import ninja.validation.Validation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.TransactionRequestPojo;
 import services.PaymentTransactionService;
+import utils.Constants;
 import utils.LocalizationUtils;
+import utils.PaymentUtil;
 import utils.ResponseUtil;
-import utils.ValidationUtils;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.Set;
 
 /**
  * CREATED BY GIBAH
@@ -41,11 +46,32 @@ public class PaymentTransactionController {
     private PaymentTransactionService paymentTransactionService;
 
     @FilterWith(MerchantFilter.class)
-    public Result createPaymentTransaction(@JSR303Validation TransactionRequestPojo request, Validation validation,
+    public Result createPaymentTransaction(@ContentExtract String payload,
                                            Context context, @Merch Merchant merchant) {
-        if (validation.hasViolations()) {
-            return ResponseUtil.returnJsonResult(Result.SC_400_BAD_REQUEST,
-                    ValidationUtils.getFirstViolationMessage(context, messages, validation));
+        String hash = context.getHeader(Constants.REQUEST_HASH_HEADER);
+        if (StringUtils.isBlank(hash)) {
+            return ResponseUtil.returnJsonResult(400, "Missing hash header");
+        }
+
+        String ver = PaymentUtil.generateDigest("" + merchant.getCode() + merchant.getApiKey() + payload,
+                Constants.SHA_512_ALGORITHM_NAME);
+
+        logger.info(ver);
+        if (!hash.equals(ver)) {
+            return ResponseUtil.returnJsonResult(403, "Invalid request");
+        }
+
+        TransactionRequestPojo request = PaymentUtil.fromJSON(payload, TransactionRequestPojo.class);
+
+        ValidatorFactory factory = javax.validation.Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<TransactionRequestPojo>> constraintViolations = validator.validate(request);
+
+        if (constraintViolations.iterator().hasNext()) {
+            String message = constraintViolations.iterator().next().getMessage();
+            Object field = constraintViolations.iterator().next().getInvalidValue();
+
+            return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage(message, context, messages, field));
         }
 
         PaymentTransaction paymentTransaction = null;
@@ -69,6 +95,19 @@ public class PaymentTransactionController {
     public Result getPaymentTransactionStatus(@PathParam("transactionId") String transactionId, @Merch Merchant merchant, Context context) {
         if (StringUtils.isBlank(transactionId)) {
             return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage("invalid.transaction.id", context, messages));
+        }
+
+        String hash = context.getHeader(Constants.REQUEST_HASH_HEADER);
+        if (StringUtils.isBlank(hash)) {
+            return ResponseUtil.returnJsonResult(400, "Missing hash header");
+        }
+
+        String ver = PaymentUtil.generateDigest("" + merchant.getCode() + merchant.getApiKey() + transactionId,
+                Constants.SHA_512_ALGORITHM_NAME);
+
+        logger.info(ver);
+        if (!hash.equals(ver)) {
+            return ResponseUtil.returnJsonResult(403, "Invalid request");
         }
 
         PaymentTransaction paymentTransaction = paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);
@@ -97,6 +136,19 @@ public class PaymentTransactionController {
                                                @Merch Merchant merchant) {
         if (StringUtils.isBlank(transactionId)) {
             return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage("invalid.transaction.id", context, messages));
+        }
+
+        String hash = context.getHeader(Constants.REQUEST_HASH_HEADER);
+        if (StringUtils.isBlank(hash)) {
+            return ResponseUtil.returnJsonResult(400, "Missing hash header");
+        }
+
+        String ver = PaymentUtil.generateDigest("" + merchant.getCode() + merchant.getApiKey() + transactionId,
+                Constants.SHA_512_ALGORITHM_NAME);
+
+        logger.info(ver);
+        if (!hash.equals(ver)) {
+            return ResponseUtil.returnJsonResult(403, "Invalid request");
         }
 
         PaymentTransaction paymentTransaction = paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MerchantRequestPojo {
     private Long id;
-    private String identifier;
+    private String code;
     @NotBlank(message = "validation.not.blank")
     private String name;
     private String dateCreated;
@@ -26,12 +26,12 @@ public class MerchantRequestPojo {
         this.id = id;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public String getCode() {
+        return code;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {

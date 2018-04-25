@@ -5,8 +5,8 @@ import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import dao.MerchantDao;
 import dao.PaymentTransactionDao;
-import ninja.jpa.UnitOfWork;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
@@ -25,10 +25,11 @@ public class PaymentTransactionService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     @Inject
     private PaymentTransactionDao paymentTransactionDao;
+    @Inject
+    private MerchantDao merchantDao;
 
     private final OkHttpClient client = new OkHttpClient();
 
-    @UnitOfWork
     public TransactionRequestPojo getFullPaymentTransactionDetailsAsPojo(PaymentTransaction paymentTransaction) {
         TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
         transactionRequestPojo.setId(paymentTransaction.getId());
@@ -103,9 +104,8 @@ public class PaymentTransactionService {
         return paymentTransactionDao.createTransaction(request, merchant);
     }
 
-    @UnitOfWork
     private void validateInterswitchTransactionRequest(TransactionRequestPojo request, Merchant merchant) throws IllegalArgumentException {
-        PaymentProviderDetails paymentProviderDetails = paymentTransactionDao.getMerchantPaymentProviderDetails(merchant.getId(), PaymentProviderConstant.INTERSWITCH);
+        PaymentProviderDetails paymentProviderDetails = merchantDao.getMerchantPaymentProviderDetails(merchant.getId(), PaymentProviderConstant.INTERSWITCH);
         if (paymentProviderDetails == null) {
             throw new IllegalArgumentException("Please add interswitch payment provider details");
         }

@@ -16,7 +16,7 @@ public class MerchantIdentifierSequence extends SequenceService {
 
     @Override
     public String getNext() {
-        return String.format("M%08d", getNextLong());
+        return String.format("M%07d", getNextLong());
     }
 
 }

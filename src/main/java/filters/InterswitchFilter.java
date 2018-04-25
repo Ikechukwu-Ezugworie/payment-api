@@ -1,13 +1,12 @@
 package filters;
 
-import com.bw.payment.entity.Merchant;
 import com.google.inject.Inject;
 import dao.BaseDao;
-import dao.MerchantDao;
 import ninja.Context;
 import ninja.Filter;
 import ninja.FilterChain;
 import ninja.Result;
+import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import utils.Constants;
 import utils.ResponseUtil;
@@ -18,12 +17,27 @@ import utils.ResponseUtil;
 public class InterswitchFilter implements Filter {
     @Inject
     BaseDao baseDao;
+    @Inject
+    NinjaProperties ninjaProperties;
 
     @Override
     public Result filter(FilterChain filterChain, Context context) {
+
+        if (ninjaProperties.isDev()) {
+            return filterChain.next(context);
+        }
+
         String requestIp = context.getRemoteAddr();
 
+        if (StringUtils.isBlank(requestIp)) {
+            return ResponseUtil.returnJsonResult(403, "Invalid ip");
+        }
+
         String whitelist = baseDao.getSettingsValue(Constants.INTERSWITCH_IPS, "");
+
+        if (StringUtils.isBlank(whitelist)) {
+            return ResponseUtil.returnJsonResult(403, "No IP whitelisted");
+        }
 
         if (whitelist.contains(",")) {
             String[] ips = whitelist.split(",");
@@ -32,8 +46,12 @@ public class InterswitchFilter implements Filter {
                     return filterChain.next(context);
                 }
             }
+        } else {
+            if (whitelist.equalsIgnoreCase(requestIp)) {
+                return filterChain.next(context);
+            }
         }
 
-        return ResponseUtil.returnJsonResult(403);
+        return ResponseUtil.returnJsonResult(403, "Invalid ip");
     }
 }

@@ -120,15 +120,6 @@ public class PaymentTransactionDao extends BaseDao {
                 .getSingleResult();
     }
 
-    public PaymentProviderDetails getMerchantPaymentProviderDetails(Long merchantId, PaymentProviderConstant provider) {
-        Query q = entityManagerProvider.get().createQuery("select ppd from PaymentProviderDetails ppd, MerchantProviderDetails mpd where" +
-                " mpd.merchant.id=:mid and mpd.paymentProviderDetails.name=:pp and mpd.paymentProviderDetails.id=ppd.id");
-
-        return (PaymentProviderDetails) q.setParameter("mid", merchantId)
-                .setParameter("pp", provider.getValue())
-                .getSingleResult();
-    }
-
     public List<NotificationQueue> getPendingNotifications(int max) {
         if (max == 0) {
             max = 10;

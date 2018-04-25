@@ -110,6 +110,7 @@ public class PayDirectService {
                         queueNotification(paymentPojo, paymentTransaction);
                     }
 
+                    logger.info("<=== Payment reversed");
                     responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
                     responsePojo.setStatus(NOTIFICATION_RECEIVED);
 
@@ -134,6 +135,7 @@ public class PayDirectService {
             if (paymentTransaction.getAmountInKobo().equals(getAmountInKobo(paymentPojo.getAmount()))) {
                     saveCurrentPaymentTransactionState(paymentTransaction);
 
+                logger.info("<=== Payment success");
                     paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
                     paymentTransactionDao.updateObject(paymentTransaction);
 

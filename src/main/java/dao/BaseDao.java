@@ -3,14 +3,9 @@ package dao;
 import com.bw.payment.entity.Setting;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import services.sequence.MerchantIdentifierSequence;
-import services.sequence.PayerIdSequence;
-import services.sequence.TransactionIdSequence;
+import com.google.inject.persist.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -49,6 +44,14 @@ public class BaseDao {
         }
     }
 
+    <T> T uniqueResultOrNull(Query query, Class<T> tClass) {
+        try {
+            return (T) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ignore) {
+            return null;
+        }
+    }
+
     <T> List<T> resultsList(TypedQuery<T> tTypedQuery) {
         try {
             return tTypedQuery.getResultList();
@@ -61,6 +64,7 @@ public class BaseDao {
         return getSettingsValue(name,defaultValue,false);
     }
 
+    @Transactional
     public String getSettingsValue(String name, String defaultValue, boolean createIfNotExist) {
         EntityManager entityManager = entityManagerProvider.get();
 

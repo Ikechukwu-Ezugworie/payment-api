@@ -20,12 +20,12 @@ public class MerchantFilter implements Filter {
 
     @Override
     public Result filter(FilterChain filterChain, Context context) {
-        String merchantIdentifier = context.getHeader(Constants.MERCHANT_IDENTIFIER_HEADER);
+        String merchantIdentifier = context.getHeader(Constants.MERCHANT_CODE_HEADER);
         if (StringUtils.isBlank(merchantIdentifier)) {
-            return ResponseUtil.returnJsonResult(400, "Missing merchant identifier header");
+            return ResponseUtil.returnJsonResult(400, "Missing merchant code header");
         }
 
-        Merchant merchant = merchantDao.getUniqueRecordByProperty(Merchant.class, "identifier", merchantIdentifier);
+        Merchant merchant = merchantDao.getMerchantByCode(merchantIdentifier);
         if (merchant == null) {
             return ResponseUtil.returnJsonResult(Result.SC_401_UNAUTHORIZED, "Merchant not found");
         }

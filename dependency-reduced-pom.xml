@@ -172,9 +172,13 @@
           <groupId>org.eclipse.jetty.websocket</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>httpmime</artifactId>
-          <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
         </exclusion>
+          <exclusion>
+              <artifactId>httpmime</artifactId>
+              <groupId>org.apache.httpcomponents</groupId>
+          </exclusion>
         <exclusion>
           <artifactId>doctester-core</artifactId>
           <groupId>org.doctester</groupId>

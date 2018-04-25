@@ -9,6 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -24,10 +27,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class PaymentUtil {
 
@@ -787,7 +787,7 @@ public class PaymentUtil {
     public static String toJSONWithAdaptor(Object data) {
         GsonBuilder b = new GsonBuilder();
         b.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY);
-       return b.create().toJson(data);
+        return b.create().toJson(data);
     }
 
     public static <T> T fromJSON(String data, Type tClass) {
@@ -1245,5 +1245,30 @@ public class PaymentUtil {
         BigDecimal koboAmount = new BigDecimal(amountInKobo);
         BigDecimal divisor = new BigDecimal(Constants.NAIRA_TO_KOBO);
         return koboAmount.divide(divisor, Constants.NAIRA_TO_KOBO_SCALE, BigDecimal.ROUND_HALF_UP);
+    }
+
+    private static String generate() {
+        UUID uuid = UUID.randomUUID();
+        return String.valueOf(Math.abs(uuid.getMostSignificantBits()));
+    }
+
+    public static String generateApiKey() {
+
+        KeyGenerator keyGen = null;
+        try {
+            keyGen = KeyGenerator.getInstance("AES");
+            keyGen.init(128);
+            SecretKey secretKey = keyGen.generateKey();
+            byte[] encoded = secretKey.getEncoded();
+            return DatatypeConverter.printHexBinary(encoded).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generate();
+    }
+
+    public static void main(String[] args) {
+        String payload = "{ \"merchantTransactionReferenceId\": \"000000012\", \"amountInKobo\": 5000000, \"paymentProvider\": \"INTERSWITCH\", \"paymentChannel\": \"PAYDIRECT\", \"payer\": { \"firstName\": \"JOhn\", \"lastName\": \"Doe\", \"email\": \"jdoe@gmail.com\", \"phoneNumber\": \"01212023023\" } }";
+        System.out.println(generateDigest("M0000003" + "de769088d33a77b20a874b3fbace7e12" + payload, Constants.SHA_512_ALGORITHM_NAME));
     }
 }

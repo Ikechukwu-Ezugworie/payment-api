@@ -23,7 +23,6 @@ import okhttp3.OkHttpClient;
 
 @Singleton
 public class Module extends AbstractModule {
-    
 
     protected void configure() {
         
