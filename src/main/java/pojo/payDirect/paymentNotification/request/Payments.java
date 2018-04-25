@@ -9,13 +9,13 @@ import java.util.List;
  */
 public class Payments {
     @JacksonXmlProperty(localName = "Payment")
-    private List<Payment> payments;
+    private List<Payment> payment;
 
     public List<Payment> getPayment() {
-        return payments;
+        return payment;
     }
 
     public void setPayment(List<Payment> payment) {
-        this.payments = payment;
+        this.payment = payment;
     }
 }

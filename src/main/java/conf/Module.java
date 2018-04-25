@@ -19,6 +19,7 @@ package conf;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import okhttp3.OkHttpClient;
 
 @Singleton
 public class Module extends AbstractModule {
@@ -27,6 +28,7 @@ public class Module extends AbstractModule {
     protected void configure() {
         
         bind(StartupActions.class);
+        bind(OkHttpClient.class).toInstance(new OkHttpClient());
 //        bind(PaymentService.class).toInstance(ServiceLocator.getInstance().getPaymentService());
 
 //        bind(ContextListener.class);

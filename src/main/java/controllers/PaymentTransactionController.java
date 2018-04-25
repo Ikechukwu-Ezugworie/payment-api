@@ -3,6 +3,7 @@ package controllers;
 import com.bw.payment.entity.Merchant;
 import com.bw.payment.entity.PaymentTransaction;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import extractors.Merch;
@@ -27,6 +28,7 @@ import utils.ValidationUtils;
 /**
  * CREATED BY GIBAH
  */
+@Singleton
 public class PaymentTransactionController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Inject

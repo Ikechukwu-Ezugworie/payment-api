@@ -20,15 +20,9 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class BaseDao {
-    @Inject
-    protected TransactionIdSequence transactionIdSequence;
-    @Inject
-    protected MerchantIdentifierSequence merchantIdentifierSequence;
-    @Inject
-    protected PayerIdSequence payerIdSequence;
+
     @Inject
     protected Provider<EntityManager> entityManagerProvider;
-
 
     public <T> T getRecordById(Class<T> tClass, Long id) {
         return entityManagerProvider.get().find(tClass, id);
@@ -63,6 +57,10 @@ public class BaseDao {
         }
     }
 
+    public String getSettingsValue(String name, String defaultValue) {
+        return getSettingsValue(name,defaultValue,false);
+    }
+
     public String getSettingsValue(String name, String defaultValue, boolean createIfNotExist) {
         EntityManager entityManager = entityManagerProvider.get();
 
@@ -83,6 +81,32 @@ public class BaseDao {
         }
 
         return setting == null ? defaultValue : setting.getValue();
+    }
+
+    public void saveToSettings(String name, String value) {
+        saveToSettings(name, value, true);
+    }
+
+    public void saveToSettings(String name, String value, boolean overwrite) {
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Setting> clientCriteriaQuery = criteriaBuilder.createQuery(Setting.class);
+        Root<Setting> clientRoot = clientCriteriaQuery.from(Setting.class);
+        Predicate predicate = criteriaBuilder.equal(clientRoot.get("name"), name);
+        clientCriteriaQuery.where(predicate);
+
+        Setting setting = uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
+
+        if (setting == null) {
+            setting = new Setting();
+            setting.setName(name);
+            setting.setValue(value);
+        } else if (overwrite) {
+            setting.setValue(value);
+        }
+
+        entityManagerProvider.get().persist(setting);
     }
 
     public <T> List<T> getAllRecords(Class<T> tClass) {

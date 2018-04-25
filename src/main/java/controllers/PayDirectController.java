@@ -1,12 +1,15 @@
 package controllers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import extractors.ContentExtract;
+import filters.InterswitchFilter;
 import ninja.Context;
+import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
 import ninja.i18n.Messages;
@@ -15,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
 import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
+import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import services.PayDirectService;
 import services.PaymentTransactionService;
 
@@ -31,6 +35,7 @@ import java.io.IOException;
  * CREATED BY GIBAH
  */
 @Singleton
+@FilterWith(InterswitchFilter.class)
 public class PayDirectController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Inject
@@ -46,23 +51,6 @@ public class PayDirectController {
 
     @Inject
     private XmlMapper xmlMapper;
-
-//    public Result validateCustomer(@JSR303Validation CustomerInformationRequest request, Context context, Validation validation) {
-//
-//        CustomerInformationResponse customerInformationResponse = paymentTransactionService.processCustomerValidationRequest(request, context);
-//
-//
-//        return Results.xml().render(customerInformationResponse);
-//    }
-//
-//    public Result doPayDirectPaymentNotification(@JSR303Validation PaymentNotificationRequest request, Validation validation,
-//                                                 Context context) {
-//
-//        PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
-//
-//        payDirectService.savePaymentNotificationRequest(request);
-//        return Results.ok().xml().render(paymentNotificationResponsePojo);
-//    }
 
     public Result doPayDirectRequest(@ContentExtract String payload, Context context) {
         try {
@@ -89,10 +77,10 @@ public class PayDirectController {
                                 eventReader.close();
                                 PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
                                 logger.info(request.toString());
-//                                PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
+                                PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
 //
-//                                payDirectService.savePaymentNotificationRequest(request);
-                                return Results.ok().xml().render(request);
+                                payDirectService.savePaymentNotificationRequest(request);
+                                return Results.ok().xml().render(paymentNotificationResponsePojo);
                             }
                             break;
                     }

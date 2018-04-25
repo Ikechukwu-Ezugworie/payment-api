@@ -3,7 +3,7 @@ package utils;
 /**
  * Created by Gibah on 2/3/2018.
  */
-public class GeneralConstants {
+public class Constants {
     public static final String APPLICATION_SUFFIX = "EPLUC";
     public static final int MAX_AUTH_KEY_CHARACTERS = 16;
     public static final String AUTH_HEADER_KEY = "Authorization";
@@ -31,4 +31,5 @@ public class GeneralConstants {
     public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.Z";
     public static final int NAIRA_TO_KOBO = 100;
     public static final int NAIRA_TO_KOBO_SCALE = 2;
+    public static final String INTERSWITCH_IPS = "INTERSWITCH_IPS";
 }

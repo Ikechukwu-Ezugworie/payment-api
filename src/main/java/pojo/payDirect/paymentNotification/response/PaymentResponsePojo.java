@@ -1,5 +1,5 @@
 
-package pojo.payDirect.pojo;
+package pojo.payDirect.paymentNotification.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 

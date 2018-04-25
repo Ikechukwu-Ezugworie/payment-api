@@ -4,28 +4,36 @@ import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import dao.PaymentTransactionDao;
+import ninja.jpa.UnitOfWork;
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
 import pojo.TransactionRequestPojo;
-import utils.GeneralConstants;
+import utils.Constants;
 import utils.PaymentUtil;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
  * CREATED BY GIBAH
  */
 public class PaymentTransactionService {
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     @Inject
     private PaymentTransactionDao paymentTransactionDao;
 
+    private final OkHttpClient client = new OkHttpClient();
+
+    @UnitOfWork
     public TransactionRequestPojo getFullPaymentTransactionDetailsAsPojo(PaymentTransaction paymentTransaction) {
         TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
         transactionRequestPojo.setId(paymentTransaction.getId());
         transactionRequestPojo.setTransactionId(paymentTransaction.getTransactionId());
-        transactionRequestPojo.setDateCreated(PaymentUtil.format(paymentTransaction.getDateCreated(), GeneralConstants.ISO_DATE_TIME_FORMAT));
+        transactionRequestPojo.setDateCreated(PaymentUtil.format(paymentTransaction.getDateCreated(), Constants.ISO_DATE_TIME_FORMAT));
         transactionRequestPojo.setMerchantTransactionReferenceId(paymentTransaction.getMerchantTransactionReferenceId());
         transactionRequestPojo.setAmountInKobo(paymentTransaction.getAmountInKobo());
         transactionRequestPojo.setNotifyOnStatusChange(paymentTransaction.getNotifyOnStatusChange());
@@ -95,6 +103,7 @@ public class PaymentTransactionService {
         return paymentTransactionDao.createTransaction(request, merchant);
     }
 
+    @UnitOfWork
     private void validateInterswitchTransactionRequest(TransactionRequestPojo request, Merchant merchant) throws IllegalArgumentException {
         PaymentProviderDetails paymentProviderDetails = paymentTransactionDao.getMerchantPaymentProviderDetails(merchant.getId(), PaymentProviderConstant.INTERSWITCH);
         if (paymentProviderDetails == null) {
@@ -104,5 +113,28 @@ public class PaymentTransactionService {
         if (StringUtils.isBlank(paymentProviderDetails.getMerchantId())) {
             throw new IllegalArgumentException("No payment provider merchant id provided");
         }
+    }
+
+    @Transactional
+    public void processPendingNotifications() {
+        List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(10);
+        for (NotificationQueue notificationQueue : notificationQueues) {
+            try {
+                RequestBody body = RequestBody.create(JSON, notificationQueue.getMessageInJson());
+                Request request = new Request.Builder().url(notificationQueue.getNotificationUrl()).post(body).build();
+                Response response = client.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    notificationQueue.setNotificationSent(true);
+                    notificationSent(notificationQueue);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void notificationSent(NotificationQueue notificationQueue) {
+        paymentTransactionDao.updateObject(notificationQueue);
     }
 }

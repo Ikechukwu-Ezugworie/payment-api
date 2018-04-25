@@ -8,7 +8,7 @@ import ninja.Filter;
 import ninja.FilterChain;
 import ninja.Result;
 import org.apache.commons.lang3.StringUtils;
-import utils.GeneralConstants;
+import utils.Constants;
 import utils.ResponseUtil;
 
 /**
@@ -20,7 +20,7 @@ public class MerchantFilter implements Filter {
 
     @Override
     public Result filter(FilterChain filterChain, Context context) {
-        String merchantIdentifier = context.getHeader(GeneralConstants.MERCHANT_IDENTIFIER_HEADER);
+        String merchantIdentifier = context.getHeader(Constants.MERCHANT_IDENTIFIER_HEADER);
         if (StringUtils.isBlank(merchantIdentifier)) {
             return ResponseUtil.returnJsonResult(400, "Missing merchant identifier header");
         }
@@ -30,7 +30,7 @@ public class MerchantFilter implements Filter {
             return ResponseUtil.returnJsonResult(Result.SC_401_UNAUTHORIZED, "Merchant not found");
         }
 
-        context.setAttribute(GeneralConstants.MERCHANT_CONTEXT_KEY, merchant);
+        context.setAttribute(Constants.MERCHANT_CONTEXT_KEY, merchant);
 
         return filterChain.next(context);
     }

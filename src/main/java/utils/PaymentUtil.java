@@ -2,6 +2,7 @@ package utils;
 
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +37,7 @@ public class PaymentUtil {
     //    private static String sep = System.lineSeparator();
 
     public static Long getAmountInKobo(BigDecimal amountInNaira) {
-        Long amountInKobo = (amountInNaira.multiply(new BigDecimal(GeneralConstants.NAIRA_TO_KOBO))).longValue();
+        Long amountInKobo = (amountInNaira.multiply(new BigDecimal(Constants.NAIRA_TO_KOBO))).longValue();
         return amountInKobo;
     }
 
@@ -245,7 +246,7 @@ public class PaymentUtil {
     }
 
     public static Timestamp getTimestamp(String dateString) {
-        SimpleDateFormat formatter = new SimpleDateFormat(GeneralConstants.DEFAULT_DATE_TIME_FORMAT);
+        SimpleDateFormat formatter = new SimpleDateFormat(Constants.DEFAULT_DATE_TIME_FORMAT);
         Date date = null;
         try {
             date = formatter.parse(dateString);
@@ -769,7 +770,7 @@ public class PaymentUtil {
 //                "to pick up your ESBN card.", taxPayer.getStateTin());
 //    }
 
-//    public static void sendStateTINNotification(TaxPayer taxPayer) {
+    //    public static void sendStateTINNotification(TaxPayer taxPayer) {
 //        if (ICSUtil.isValidString(taxPayer.getPhoneNumber())) {
 //            String smsMsg = ICSUtil.helpPrepareTaxpayerMessage(taxPayer);
 //            logger.info(">>>>>>>>>>>>>>> About to send  SMS<<<<<<<<<<<<<<<<");
@@ -781,6 +782,12 @@ public class PaymentUtil {
 
     public static String toJSON(Object data) {
         return gson.toJson(data);
+    }
+
+    public static String toJSONWithAdaptor(Object data) {
+        GsonBuilder b = new GsonBuilder();
+        b.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY);
+       return b.create().toJson(data);
     }
 
     public static <T> T fromJSON(String data, Type tClass) {
@@ -1236,7 +1243,7 @@ public class PaymentUtil {
 
     public static BigDecimal getAmountInNaira(Long amountInKobo) {
         BigDecimal koboAmount = new BigDecimal(amountInKobo);
-        BigDecimal divisor = new BigDecimal(GeneralConstants.NAIRA_TO_KOBO);
-        return koboAmount.divide(divisor, GeneralConstants.NAIRA_TO_KOBO_SCALE, BigDecimal.ROUND_HALF_UP);
+        BigDecimal divisor = new BigDecimal(Constants.NAIRA_TO_KOBO);
+        return koboAmount.divide(divisor, Constants.NAIRA_TO_KOBO_SCALE, BigDecimal.ROUND_HALF_UP);
     }
 }

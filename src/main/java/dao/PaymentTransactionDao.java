@@ -5,19 +5,33 @@ import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import pojo.ItemPojo;
 import pojo.TransactionRequestPojo;
 import pojo.payDirect.paymentNotification.request.Payment;
+import services.sequence.PayerIdSequence;
+import services.sequence.TransactionIdSequence;
 import utils.PaymentUtil;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
  * CREATED BY GIBAH
  */
 public class PaymentTransactionDao extends BaseDao {
+
+    @Inject
+    protected TransactionIdSequence transactionIdSequence;
+
+    @Inject
+    protected PayerIdSequence payerIdSequence;
+
     @Transactional
     public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
         PaymentTransaction paymentTransaction = new PaymentTransaction();
@@ -31,7 +45,7 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
         paymentTransaction.setServiceTypeId(request.getServiceTypeId());
         paymentTransaction.setMerchant(merchant);
-        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENIDNG);
+        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
 
         Payer payer = new Payer();
         payer.setPayerId(payerIdSequence.getNext());
@@ -89,7 +103,7 @@ public class PaymentTransactionDao extends BaseDao {
     public boolean isDuplicateNotification(Payment request) {
         Query q = entityManagerProvider.get().createQuery("select count(x) from PaymentResponseLog x where x.paymentLogId=:pLogId" +
                 " and x.amountInKobo=:amount and x.recieptNumber=:rNo and x.paymentReference=:pRef");
-        q.setParameter("pLogId", request.getPaymentLogId())
+        q.setParameter("pLogId", String.valueOf(request.getPaymentLogId()))
                 .setParameter("amount", PaymentUtil.getAmountInKobo(request.getAmount()))
                 .setParameter("rNo", request.getReceiptNo())
                 .setParameter("pRef", request.getPaymentReference());
@@ -113,5 +127,19 @@ public class PaymentTransactionDao extends BaseDao {
         return (PaymentProviderDetails) q.setParameter("mid", merchantId)
                 .setParameter("pp", provider.getValue())
                 .getSingleResult();
+    }
+
+    public List<NotificationQueue> getPendingNotifications(int max) {
+        if (max == 0) {
+            max = 10;
+        }
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<NotificationQueue> clientCriteriaQuery = criteriaBuilder.createQuery(NotificationQueue.class);
+        Root<NotificationQueue> clientRoot = clientCriteriaQuery.from(NotificationQueue.class);
+        clientCriteriaQuery.where(criteriaBuilder.equal(clientRoot.get("notificationSent"), false));
+
+        return resultsList(entityManager.createQuery(clientCriteriaQuery).setMaxResults(max));
     }
 }

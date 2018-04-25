@@ -5,10 +5,12 @@ import com.bw.payment.entity.MerchantProviderDetails;
 import com.bw.payment.entity.PaymentProviderDetails;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import pojo.MerchantRequestPojo;
 import pojo.PaymentProviderDetailsPojo;
 import services.PasswordService;
+import services.sequence.MerchantIdentifierSequence;
 import utils.PaymentUtil;
 
 import java.sql.Timestamp;
@@ -18,6 +20,9 @@ import java.time.Instant;
  * CREATED BY GIBAH
  */
 public class MerchantDao extends BaseDao {
+
+    @Inject
+    protected MerchantIdentifierSequence merchantIdentifierSequence;
 
     @Transactional
     public Merchant createMerchant(MerchantRequestPojo request) {

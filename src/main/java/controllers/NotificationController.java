@@ -32,17 +32,22 @@
 
 package controllers;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import ninja.Result;
 import ninja.Results;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
+import services.PaymentTransactionService;
 
 
 @Singleton
-public class CustomerValidationController {
+public class NotificationController {
+    @Inject
+    private PaymentTransactionService paymentTransactionService;
 
-    public Result validateCustomer(CustomerInformationRequest request) {
+    public Result sendNotifications() {
 
-        return Results.xml().render(request);
+        paymentTransactionService.processPendingNotifications();
+        return Results.ok().json();
     }
 }
