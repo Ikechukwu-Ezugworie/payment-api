@@ -91,6 +91,12 @@ public class PaymentTransactionService {
     }
 
     public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
+
+        if (request.getValidateTransaction()) {
+            if (StringUtils.isBlank(request.getTransactionValidationUrl())) {
+                throw new IllegalArgumentException("Transaction validation url not set");
+            }
+        }
         PaymentProviderConstant providerConstant = PaymentProviderConstant.fromValue(request.getPaymentProvider());
         switch (providerConstant) {
             case INTERSWITCH:

@@ -133,4 +133,16 @@ public class PaymentTransactionDao extends BaseDao {
 
         return resultsList(entityManager.createQuery(clientCriteriaQuery).setMaxResults(max));
     }
+
+    public boolean isProcessed(Payment request) {
+        Query q = entityManagerProvider.get().createQuery("select count(x) from PaymentResponseLog x where x.paymentLogId=:pLogId" +
+                " and x.amountInKobo=:amount and x.recieptNumber=:rNo and x.processed=:processed and x.paymentReference=:pRef");
+        q.setParameter("pLogId", String.valueOf(request.getPaymentLogId()))
+                .setParameter("amount", PaymentUtil.getAmountInKobo(request.getAmount()))
+                .setParameter("rNo", request.getReceiptNo())
+                .setParameter("pRef", request.getPaymentReference())
+                .setParameter("processed", true);
+
+        return ((long) q.getSingleResult()) > 0;
+    }
 }

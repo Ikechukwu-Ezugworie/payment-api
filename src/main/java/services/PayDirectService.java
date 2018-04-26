@@ -3,6 +3,7 @@ package services;
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.bw.payment.enumeration.PaymentResponseStatusConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -48,11 +49,12 @@ public class PayDirectService {
     @Transactional
     public PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, Context context) {
         PaymentNotificationResponse paymentNotificationResponsePojo = new PaymentNotificationResponse();
+//
 
         PaymentResponsePojo responsePojo = new PaymentResponsePojo();
         for (Payment paymentPojo : request.getPayments().getPayment()) {
 //            if is duplicate notification
-            if (paymentTransactionDao.isDuplicateNotification(paymentPojo)) {
+            if (paymentTransactionDao.isDuplicateNotification(paymentPojo) && paymentTransactionDao.isProcessed(paymentPojo)) {
                 logger.info("<=== duplicate notification");
                 responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
                 responsePojo.setStatus(NOTIFICATION_RECEIVED);
@@ -78,7 +80,8 @@ public class PayDirectService {
                 payments.addPayment(responsePojo);
 
                 paymentNotificationResponsePojo.setPayments(payments);
-
+                savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                        responsePojo.getStatusMessage());
                 break;
             }
 
@@ -92,7 +95,8 @@ public class PayDirectService {
                 payments.addPayment(responsePojo);
 
                 paymentNotificationResponsePojo.setPayments(payments);
-
+                savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                        responsePojo.getStatusMessage());
                 break;
             }
 
@@ -100,6 +104,8 @@ public class PayDirectService {
             if (paymentPojo.getReversal()) {
 //                check if its the right amount
                 if (paymentTransaction.getAmountInKobo().equals(getAmountInKobo(paymentPojo.getAmount().abs()))) {
+
+
                     saveCurrentPaymentTransactionState(paymentTransaction);
 
                     paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
@@ -118,6 +124,9 @@ public class PayDirectService {
                     payments.addPayment(responsePojo);
 
                     paymentNotificationResponsePojo.setPayments(payments);
+
+                    savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.ACCEPTED,
+                            responsePojo.getStatusMessage());
                 } else {
 
                     responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
@@ -127,29 +136,35 @@ public class PayDirectService {
                     payments.addPayment(responsePojo);
 
                     paymentNotificationResponsePojo.setPayments(payments);
+
+                    savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                            responsePojo.getStatusMessage());
                 }
 
                 break;
             }
 
             if (paymentTransaction.getAmountInKobo().equals(getAmountInKobo(paymentPojo.getAmount()))) {
-                    saveCurrentPaymentTransactionState(paymentTransaction);
+                saveCurrentPaymentTransactionState(paymentTransaction);
 
                 logger.info("<=== Payment success");
-                    paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
-                    paymentTransactionDao.updateObject(paymentTransaction);
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+                paymentTransactionDao.updateObject(paymentTransaction);
 
-                    if (paymentTransaction.getNotifyOnStatusChange()) {
-                        queueNotification(paymentPojo, paymentTransaction);
-                    }
+                if (paymentTransaction.getNotifyOnStatusChange()) {
+                    queueNotification(paymentPojo, paymentTransaction);
+                }
 
-                    responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
-                    responsePojo.setStatus(NOTIFICATION_RECEIVED);
+                responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
+                responsePojo.setStatus(NOTIFICATION_RECEIVED);
 
-                    Payments payments = new Payments();
-                    payments.addPayment(responsePojo);
+                Payments payments = new Payments();
+                payments.addPayment(responsePojo);
 
-                    paymentNotificationResponsePojo.setPayments(payments);
+                paymentNotificationResponsePojo.setPayments(payments);
+
+                savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.ACCEPTED,
+                        responsePojo.getStatusMessage());
 
                 break;
             } else {
@@ -163,6 +178,9 @@ public class PayDirectService {
             payments.addPayment(responsePojo);
 
             paymentNotificationResponsePojo.setPayments(payments);
+
+            savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                    responsePojo.getStatusMessage());
         }
         return paymentNotificationResponsePojo;
     }
@@ -272,21 +290,24 @@ public class PayDirectService {
         return customerInformationResponse;
     }
 
-    @Transactional
-    public void savePaymentNotificationRequest(PaymentNotificationRequest request) {
-        for (Payment paymentPojo : request.getPayments().getPayment()) {
-            PaymentResponseLog paymentResponseLog = new PaymentResponseLog();
-            paymentResponseLog.setRecieptNumber(paymentPojo.getReceiptNo());
-            paymentResponseLog.setPaymentReference(paymentPojo.getPaymentReference());
-            paymentResponseLog.setAmountInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
-            paymentResponseLog.setPaymentLogId(String.valueOf(paymentPojo.getPaymentLogId()));
-            paymentResponseLog.setResponseDump(PaymentUtil.toJSON(request));
-            paymentResponseLog.setDateCreated(Timestamp.from(Instant.now()));
-            paymentResponseLog.setPaymentTransaction(paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId",
-                    paymentPojo.getCustReference()));
+    public void savePaymentNotificationRequest(Payment paymentPojo, PaymentNotificationRequest request,
+                                               boolean wasValidated, boolean wasProcessed, PaymentResponseStatusConstant status,
+                                               String reasonForOutcome) {
+        PaymentResponseLog paymentResponseLog = new PaymentResponseLog();
+        paymentResponseLog.setRecieptNumber(paymentPojo.getReceiptNo());
+        paymentResponseLog.setPaymentReference(paymentPojo.getPaymentReference());
+        paymentResponseLog.setAmountInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
+        paymentResponseLog.setPaymentLogId(String.valueOf(paymentPojo.getPaymentLogId()));
+        paymentResponseLog.setResponseDump(PaymentUtil.toJSON(request));
+        paymentResponseLog.setDateCreated(Timestamp.from(Instant.now()));
+        paymentResponseLog.setPaymentTransaction(paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId",
+                paymentPojo.getCustReference()));
+        paymentResponseLog.setValidated(wasValidated);
+        paymentResponseLog.setProcessed(wasProcessed);
+        paymentResponseLog.setStatus(status);
+        paymentResponseLog.setReason(reasonForOutcome);
 
-            paymentTransactionDao.saveObject(paymentResponseLog);
-        }
+        paymentTransactionDao.saveObject(paymentResponseLog);
 
     }
 

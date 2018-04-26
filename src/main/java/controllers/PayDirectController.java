@@ -1,6 +1,5 @@
 package controllers;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -78,8 +77,6 @@ public class PayDirectController {
                                 PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
                                 logger.info(request.toString());
                                 PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
-//
-                                payDirectService.savePaymentNotificationRequest(request);
                                 return Results.ok().xml().render(paymentNotificationResponsePojo);
                             }
                             break;

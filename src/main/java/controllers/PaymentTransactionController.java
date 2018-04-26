@@ -15,6 +15,7 @@ import ninja.Result;
 import ninja.i18n.Messages;
 import ninja.params.Param;
 import ninja.params.PathParam;
+import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,8 @@ public class PaymentTransactionController {
     private PaymentTransactionDao paymentTransactionDao;
     @Inject
     private PaymentTransactionService paymentTransactionService;
+    @Inject
+    private NinjaProperties ninjaProperties;
 
     @FilterWith(MerchantFilter.class)
     public Result createPaymentTransaction(@ContentExtract String payload,
@@ -53,12 +56,14 @@ public class PaymentTransactionController {
             return ResponseUtil.returnJsonResult(400, "Missing hash header");
         }
 
-        String ver = PaymentUtil.generateDigest("" + merchant.getCode() + merchant.getApiKey() + payload,
-                Constants.SHA_512_ALGORITHM_NAME);
+        if (!ninjaProperties.isDev()) {
+            String ver = PaymentUtil.generateDigest("" + merchant.getCode() + merchant.getApiKey() + payload,
+                    Constants.SHA_512_ALGORITHM_NAME);
 
-        logger.info(ver);
-        if (!hash.equals(ver)) {
-            return ResponseUtil.returnJsonResult(403, "Invalid request");
+            logger.info(ver);
+            if (!hash.equals(ver)) {
+                return ResponseUtil.returnJsonResult(403, "Invalid request");
+            }
         }
 
         TransactionRequestPojo request = PaymentUtil.fromJSON(payload, TransactionRequestPojo.class);

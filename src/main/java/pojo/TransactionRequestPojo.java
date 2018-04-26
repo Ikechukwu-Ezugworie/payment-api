@@ -36,6 +36,9 @@ public class TransactionRequestPojo {
     @Valid
     private PayerPojo payer;
     private List<ItemPojo> items;
+    @NotNull(message = "validation.not.null")
+    private Boolean validateTransaction;
+    private String transactionValidationUrl;
 
     public Long getId() {
         return id;
@@ -162,5 +165,21 @@ public class TransactionRequestPojo {
 
     public void setPaymentTransactionStatus(String paymentTransactionStatus) {
         this.paymentTransactionStatus = paymentTransactionStatus;
+    }
+
+    public Boolean getValidateTransaction() {
+        return validateTransaction;
+    }
+
+    public void setValidateTransaction(Boolean validateTransaction) {
+        this.validateTransaction = validateTransaction;
+    }
+
+    public String getTransactionValidationUrl() {
+        return transactionValidationUrl;
+    }
+
+    public void setTransactionValidationUrl(String transactionValidationUrl) {
+        this.transactionValidationUrl = transactionValidationUrl;
     }
 }
