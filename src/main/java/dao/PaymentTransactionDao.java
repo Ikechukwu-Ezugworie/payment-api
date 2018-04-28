@@ -46,6 +46,8 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setServiceTypeId(request.getServiceTypeId());
         paymentTransaction.setMerchant(merchant);
         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+        paymentTransaction.setValidateTransaction(request.getValidateTransaction());
+        paymentTransaction.setTransactionValidationUrl(request.getTransactionValidationUrl());
 
         Payer payer = new Payer();
         payer.setPayerId(payerIdSequence.getNext());
@@ -108,16 +110,16 @@ public class PaymentTransactionDao extends BaseDao {
                 .setParameter("rNo", request.getReceiptNo())
                 .setParameter("pRef", request.getPaymentReference());
 
-        return ((long) q.getSingleResult()) > 0;
+        return (getCount(q)) > 0;
     }
 
     public Merchant getMerchantByMerchantId(String merchantReference, PaymentProviderConstant paymentProvider) {
         Query q = entityManagerProvider.get().createQuery("select m from Merchant m, MerchantProviderDetails mp where mp.paymentProviderDetails.merchantId=:mid" +
                 " and mp.paymentProviderDetails.name=:name and m.id=mp.merchant.id");
 
-        return (Merchant) q.setParameter("mid", merchantReference)
-                .setParameter("name", paymentProvider.getValue())
-                .getSingleResult();
+        q.setParameter("mid", merchantReference)
+                .setParameter("name", paymentProvider.getValue());
+        return uniqueResultOrNull(q, Merchant.class);
     }
 
     public List<NotificationQueue> getPendingNotifications(int max) {
@@ -143,6 +145,6 @@ public class PaymentTransactionDao extends BaseDao {
                 .setParameter("pRef", request.getPaymentReference())
                 .setParameter("processed", true);
 
-        return ((long) q.getSingleResult()) > 0;
+        return getCount(q) > 0;
     }
 }

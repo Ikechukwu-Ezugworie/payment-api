@@ -11,6 +11,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -21,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -494,33 +496,6 @@ public class PaymentUtil {
         return phoneNumber;
     }
 
-//    public String googleCaptchaURLParams(String response) {
-//        Setting captchaSetting = customService.getSettingByName(captchaSecretSettingName, captchaSecretSettingName,
-//                "6Ld-FQoUAAAAAEjN7Vb06l-ohs-ospmY8Rf4BHsp");
-//        String googleCaptchaSecret = null;
-//        if (captchaSetting != null) {
-//            googleCaptchaSecret = captchaSetting.getValue();
-//        }
-//
-//        return "secret=" + googleCaptchaSecret + "&response=" + response;
-//    }
-
-//    public static List<PaymentChannelPojo> paymentChannelsPojo() {
-//
-//        List<PaymentChannel> paymentChannels = PaymentChannel.values();
-//        List<PaymentChannelPojo> paymentChannelList = new ArrayList<PaymentChannelPojo>();
-//        for (Iterator iterator = paymentChannels.iterator(); iterator.hasNext(); ) {
-//            PaymentChannel paymentChannel = (PaymentChannel) iterator.next();
-//            PaymentChannelPojo paymentChannelPojo = new PaymentChannelPojo();
-//            paymentChannelPojo.setName(paymentChannel.getValue().replace("_", " "));
-//            paymentChannelPojo.setValue(paymentChannel.getValue());
-//            paymentChannelList.add(paymentChannelPojo);
-//
-//        }
-//
-//        return paymentChannelList;
-//    }
-
     public static Boolean isValidString(String str) {
         Boolean valid = Boolean.FALSE;
         if (str != null) {
@@ -530,202 +505,12 @@ public class PaymentUtil {
         return valid;
     }
 
-//    public static String makeServiceCallXml(String requestData, String serviceCallURL) {
-//        String response = "";
-//        System.out.println("Service call to: " + serviceCallURL);
-//        System.out.println();
-//        System.out.println("Request Data: " + requestData);
-//        try {
-//            Client client = Client.create();
-//            WebResource webResource = client.resource(serviceCallURL);
-//            ClientResponse clientResponse = webResource.header("Content-Type", "application/xml")
-//                    .accept(MediaType.APPLICATION_XML).post(ClientResponse.class, requestData);
-//            System.out.println("Response status: " + clientResponse.getStatus());
-//            response = clientResponse.getEntity(String.class);
-//            return response;
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            System.out.println("Exception in makeServiceCall");
-//        }
-//        return response;
-//    }
-
     public static String getDefaultDueDate() {
         String formattedDate = "";
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         formattedDate = formatter.format(DateUtils.addDays(new Date(), 14));
         return formattedDate;
     }
-
-//    public static String createBooking(String firstname, String lastname, Long amount, String email,
-//                                       Map<RevenueSource, Long> revenueSources, String assessmentNumber, String stateTin, Integer taxYear,
-//                                       String dueDate, String startPeriod, String endPeriod, Context context) {
-//        String prr = null;
-//        try {
-//            String serviceCallURL = BASE_URI_P + BOOKING_URL;
-//            logger.info("Service call to : " + serviceCallURL);
-//            BookingRequest paymentBookingPojo = new BookingRequest();
-//            RevenueLineItemPojo lineItem = null;
-//            Agency agency = null;
-//            List<RevenueLineItemPojo> itemList = new ArrayList<>();
-//            RevenueSource revenueSource = null;
-//
-//            paymentBookingPojo.setAmount_in_kobo(amount.toString());
-//            paymentBookingPojo.setOrder_id(OrderIdSeqUtil.generateId());
-//            paymentBookingPojo.setPayer_last_name(lastname == null ? "" : lastname);
-//            paymentBookingPojo.setPayer_first_name(firstname);
-//            paymentBookingPojo.setPayer_email(email);
-//            paymentBookingPojo.setAssessment_number(assessmentNumber);
-//            paymentBookingPojo.setState_tin(stateTin);
-//            paymentBookingPojo.setDate_due(dueDate);
-//            paymentBookingPojo.setStartPeriod(startPeriod);
-//            paymentBookingPojo.setEndPeriod(endPeriod);
-//            System.out.println("done loading paymentBooking pojo");
-//
-//            for (Map.Entry<RevenueSource, Long> entry : revenueSources.entrySet()) {
-//                lineItem = new RevenueLineItemPojo();
-//                revenueSource = entry.getKey();
-//                agency = ICSCustomService.getAgencyById(revenueSource.getAgency().getId());
-//
-//                lineItem.setAgencyCode(agency.getCode());
-//                lineItem.setRevenueCode(revenueSource.getCode());// "4010024"
-//                lineItem.setAmountInKobo(entry.getValue().toString());
-//                lineItem.setRevenueDescription(revenueSource.getName());
-//                lineItem.setTaxYear(String.valueOf(taxYear));
-//
-//                itemList.add(lineItem);
-//                System.out.println("Adding line item " + lineItem.getTaxYear());
-//            }
-//
-//            paymentBookingPojo.setRevenueLineItems(itemList);
-//
-//            Session session = context.getSession();
-//
-//            System.out.println("Clieny code is  " + session.get("clientCode"));
-//            PortalAccount portalAccount = ICSCustomService.getPortalAccountByClientCode(session.get("clientCode"));
-//            APIKey apiKey = ICSCustomService.getApiKeyByPortalAccount(portalAccount.getId());
-//            System.out.println("Portal Account " + portalAccount.getId());
-//            System.out.println("Api Keyr " + apiKey.getId());
-//            System.out.println("Payment booking pojo is null " + paymentBookingPojo == null ? "true"
-//                    : paymentBookingPojo.getState_tin());
-//            String requestData = new Gson().toJson(paymentBookingPojo);
-//            String response = makeServiceCall(requestData, portalAccount.getAccountId(), apiKey.getKey(),
-//                    serviceCallURL);
-//            ICSCustomService.createAuditTrial(Constant.AUDIT_TRAIL_API_CALL,
-//                    "Service call to generate payment booking [ " + serviceCallURL + " ]",
-//                    Long.valueOf(context.getSession().get(Constant.SESSION_USER_ID)),
-//                    context.getSession().get(Constant.SESSION_USER_NAME),
-//                    ICSCustomService.getPortalUserFromSession(context).getId(), TaxPayer.class.getSimpleName(),
-//                    context);
-//            System.out.println("Response Text1: " + response);
-//
-//            BookingResponse bookingResponse = fromJSON(response, BookingResponse.class);
-//
-//            System.out.println("Response Text: " + response);
-//            prr = bookingResponse.getPRR();
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return prr;
-//    }
-
-//    public static String createBookingForBWCashPos(String firstname, String lastname, Long amount, String email,
-//                                                   Map<RevenueSource, Long> revenueSources, String assessmentNumber, String stateTin, Integer taxYear,
-//                                                   String dueDate, String startPeriod, String endPeriod, String paymentDate, Context context) {
-//        String prr = null;
-//        try {
-//            String serviceCallURL = BASE_URI_P + BOOKING_URL_CASH_POS;
-//            logger.info("Service call to : " + serviceCallURL);
-//            BookingRequest paymentBookingPojo = new BookingRequest();
-//            RevenueLineItemPojo lineItem = null;
-//            Agency agency = null;
-//            List<RevenueLineItemPojo> itemList = new ArrayList<>();
-//            RevenueSource revenueSource = null;
-//
-//            paymentBookingPojo.setAmount_in_kobo(amount.toString());
-//            paymentBookingPojo.setOrder_id(OrderIdSeqUtil.generateId());
-//            paymentBookingPojo.setPayer_last_name(lastname == null ? "" : lastname);
-//            paymentBookingPojo.setPayer_first_name(firstname);
-//            paymentBookingPojo.setPayer_email(email);
-//            paymentBookingPojo.setAssessment_number(assessmentNumber);
-//            paymentBookingPojo.setState_tin(stateTin);
-//            paymentBookingPojo.setDate_due(dueDate);
-//            paymentBookingPojo.setStartPeriod(startPeriod);
-//            paymentBookingPojo.setEndPeriod(endPeriod);
-//            paymentBookingPojo.setPaymentDate(paymentDate);
-//            System.out.println("done loading paymentBooking pojo");
-//
-//            for (Map.Entry<RevenueSource, Long> entry : revenueSources.entrySet()) {
-//                lineItem = new RevenueLineItemPojo();
-//                revenueSource = entry.getKey();
-//                agency = ICSCustomService.getAgencyById(revenueSource.getAgency().getId());
-//
-//                lineItem.setAgencyCode(agency.getCode());
-//                lineItem.setRevenueCode(revenueSource.getCode());// "4010024"
-//                lineItem.setAmountInKobo(entry.getValue().toString());
-//                lineItem.setRevenueDescription(revenueSource.getName());
-//                lineItem.setTaxYear(String.valueOf(taxYear));
-//
-//                itemList.add(lineItem);
-//                System.out.println("Adding line item " + lineItem.getTaxYear());
-//            }
-//
-//            paymentBookingPojo.setRevenueLineItems(itemList);
-//
-//            Session session = context.getSession();
-//
-//            System.out.println("Clieny code is  " + session.get("clientCode"));
-//            PortalAccount portalAccount = ICSCustomService.getPortalAccountByClientCode(session.get("clientCode"));
-//            APIKey apiKey = ICSCustomService.getApiKeyByPortalAccount(portalAccount.getId());
-//            System.out.println("Portal Account " + portalAccount.getId());
-//            System.out.println("Api Keyr " + apiKey.getId());
-//            System.out.println("Payment booking pojo is null " + paymentBookingPojo == null ? "true"
-//                    : paymentBookingPojo.getState_tin());
-//            String requestData = new Gson().toJson(paymentBookingPojo);
-//            String response = makeServiceCall(requestData, portalAccount.getAccountId(), apiKey.getKey(),
-//                    serviceCallURL);
-//            ICSCustomService.createAuditTrial(Constant.AUDIT_TRAIL_API_CALL,
-//                    "Service call to generate payment booking [ " + serviceCallURL + " ]",
-//                    Long.valueOf(context.getSession().get(Constant.SESSION_USER_ID)),
-//                    context.getSession().get(Constant.SESSION_USER_NAME),
-//                    ICSCustomService.getPortalUserFromSession(context).getId(), PrePrintedReceipt.class.getSimpleName(),
-//                    context);
-//            System.out.println("Response Text1: " + response);
-//
-//            BookingResponse bookingResponse = fromJSON(response, BookingResponse.class);
-//
-//            System.out.println("Response Text: " + response);
-//            prr = bookingResponse.getPRR();
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return prr;
-//    }
-
-//    public static String makeServiceCall(String requestData, String clientCode, String aKey, String serviceCallURL) {
-//        System.out.println("In ,ake service call");
-//        String response = "";
-//        System.out.println("Service call to: " + serviceCallURL);
-//        System.out.println();
-//        System.out.println("Request Data: " + requestData);
-//        try {
-//            String requestHash = generateHashValue(requestData + aKey, "SHA-512");
-//            Client client = Client.create();
-//            WebResource webResource = client.resource(serviceCallURL);
-//            ClientResponse clientResponse = webResource.header("Content-Type", "application/json")
-//                    .header("clientCode", clientCode).header("hash", requestHash).accept(MediaType.APPLICATION_JSON)
-//                    .post(ClientResponse.class, requestData);
-//            System.out.println("Response status: " + clientResponse.getStatus());
-//            response = clientResponse.getEntity(String.class);
-//            return response;
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            System.out.println("Exception in makeServiceCall");
-//        }
-//        return response;
-//    }
 
     public static String generateHashValue(String message, String hashType) {
         String msg = message;
@@ -762,24 +547,6 @@ public class PaymentUtil {
         return gson.fromJson(s, tClass);
     }
 
-//    private static String helpPrepareTaxpayerMessage(TaxPayer taxPayer) {
-//        return String.format("Enugu State thanks you for Registering.\n" +
-//                "Please Save your ESBN in your phone.\n" +
-//                "The Number is: %S.\n" +
-//                "Visit No13 Coal City Garden; IRS Oce HQ\n" +
-//                "to pick up your ESBN card.", taxPayer.getStateTin());
-//    }
-
-    //    public static void sendStateTINNotification(TaxPayer taxPayer) {
-//        if (ICSUtil.isValidString(taxPayer.getPhoneNumber())) {
-//            String smsMsg = ICSUtil.helpPrepareTaxpayerMessage(taxPayer);
-//            logger.info(">>>>>>>>>>>>>>> About to send  SMS<<<<<<<<<<<<<<<<");
-//            String phoneNumber = taxPayer.getPhoneNumber();
-//            phoneNumber = formatPhoneNumber(taxPayer.getPhoneNumber());
-//            Notifier.getNotifier().sendSms(phoneNumber, "Enugu IGR", smsMsg, "");
-//        }
-//    }
-
     public static String toJSON(Object data) {
         return gson.toJson(data);
     }
@@ -794,55 +561,16 @@ public class PaymentUtil {
         return gson.fromJson(data, tClass);
     }
 
-    public static Timestamp getStartOfYear(int currentYear) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, currentYear);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.MONTH, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return new Timestamp(calendar.getTimeInMillis());
+    public static String generateAPIKey(int lent) {
+        SecretKeySpec aesKey = null;
+
+        SecureRandom random = new SecureRandom();
+
+        byte[] keyBytes = new byte[lent];
+        random.nextBytes(keyBytes);
+        aesKey = new SecretKeySpec(keyBytes, "AES");
+        return new String(Base64.getEncoder().encode(aesKey.getEncoded()));
     }
-
-//    public static String getValueFromCell(Cell cell) {
-//        int type = cell.getCellType();
-//        String value = "";
-//        switch (type) {
-//            case Cell.CELL_TYPE_BOOLEAN:
-//                value = String.valueOf(cell.getBooleanCellValue());
-//                break;
-//            case Cell.CELL_TYPE_NUMERIC:
-//                if (HSSFDateUtil.isCellDateFormatted(cell)) {
-//                    Date date = cell.getDateCellValue();
-//                    value = getFormattedDate(new Timestamp(date.getTime()));
-//                } else {
-//                    Long temp = Double.valueOf(cell.getNumericCellValue()).longValue();
-//                    value = String.valueOf(temp);
-//                }
-//                break;
-//            case Cell.CELL_TYPE_STRING:
-//                value = getStringValue(cell.getStringCellValue());
-//                break;
-//            case Cell.CELL_TYPE_BLANK:
-//                value = "";
-//                break;
-//        }
-//        return value.trim();
-//    }
-
-//    public static Double getDoubleValue(Cell cell) {
-//        return cell.getNumericCellValue();
-//    }
-
-//    public static String generateAPIKey(int lent) {
-//        SecretKeySpec aesKey = null;
-//
-//        SecureRandom random = new SecureRandom();
-//
-//        byte[] keyBytes = new byte[lent];
-//        random.nextBytes(keyBytes);
-//        aesKey = new SecretKeySpec(keyBytes, "AES");
-//        return new String(Base64.encodeBase64(aesKey.getEncoded()));
-//    }
 
     public static Timestamp getEndOfYear(int currentyear) {
         Calendar calendar = Calendar.getInstance();
@@ -865,77 +593,6 @@ public class PaymentUtil {
         formattedDate = formatter.format(timestamp);
         return formattedDate;
     }
-
-//    public static String createBookingForBacklog(String firstname, String lastname, String gprr, Long amount, String email,
-//                                                 Map<RevenueSource, Long> revenueSources, String assessmentNumber, String stateTin, Integer taxYear,
-//                                                 String dueDate, String startPeriod, String endPeriod) {
-//        String prr = null;
-//        try {
-//            String serviceCallURL = BASE_URI_P + BOOKING_URL_BACKLOG;
-//            logger.info("Service call to : " + serviceCallURL);
-//            BookingRequest paymentBookingPojo = new BookingRequest();
-//            RevenueLineItemPojo lineItem = null;
-//            Agency agency = null;
-//            List<RevenueLineItemPojo> itemList = new ArrayList<>();
-//            RevenueSource revenueSource = null;
-//
-//            paymentBookingPojo.setAmount_in_kobo(amount.toString());
-//            paymentBookingPojo.setOrder_id(OrderIdSeqUtil.generateId());
-//            paymentBookingPojo.setPayer_last_name(lastname == null ? "" : lastname);
-//            paymentBookingPojo.setPayer_first_name(firstname);
-//            paymentBookingPojo.setPayer_email(email);
-//            paymentBookingPojo.setAssessment_number(assessmentNumber);
-//            paymentBookingPojo.setState_tin(stateTin);
-//            paymentBookingPojo.setDate_due(dueDate);
-//            paymentBookingPojo.setStartPeriod(startPeriod);
-//            paymentBookingPojo.setEndPeriod(endPeriod);
-//            paymentBookingPojo.setOriginalGprr(gprr);
-//            ;
-//            System.out.println("done loading paymentBooking pojo");
-//
-//            for (Map.Entry<RevenueSource, Long> entry : revenueSources.entrySet()) {
-//                lineItem = new RevenueLineItemPojo();
-//                revenueSource = entry.getKey();
-//
-//                System.out.println("revenueSource === " + (revenueSource == null ? null : revenueSource.getId()));
-//
-//                agency = ICSCustomService.getAgencyById(revenueSource.getAgency().getId());
-//
-//                lineItem.setAgencyCode(agency.getCode());
-//                lineItem.setRevenueCode(revenueSource.getCode());// "4010024"
-//                lineItem.setAmountInKobo(entry.getValue().toString());
-//                lineItem.setRevenueDescription(revenueSource.getName());
-//                lineItem.setTaxYear(String.valueOf(taxYear));
-//
-//                itemList.add(lineItem);
-//                System.out.println("Adding line item " + lineItem.getTaxYear());
-//            }
-//
-//            paymentBookingPojo.setRevenueLineItems(itemList);
-//
-//
-//            PortalAccount portalAccount = ICSCustomService.getPortalAccountByType(AccountTypeConstant.ICS_PORTAL).get(0);
-//            APIKey apiKey = ICSCustomService.getApiKeyByPortalAccount(portalAccount.getId());
-//            System.out.println("Portal Account " + portalAccount.getId());
-//            System.out.println("Api Keyr " + apiKey.getId());
-//            System.out.println("Payment booking pojo is null " + paymentBookingPojo == null ? "true"
-//                    : paymentBookingPojo.getState_tin());
-//            String requestData = new Gson().toJson(paymentBookingPojo);
-//            String response = makeServiceCall(requestData, portalAccount.getAccountId(), apiKey.getKey(),
-//                    serviceCallURL);
-//
-//            System.out.println("Response Text1: " + response);
-//
-//            BookingResponse bookingResponse = fromJSON(response, BookingResponse.class);
-//
-//            System.out.println("Response Text: " + response);
-//            prr = bookingResponse.getPRR();
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return prr;
-//    }
 
     public static String getFormattedDate5(Timestamp timestamp) {
         String formattedDate = "";
@@ -975,150 +632,6 @@ public class PaymentUtil {
             throw new NumberFormatException();
         }
         return amount;
-    }
-
-//    public static String createBooking(String firstname, String lastname, Long amount, String email,
-//                                       Map<RevenueSource, Long> revenueSources, String assessmentNumber, String stateTin, Integer taxYear,
-//                                       String dueDate, String startPeriod, String endPeriod, long outstanding, Context context) {
-//        String prr = null;
-//        try {
-//            String serviceCallURL = BASE_URI_P + BOOKING_URL;
-//            logger.info("Service call to : " + serviceCallURL);
-//            BookingRequest paymentBookingPojo = new BookingRequest();
-//            RevenueLineItemPojo lineItem = null;
-//            Agency agency = null;
-//            List<RevenueLineItemPojo> itemList = new ArrayList<>();
-//            RevenueSource revenueSource = null;
-//
-//            paymentBookingPojo.setAmount_in_kobo(amount.toString());
-//            paymentBookingPojo.setOrder_id(OrderIdSeqUtil.generateId());
-//            paymentBookingPojo.setPayer_last_name(lastname == null ? "" : lastname);
-//            paymentBookingPojo.setPayer_first_name(firstname);
-//            paymentBookingPojo.setPayer_email(email);
-//            paymentBookingPojo.setAssessment_number(assessmentNumber);
-//            paymentBookingPojo.setState_tin(stateTin);
-//            paymentBookingPojo.setDate_due(dueDate);
-//            paymentBookingPojo.setStartPeriod(startPeriod);
-//            paymentBookingPojo.setEndPeriod(endPeriod);
-//            paymentBookingPojo.setOutstanding_in_kobo(outstanding);
-//            System.out.println("done loading paymentBooking pojo");
-//
-//            for (Map.Entry<RevenueSource, Long> entry : revenueSources.entrySet()) {
-//                lineItem = new RevenueLineItemPojo();
-//                revenueSource = entry.getKey();
-//                agency = ICSCustomService.getAgencyById(revenueSource.getAgency().getId());
-//
-//                lineItem.setAgencyCode(agency.getCode());
-//                lineItem.setRevenueCode(revenueSource.getCode());// "4010024"
-//                lineItem.setAmountInKobo(entry.getValue().toString());
-//                lineItem.setRevenueDescription(revenueSource.getName());
-//                lineItem.setTaxYear(String.valueOf(taxYear));
-//
-//                itemList.add(lineItem);
-//                System.out.println("Adding line item " + lineItem.getTaxYear());
-//            }
-//
-//            paymentBookingPojo.setRevenueLineItems(itemList);
-//
-//            Session session = context.getSession();
-//
-//            System.out.println("Clieny code is  " + session.get("clientCode"));
-//            PortalAccount portalAccount = ICSCustomService.getPortalAccountByClientCode(session.get("clientCode"));
-//            APIKey apiKey = ICSCustomService.getApiKeyByPortalAccount(portalAccount.getId());
-//            System.out.println("Portal Account " + portalAccount.getId());
-//            System.out.println("Api Keyr " + apiKey.getId());
-//            System.out.println("Payment booking pojo is null " + paymentBookingPojo == null ? "true"
-//                    : paymentBookingPojo.getState_tin());
-//            String requestData = new Gson().toJson(paymentBookingPojo);
-//            String response = makeServiceCall(requestData, portalAccount.getAccountId(), apiKey.getKey(),
-//                    serviceCallURL);
-//            ICSCustomService.createAuditTrial(Constant.AUDIT_TRAIL_API_CALL,
-//                    "Service call to generate payment booking [ " + serviceCallURL + " ]",
-//                    Long.valueOf(context.getSession().get(Constant.SESSION_USER_ID)),
-//                    context.getSession().get(Constant.SESSION_USER_NAME),
-//                    ICSCustomService.getPortalUserFromSession(context).getId(), TaxPayer.class.getSimpleName(),
-//                    context);
-//            System.out.println("Response Text1: " + response);
-//
-//            BookingResponse bookingResponse = fromJSON(response, BookingResponse.class);
-//
-//            System.out.println("Response Text: " + response);
-//            prr = bookingResponse.getPRR();
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return prr;
-//    }
-
-    public static long nairaToKoboIncludesNegativeNum(String amountInNaira) throws NumberFormatException {
-
-        long amountInKobo = 0l;
-
-        amountInNaira = amountInNaira.replace(",", "");
-        Double.valueOf(amountInNaira);
-
-        try {
-            BigDecimal bigAmount = new BigDecimal(amountInNaira);
-            bigAmount = bigAmount.multiply(new BigDecimal(String.valueOf(NAIRA_TO_KOBO)));
-            amountInKobo = bigAmount.longValue();
-        } catch (Exception e) {
-            throw new NumberFormatException();
-        }
-        return amountInKobo;
-    }
-
-    public static Timestamp getYearStart(int year) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, calendar.getActualMinimum(Calendar.MONTH));
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-        calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMinimum(Calendar.HOUR_OF_DAY));
-        calendar.set(Calendar.MINUTE, calendar.getActualMinimum(Calendar.MINUTE));
-        calendar.set(Calendar.SECOND, calendar.getActualMinimum(Calendar.SECOND));
-
-        return new Timestamp(calendar.getTimeInMillis());
-    }
-
-    public static Timestamp getYearEnd(int year) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, calendar.getActualMaximum(Calendar.MONTH));
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY));
-        calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
-        calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
-
-        return new Timestamp(calendar.getTimeInMillis());
-    }
-
-    public static List<Integer> getPreviousYears(int count) {
-        int start = Calendar.getInstance().get(Calendar.YEAR);
-        List<Integer> years = new ArrayList<>();
-
-        while (count != 0) {
-            years.add(start--);
-            count--;
-        }
-
-        return years;
-    }
-
-    public static String formatDate(Date date, String format) {
-        if (date == null) {
-            return "";
-        } else {
-            return new SimpleDateFormat(format).format(date);
-        }
-    }
-
-    public static Boolean isValidLong(String str) {
-        Boolean valid = Boolean.FALSE;
-        if (str != null && str != "0" && StringUtils.isNumeric(str)) {
-            valid = str.trim().isEmpty() ? Boolean.FALSE : Boolean.TRUE;
-        }
-
-        return valid;
     }
 
 
@@ -1210,38 +723,10 @@ public class PaymentUtil {
         }
     }
 
-    public static ArrayList<Integer> getRandomNumberInRangeList(int min, int max) {
-
-        ArrayList<Integer> rangeOfData = new ArrayList<>();
-        for (int i = min; i <= max; i++) {
-            System.out.println(i);
-            rangeOfData.add(i);
-        }
-
-        return rangeOfData;
-    }
-
-    public static String hidePhoneNumber(String phoneNumber) {
-
-        try {
-            PhoneNumberUtil numberUtil = PhoneNumberUtil.getInstance();
-            Phonenumber.PhoneNumber number = numberUtil.parse(phoneNumber, "NG");
-            phoneNumber = numberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-            String[] numbers = phoneNumber.split(" ");
-            numbers[3] = "*" + numbers[3].substring(1);
-            numbers[2] = "***";
-            phoneNumber = "";
-            for (int i = 0; i < numbers.length; i++) {
-                phoneNumber += numbers[i] + " ";
-            }
-            System.out.println("first " + phoneNumber);
-        } catch (Exception ignore) {
-            //e.printStackTrace();
-        }
-        return phoneNumber;
-    }
-
     public static BigDecimal getAmountInNaira(Long amountInKobo) {
+        if (amountInKobo == null) {
+            return new BigDecimal(0);
+        }
         BigDecimal koboAmount = new BigDecimal(amountInKobo);
         BigDecimal divisor = new BigDecimal(Constants.NAIRA_TO_KOBO);
         return koboAmount.divide(divisor, Constants.NAIRA_TO_KOBO_SCALE, BigDecimal.ROUND_HALF_UP);

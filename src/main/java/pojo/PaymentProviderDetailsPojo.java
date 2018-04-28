@@ -5,8 +5,10 @@ import org.hibernate.validator.constraints.NotBlank;
 
 public class PaymentProviderDetailsPojo {
     private Long id;
+    @NotBlank(message = "validation.not.blank")
     @PaymentProvider
     private String name;
+    @NotBlank(message = "validation.not.blank")
     private String merchantId;
     private String apiKey;
     @NotBlank(message = "validation.not.blank")

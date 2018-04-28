@@ -27,7 +27,11 @@ public class MerchantDao extends BaseDao {
 
     @Transactional
     public Merchant createMerchant(MerchantRequestPojo request) {
-        Merchant merchant = new Merchant();
+        Merchant merchant = getUniqueRecordByProperty(Merchant.class, "name", request.getName());
+        if (merchant != null) {
+            throw new IllegalArgumentException("Merchant with same name already exists");
+        }
+        merchant = new Merchant();
         merchant.setCode(merchantIdentifierSequence.getNext());
         merchant.setApiKey(PaymentUtil.generateApiKey());
         merchant.setName(request.getName());

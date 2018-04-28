@@ -52,6 +52,14 @@ public class BaseDao {
         }
     }
 
+    long getCount(Query query) {
+        try {
+            return (long) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ignore) {
+            return 0;
+        }
+    }
+
     <T> List<T> resultsList(TypedQuery<T> tTypedQuery) {
         try {
             return tTypedQuery.getResultList();
@@ -61,7 +69,7 @@ public class BaseDao {
     }
 
     public String getSettingsValue(String name, String defaultValue) {
-        return getSettingsValue(name,defaultValue,false);
+        return getSettingsValue(name, defaultValue, false);
     }
 
     @Transactional

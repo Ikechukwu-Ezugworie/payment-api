@@ -28,10 +28,6 @@ public class Module extends AbstractModule {
         
         bind(StartupActions.class);
         bind(OkHttpClient.class).toInstance(new OkHttpClient());
-//        bind(PaymentService.class).toInstance(ServiceLocator.getInstance().getPaymentService());
-
-//        bind(ContextListener.class);
-//        bind(EmailService.class).to(NinjaMailImpl.class);
         
     }
 

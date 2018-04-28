@@ -3,6 +3,7 @@ package services;
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
@@ -11,6 +12,7 @@ import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
+import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
 import utils.Constants;
 import utils.PaymentUtil;
@@ -124,16 +126,22 @@ public class PaymentTransactionService {
     @Transactional
     public void processPendingNotifications() {
         List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(10);
+        System.out.println("<==== processing notifications : " + notificationQueues.size());
         for (NotificationQueue notificationQueue : notificationQueues) {
             try {
                 RequestBody body = RequestBody.create(JSON, notificationQueue.getMessageInJson());
+                System.out.println("<==== processing notification : " + notificationQueue.getMessageInJson());
                 Request request = new Request.Builder().url(notificationQueue.getNotificationUrl()).post(body).build();
+                TransactionNotificationPojo transactionNotificationPojo = new Gson().fromJson(notificationQueue.getMessageInJson(), TransactionNotificationPojo.class);
+                System.out.println(transactionNotificationPojo.toString());
                 Response response = client.newCall(request).execute();
 
                 if (response.isSuccessful()) {
                     notificationQueue.setNotificationSent(true);
                     notificationSent(notificationQueue);
                 }
+
+                System.out.println("<== noitification response code " + request.url() + " : " + response.code());
             } catch (IOException e) {
                 e.printStackTrace();
             }

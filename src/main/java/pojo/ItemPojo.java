@@ -1,16 +1,27 @@
 package pojo;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * CREATED BY GIBAH
  */
 public class ItemPojo {
+    @NotBlank(message = "validation.not.blank")
     private String name;
+    @NotBlank(message = "validation.not.blank")
     private String itemId;
+    @NotNull(message = "validation.not.blank")
     private Integer quantity;
+    @NotNull(message = "validation.not.blank")
     private Long priceInKobo;
     private Long taxInKobo;
+    @NotNull(message = "validation.not.blank")
     private Long subTotalInKobo;
+    @NotNull(message = "validation.not.blank")
     private Long totalInKobo;
+    @NotBlank(message = "validation.not.blank")
     private String description;
     private String status;
     private Long id;

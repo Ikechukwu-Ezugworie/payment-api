@@ -34,4 +34,5 @@ public class Constants {
     public static final String INTERSWITCH_IPS = "INTERSWITCH_IPS";
     public static final String REQUEST_HASH_HEADER = "X-HASH";
     public static final String SHA_512_ALGORITHM_NAME = "SHA-512";
+    public static final String INTERSWITCH_DATE_FORMAT = "MM/dd/yyyy hh:mm:ss";
 }

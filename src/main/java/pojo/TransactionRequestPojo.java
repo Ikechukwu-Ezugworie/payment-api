@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,9 @@ public class TransactionRequestPojo {
     @NotNull(message = "validation.not.null")
     @Valid
     private PayerPojo payer;
+    @NotNull(message = "validation.not.null")
+    @Size(min = 1, message = "validation.not.blank")
+    @Valid
     private List<ItemPojo> items;
     @NotNull(message = "validation.not.null")
     private Boolean validateTransaction;

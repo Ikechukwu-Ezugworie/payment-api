@@ -3,6 +3,7 @@ package services.sequence;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 
 import javax.persistence.EntityManager;
 
@@ -15,6 +16,7 @@ public class TransactionIdSequence extends SequenceService {
     }
 
     @Override
+    @Transactional
     public String getNext() {
         return String.format("%09d", getNextLong());
     }

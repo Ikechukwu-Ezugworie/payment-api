@@ -113,7 +113,6 @@ public class MerchantController {
         }
         merchant.setDateCreated(null);
         merchant.setLastModified(null);
-        merchant.setId(null);
 
         return ResponseUtil.returnJsonResult(201, null, merchant);
     }

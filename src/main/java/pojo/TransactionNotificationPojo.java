@@ -14,6 +14,9 @@ public class TransactionNotificationPojo {
     private boolean isReversal = false;
     private String paymentDate;
     private String settlementDate;
+    private String paymentChannelName;
+    private String paymentProviderPaymentReference;
+    private String paymentMethod;
 
     public String getStatus() {
         return status;
@@ -93,5 +96,48 @@ public class TransactionNotificationPojo {
 
     public void setSettlementDate(String settlementDate) {
         this.settlementDate = settlementDate;
+    }
+
+    public String getPaymentChannelName() {
+        return paymentChannelName;
+    }
+
+    public void setPaymentChannelName(String paymentChannelName) {
+        this.paymentChannelName = paymentChannelName;
+    }
+
+    public String getPaymentProviderPaymentReference() {
+        return paymentProviderPaymentReference;
+    }
+
+    public void setPaymentProviderPaymentReference(String paymentProviderPaymentReference) {
+        this.paymentProviderPaymentReference = paymentProviderPaymentReference;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    @Override
+    public String toString() {
+        return "TransactionNotificationPojo{" +
+                "status='" + status + '\'' +
+                ", transactionId='" + transactionId + '\'' +
+                ", datePaymentReceived='" + datePaymentReceived + '\'' +
+                ", receiptNumber='" + receiptNumber + '\'' +
+                ", amountPaidInKobo=" + amountPaidInKobo +
+                ", paymentProvider='" + paymentProvider + '\'' +
+                ", paymentProviderTransactionId='" + paymentProviderTransactionId + '\'' +
+                ", isReversal=" + isReversal +
+                ", paymentDate='" + paymentDate + '\'' +
+                ", settlementDate='" + settlementDate + '\'' +
+                ", paymentChannelName='" + paymentChannelName + '\'' +
+                ", paymentProviderPaymentReference='" + paymentProviderPaymentReference + '\'' +
+                ", paymentMethod='" + paymentMethod + '\'' +
+                '}';
     }
 }

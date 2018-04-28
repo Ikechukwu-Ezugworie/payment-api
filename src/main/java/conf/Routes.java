@@ -34,6 +34,8 @@ public class Routes implements ApplicationRoutes {
         // Interswitch
         ///////////////////////////////////////////////////////////////////////
         router.POST().route("/api/v1/payments/interswitch/paydirect").with(PayDirectController::doPayDirectRequest);
+        router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
+        router.POST().route("/interswitch").with(PrototypeController::doMakePay);
 
         ///////////////////////////////////////////////////////////////////////
         // Merchant controller
@@ -43,14 +45,14 @@ public class Routes implements ApplicationRoutes {
         ///////////////////////////////////////////////////////////////////////
         // PaymentTransaction controller
         ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
         router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
+        router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
         router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
 
         ///////////////////////////////////////////////////////////////////////
         // Notifications controller
         ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/notify").with(NotificationController::sendNotifications);
+        router.GET().route("/api/v1/notify").with(NotificationController::sendNotifications);
 
 
         ///////////////////////////////////////////////////////////////////////

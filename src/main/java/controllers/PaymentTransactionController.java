@@ -19,6 +19,7 @@ import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pojo.ItemPojo;
 import pojo.TransactionRequestPojo;
 import services.PaymentTransactionService;
 import utils.Constants;
@@ -27,6 +28,7 @@ import utils.PaymentUtil;
 import utils.ResponseUtil;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Path;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
@@ -74,8 +76,11 @@ public class PaymentTransactionController {
 
         if (constraintViolations.iterator().hasNext()) {
             String message = constraintViolations.iterator().next().getMessage();
-            Object field = constraintViolations.iterator().next().getInvalidValue();
+            Path field = constraintViolations.iterator().next().getPropertyPath();
 
+            field.iterator().forEachRemaining(node -> {
+                logger.info(node.getName());
+            });
             return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage(message, context, messages, field));
         }
 
@@ -86,7 +91,6 @@ public class PaymentTransactionController {
             e.printStackTrace();
             return ResponseUtil.returnJsonResult(400, e.getMessage());
         }
-        paymentTransaction.setId(null);
         paymentTransaction.setMerchant(null);
         paymentTransaction.setPayer(null);
         paymentTransaction.setDateCreated(null);
@@ -129,7 +133,6 @@ public class PaymentTransactionController {
         paymentTransaction.setPaymentProvider(null);
         paymentTransaction.setPaymentChannel(null);
         paymentTransaction.setServiceTypeId(null);
-        paymentTransaction.setId(null);
         paymentTransaction.setMerchant(null);
         paymentTransaction.setPayer(null);
 
@@ -158,11 +161,24 @@ public class PaymentTransactionController {
 
         PaymentTransaction paymentTransaction = paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);
 
+        if (paymentTransaction == null) {
+            return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage("invalid.transaction.id", context, messages));
+        }
+
         if (!paymentTransaction.getMerchant().getId().equals(merchant.getId())) {
             return ResponseUtil.returnJsonResult(Result.SC_403_FORBIDDEN);
         }
 
         TransactionRequestPojo transactionRequestPojo = paymentTransactionService.getFullPaymentTransactionDetailsAsPojo(paymentTransaction);
+        transactionRequestPojo.setNotifyOnStatusChange(null);
+        transactionRequestPojo.setNotificationUrl(null);
+        transactionRequestPojo.setMerchant(null);
+        transactionRequestPojo.setValidateTransaction(null);
+        transactionRequestPojo.setTransactionValidationUrl(null);
+
+        for (ItemPojo itemPojo : transactionRequestPojo.getItems()) {
+            itemPojo.setStatus(null);
+        }
 
         return ResponseUtil.returnJsonResult(200, transactionRequestPojo);
     }
