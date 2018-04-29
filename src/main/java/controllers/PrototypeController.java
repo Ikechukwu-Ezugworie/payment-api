@@ -30,7 +30,7 @@ public class PrototypeController {
 
     public Result interswitchPay(@Param("amount") String amount, @Param("transactionId") String transactionId,
                                  @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
-        System.out.println("<=== processing payment" + type);
+        System.out.println("<=== processing payment");
         if (StringUtils.isBlank(type)) {
             return Results.html();
         }

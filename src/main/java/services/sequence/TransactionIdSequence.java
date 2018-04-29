@@ -12,7 +12,7 @@ public class TransactionIdSequence extends SequenceService {
 
     @Inject
     public TransactionIdSequence(Provider<EntityManager> entityManagerProvider) {
-        super(entityManagerProvider, "provider");
+        super(entityManagerProvider, "transaction");
     }
 
     @Override

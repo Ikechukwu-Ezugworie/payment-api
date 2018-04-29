@@ -1,67 +1,71 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
 <@layout.myLayout "Interswitch">
 
-<form action="" method="get">
-    <div class="form-group">
-        <label for="exampleInputEmail1">Transaction reference</label>
-        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-               placeholder="Enter transaction reference" name="transactionId" required>
-        <input type="hidden" value="validation" class="form-control" id="exampleInputEmail1"
-               aria-describedby="emailHelp"
-               placeholder="Enter transaction reference" name="type" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Find</button>
-</form>
-    <#if data??>
-    <table class="table">
-        <tbody>
-            <#list data.customers.customers  as customer>
-            <tr>
-            </tr>
-            <tr>
-                <th>First Name</th>
-                <td>${(customer.firstName)!""}</td>
-            </tr>
-            <tr>
-                <th>Last Name</th>
-                <td>${(customer.lastName)!""}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>${(customer.email)!""}</td>
-            </tr>
-            <tr>
-                <th>Phone</th>
-                <td>${(customer.phone)!""}</td>
-            </tr>
-            <tr>
-                <th>Amount</th>
-                <td>${(customer.amount)!""}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>${(customer.statusMessage)!""}</td>
-            </tr>
-            </#list>
-        </tbody>
-    </table>
-        <#list data.customers.customers  as customer>
-        <form action="" method="post">
-            <input type="hidden" value="${(customer.custReference)!""}" class="form-control" id="exampleInputEmail1"
-                   aria-describedby="emailHelp"
+<div class="container fill" style="margin-top: 10%">
+
+    <form action="" method="get">
+        <div class="form-group">
+            <label for="exampleInputEmail1">Transaction reference<span style="color: darkred">*</span></label>
+            <input type="text" value="${(data.customers.customers[0].custReference)!""}" class="form-control"
+                   id="exampleInputEmail1" aria-describedby="emailHelp"
                    placeholder="Enter transaction reference" name="transactionId" required>
-            <input type="hidden" value="${(customer.paymentItems.items[0].productCode)!""}"
-                   class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                   placeholder="Enter transaction reference" name="itemCode" required>
-            <input type="hidden" value="${(customer.amount)!""}" class="form-control" id="exampleInputEmail1"
-                   aria-describedby="emailHelp"
-                   placeholder="Enter transaction reference" name="amount" required>
-            <input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"
+            <input type="hidden" value="validation" class="form-control" id="exampleInputEmail1"
                    aria-describedby="emailHelp"
                    placeholder="Enter transaction reference" name="type" required>
-            <button type="submit" class="btn btn-primary">
-                Pay ${(customer.paymentItems.items[0].productCode)!""}</button>
-        </form>
-        </#list >
-    </#if>
+        </div>
+        <button type="submit" class="btn btn-success btn-lg float-right">CONTINUE</button>
+    </form>
+    <div style="margin-top: 10%">
+        <#if data??>
+            <table class="table table-striped">
+                <tbody>
+                    <#list data.customers.customers  as customer>
+                    <tr>
+                    </tr>
+                    <tr>
+                        <th>First Name</th>
+                        <td>${(customer.firstName)!""}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Name</th>
+                        <td>${(customer.lastName)!""}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>${(customer.email)!""}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone</th>
+                        <td>${(customer.phone)!""}</td>
+                    </tr>
+                    <tr>
+                        <th>Amount</th>
+                        <td>${(customer.amount)!""}</td>
+                    </tr>
+                    </#list>
+                </tbody>
+            </table>
+            <#list data.customers.customers  as customer>
+                <form action="" method="post">
+                    <input type="hidden" value="${(customer.custReference)!""}" class="form-control"
+                           id="exampleInputEmail1"
+                           aria-describedby="emailHelp"
+                           placeholder="Enter transaction reference" name="transactionId" required>
+                    <input type="hidden" value="${(customer.paymentItems.items[0].productCode)!""}"
+                           class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                           placeholder="Enter transaction reference" name="itemCode" required>
+                    <input type="hidden" value="${(customer.amount)!""}" class="form-control" id="exampleInputEmail1"
+                           aria-describedby="emailHelp"
+                           placeholder="Enter transaction reference" name="amount" required>
+                    <input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"
+                           aria-describedby="emailHelp"
+                           placeholder="Enter transaction reference" name="type" required>
+                    <button type="submit" class="btn btn-success btn-lg float-right">
+                        Pay &#8358; ${(customer.amount)!""}</button>
+                </form>
+            </#list >
+        </#if>
+
+    </div>
+</div>
 </@layout.myLayout>

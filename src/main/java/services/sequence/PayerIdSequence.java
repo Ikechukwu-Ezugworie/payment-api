@@ -11,7 +11,7 @@ public class PayerIdSequence extends SequenceService {
 
     @Inject
     public PayerIdSequence(Provider<EntityManager> entityManagerProvider) {
-        super(entityManagerProvider, "provider");
+        super(entityManagerProvider, "payer");
     }
 
     @Override

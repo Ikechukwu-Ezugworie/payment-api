@@ -11,7 +11,7 @@ public class MerchantIdentifierSequence extends SequenceService {
 
     @Inject
     public MerchantIdentifierSequence(Provider<EntityManager> entityManagerProvider) {
-        super(entityManagerProvider, "provider");
+        super(entityManagerProvider, "merchant");
     }
 
     @Override

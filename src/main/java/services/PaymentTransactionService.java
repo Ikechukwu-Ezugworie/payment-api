@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
+import ninja.utils.NinjaProperties;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
@@ -25,12 +26,19 @@ import java.util.List;
  */
 public class PaymentTransactionService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    @Inject
     private PaymentTransactionDao paymentTransactionDao;
-    @Inject
     private MerchantDao merchantDao;
+    private NinjaProperties ninjaProperties;
 
-    private final OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
+
+    @Inject
+    public PaymentTransactionService(PaymentTransactionDao paymentTransactionDao, MerchantDao merchantDao, NinjaProperties ninjaProperties) {
+        this.paymentTransactionDao = paymentTransactionDao;
+        this.merchantDao = merchantDao;
+        this.ninjaProperties = ninjaProperties;
+        this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
+    }
 
     public TransactionRequestPojo getFullPaymentTransactionDetailsAsPojo(PaymentTransaction paymentTransaction) {
         TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();

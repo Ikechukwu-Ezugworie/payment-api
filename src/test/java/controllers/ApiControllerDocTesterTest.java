@@ -36,7 +36,6 @@ package controllers;
 import ninja.NinjaDocTester;
 import org.doctester.testbrowser.Request;
 import org.doctester.testbrowser.Response;
-import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -58,21 +57,6 @@ public class ApiControllerDocTesterTest extends NinjaDocTester {
 
         assertThat(response.payload, containsString("Hello World!"));
         assertThat(response.payload, containsString("BAM!"));
-
-
-    }
-
-    @Test
-    public void testGetHelloWorldJson() {
-
-        Response response = makeRequest(
-                Request.GET().url(
-                        testServerUrl().path(URL_HELLO_WORLD_JSON)));
-
-        ApplicationController.SimplePojo simplePojo
-                = response.payloadJsonAs(ApplicationController.SimplePojo.class);
-
-        assertThat(simplePojo.content, CoreMatchers.equalTo("Hello World! Hello Json!"));
 
 
     }
