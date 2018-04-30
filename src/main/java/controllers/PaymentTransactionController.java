@@ -91,13 +91,21 @@ public class PaymentTransactionController {
             e.printStackTrace();
             return ResponseUtil.returnJsonResult(400, e.getMessage());
         }
-        paymentTransaction.setMerchant(null);
-        paymentTransaction.setPayer(null);
-        paymentTransaction.setDateCreated(null);
-        paymentTransaction.setLastUpdated(null);
-        paymentTransaction.setPayer(null);
 
-        return ResponseUtil.returnJsonResult(201, paymentTransaction);
+        TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
+        transactionRequestPojo.setTransactionId(paymentTransaction.getTransactionId());
+        transactionRequestPojo.setId(paymentTransaction.getId());
+        transactionRequestPojo.setMerchantTransactionReferenceId(paymentTransaction.getMerchantTransactionReferenceId());
+        transactionRequestPojo.setAmountInKobo(paymentTransaction.getAmountInKobo());
+        transactionRequestPojo.setNotifyOnStatusChange(paymentTransaction.getNotifyOnStatusChange());
+        transactionRequestPojo.setNotificationUrl(paymentTransaction.getNotificationUrl());
+        transactionRequestPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
+        transactionRequestPojo.setServiceTypeId(paymentTransaction.getServiceTypeId());
+        transactionRequestPojo.setPaymentTransactionStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
+        transactionRequestPojo.setValidateTransaction(null);
+        transactionRequestPojo.setTransactionValidationUrl(null);
+
+        return ResponseUtil.returnJsonResult(201, transactionRequestPojo);
     }
 
     @FilterWith(MerchantFilter.class)

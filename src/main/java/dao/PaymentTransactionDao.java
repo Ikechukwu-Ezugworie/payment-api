@@ -56,9 +56,9 @@ public class PaymentTransactionDao extends BaseDao {
         payer.setEmail(request.getPayer().getEmail());
         payer.setPhoneNumber(request.getPayer().getPhoneNumber());
 
-        paymentTransaction.setPayer(payer);
-
         saveObject(payer);
+
+        paymentTransaction.setPayer(payer);
         saveObject(paymentTransaction);
 
         if (request.getItems() != null) {
@@ -74,11 +74,11 @@ public class PaymentTransactionDao extends BaseDao {
                 item.setDescription(itemPojo.getDescription());
                 item.setStatus(GenericStatusConstant.ACTIVE);
 
+                saveObject(item);
+
                 PaymentTransactionItem paymentTransactionItem = new PaymentTransactionItem();
                 paymentTransactionItem.setItem(item);
                 paymentTransactionItem.setPaymentTransaction(paymentTransaction);
-
-                saveObject(item);
                 saveObject(paymentTransactionItem);
 
             }
