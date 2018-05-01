@@ -88,6 +88,7 @@ public class BaseDao {
             setting = new Setting();
             setting.setName(name);
             setting.setValue(defaultValue);
+            setting.setDescription(name);
 
             entityManagerProvider.get().persist(setting);
         }

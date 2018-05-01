@@ -38,6 +38,12 @@ public class Routes implements ApplicationRoutes {
         router.POST().route("/interswitch").with(PrototypeController::doMakePay);
 
         ///////////////////////////////////////////////////////////////////////
+        // Quickteller
+        ///////////////////////////////////////////////////////////////////////
+        router.POST().route("/api/v1/payments/interswitch/quickteller").with(QuickTellerController::doQuickTellerNotification);
+        router.GET().route("/quickteller").with(PrototypeController::quickTeller);
+
+        ///////////////////////////////////////////////////////////////////////
         // Merchant controller
         ///////////////////////////////////////////////////////////////////////
         router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);

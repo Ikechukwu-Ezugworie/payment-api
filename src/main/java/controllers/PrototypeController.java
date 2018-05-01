@@ -1,17 +1,24 @@
 package controllers;
 
+import com.bw.payment.entity.Merchant;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import dao.MerchantDao;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
 import org.apache.commons.lang3.StringUtils;
+import pojo.Ticket;
+import pojo.TransactionRequestPojo;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
 import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import services.PayDirectService;
+import services.PaymentTransactionService;
+import services.QuickTellerService;
 import utils.Constants;
 import utils.PaymentUtil;
 
@@ -22,11 +29,18 @@ import java.util.Date;
 /**
  * CREATED BY GIBAH
  */
+@Singleton
 public class PrototypeController {
     @Inject
     private XmlMapper xmlMapper;
     @Inject
     private PayDirectService payDirectService;
+    @Inject
+    private QuickTellerService quickTellerService;
+    @Inject
+    private PaymentTransactionService paymentTransactionService;
+    @Inject
+    private MerchantDao merchantDao;
 
     public Result interswitchPay(@Param("amount") String amount, @Param("transactionId") String transactionId,
                                  @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
@@ -91,5 +105,14 @@ public class PrototypeController {
         }
         context.getFlashScope().error("Error making payment");
         return Results.redirect("/interswitch");
+    }
+
+    public Result quickTeller() {
+        Merchant merchant = merchantDao.getMerchantByCode("M0000001");
+        TransactionRequestPojo request = PaymentUtil.fromJSON("{\"merchantTransactionReferenceId\":\"0000000029\",\"amountInKobo\":34508734,\"notifyOnStatusChange\":true,\"notificationUrl\":\"\",\"paymentProvider\":\"INTERSWITCH\",\"paymentChannel\":\"QUICKTELLER\",\"payer\":{\"firstName\":\"Ramos\",\"lastName\":\"Harrell\",\"email\":\"ramosharrell@automon.com\",\"phoneNumber\":\"08137625011\"},\"items\":[{\"name\":\"ERAS ASSESSMENT\",\"itemId\":\"EDORPX821\",\"quantity\":1,\"priceInKobo\":34508734,\"taxInKobo\":0,\"subTotalInKobo\":34508734,\"totalInKobo\":34508734,\"description\":\"Pools Promoters Weekly Pay Tax - Annual Fee\"}],\"validateTransaction\":false}", TransactionRequestPojo.class);
+        Ticket transactionTicket = paymentTransactionService.createInstantTransaction(request, merchant);
+
+        System.out.println(transactionTicket);
+        return Results.html().render("data", transactionTicket);
     }
 }

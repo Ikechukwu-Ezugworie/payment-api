@@ -43,6 +43,7 @@ public class TransactionRequestPojo {
     @NotNull(message = "validation.not.null")
     private Boolean validateTransaction;
     private String transactionValidationUrl;
+    private boolean instantTransaction = false;
 
     public Long getId() {
         return id;
@@ -185,5 +186,13 @@ public class TransactionRequestPojo {
 
     public void setTransactionValidationUrl(String transactionValidationUrl) {
         this.transactionValidationUrl = transactionValidationUrl;
+    }
+
+    public boolean isInstantTransaction() {
+        return instantTransaction;
+    }
+
+    public void setInstantTransaction(boolean instantTransaction) {
+        this.instantTransaction = instantTransaction;
     }
 }

@@ -1,0 +1,58 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+<@layout.myLayout "Interswitch">
+
+<div class="container fill" style="margin-top: 10%">
+
+    <p><em>
+        <small><a id="95101" class="quickteller-checkout-anchor" style="text-align: left;"></a></small>
+    </em></p>
+</div>
+<script>// <![CDATA[
+var QTCheckout = QTCheckout || {};
+var testMode = true;
+var baseUrl = "";
+QTCheckout.paymentItems = QTCheckout.paymentItems || [];
+QTCheckout.paymentItems.push({
+    paymentCode: '${data.paymentCode}',
+    extraData: {
+        amount: '${data.amountInKobo}',
+        buttonSize: 'medium',
+        customerId: '${data.customerId}',
+        mobileNumber: '${data.mobileNumber}',
+        emailAddress: '${data.email}',
+        redirectUrl: '${data.redirectUrl}',
+        requestReference: '${data.requestReference}'
+    }
+});
+if (testMode === true) baseUrl = "https://pwq.sandbox.interswitchng.com/scripts/quickteller-checkout-min.js?v=";
+else baseUrl = "https://paywith.quickteller.com/scripts/quickteller-checkout-min.js?v=";
+if (!QTCheckout.qtScript) {
+    var qtScript = document.createElement('script');
+    qtScript.type = 'text/javascript';
+    qtScript.async = true;
+    qtScript.src = baseUrl + new Date().getDay();
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(qtScript, s);
+    QTCheckout.qtScript = qtScript;
+}
+else if (QTCheckout.buildPaymentItemsUI) {
+    QTCheckout.buildPaymentItemsUI();
+}
+// ]]>
+</script>
+
+<script>
+
+
+    $("#quicktellerColorbox").find("#quicktellerCboxClose").click(function () {
+        alert('Hey');
+    });
+
+    function closeIFrame(url) {
+
+        $('#quicktellerColorbox').remove();
+        $('#quicktellerCboxOverlay').remove();
+
+        window.open(url, '_self');
+    }</script>
+</@layout.myLayout>

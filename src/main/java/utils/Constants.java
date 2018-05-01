@@ -35,4 +35,9 @@ public class Constants {
     public static final String REQUEST_HASH_HEADER = "X-HASH";
     public static final String SHA_512_ALGORITHM_NAME = "SHA-512";
     public static final String INTERSWITCH_DATE_FORMAT = "MM/dd/yyyy hh:mm:ss";
+    public static final String QUICK_TELLER_MERCHANT_PAYMENT_CODE = "QUICK_TELLER_MERCHANT_PAYMENT_CODE";
+    public static final String QUICK_TELLER_INTERSWITCH_PREFIX = "QUICK_TELLER_INTERSWITCH_PREFIX";
+    public static final String QUICK_TELLER_SECRET_KEY = "QUICK_TELLER_SECRET_KEY";
+    public static final String SETTING_QUICKTELLER_CLIENTID = "SETTING_QUICKTELLER_CLIENTID";
+    public static final String QUICKTELLER_GET_TRANSACTION_BASEURL = "QUICKTELLER_GET_TRANSACTION_BASEURL";
 }

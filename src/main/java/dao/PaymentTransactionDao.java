@@ -147,4 +147,13 @@ public class PaymentTransactionDao extends BaseDao {
 
         return getCount(q) > 0;
     }
+
+    public PaymentTransaction getQTPaymentTransaction(String tx_ref) {
+        Query q = entityManagerProvider.get().createQuery("select x from PaymentTransaction x where x.providerTransactionReference=:ptr" +
+                " and x.paymentChannel=:pc");
+        q.setParameter("ptr", tx_ref)
+                .setParameter("pc", PaymentChannelConstant.QUICKTELLER);
+
+        return uniqueResultOrNull(q, PaymentTransaction.class);
+    }
 }

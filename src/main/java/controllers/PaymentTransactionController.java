@@ -12,6 +12,7 @@ import filters.MerchantFilter;
 import ninja.Context;
 import ninja.FilterWith;
 import ninja.Result;
+import ninja.Results;
 import ninja.i18n.Messages;
 import ninja.params.Param;
 import ninja.params.PathParam;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.ItemPojo;
+import pojo.Ticket;
 import pojo.TransactionRequestPojo;
 import services.PaymentTransactionService;
 import utils.Constants;
@@ -106,6 +108,49 @@ public class PaymentTransactionController {
         transactionRequestPojo.setTransactionValidationUrl(null);
 
         return ResponseUtil.returnJsonResult(201, transactionRequestPojo);
+    }
+
+    @FilterWith(MerchantFilter.class)
+    public Result createInstantPaymentTransaction(@ContentExtract String payload,
+                                                  Context context, @Merch Merchant merchant) {
+        String hash = context.getHeader(Constants.REQUEST_HASH_HEADER);
+        if (StringUtils.isBlank(hash)) {
+            return ResponseUtil.returnJsonResult(400, "Missing hash header");
+        }
+
+        if (!ninjaProperties.isDev()) {
+            String ver = PaymentUtil.generateDigest("" + merchant.getCode() + merchant.getApiKey() + payload,
+                    Constants.SHA_512_ALGORITHM_NAME);
+
+            logger.info(ver);
+            if (!hash.equals(ver)) {
+                return ResponseUtil.returnJsonResult(403, "Invalid request");
+            }
+        }
+
+        TransactionRequestPojo request = PaymentUtil.fromJSON(payload, TransactionRequestPojo.class);
+
+        ValidatorFactory factory = javax.validation.Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<TransactionRequestPojo>> constraintViolations = validator.validate(request);
+
+        if (constraintViolations.iterator().hasNext()) {
+            String message = constraintViolations.iterator().next().getMessage();
+            Path field = constraintViolations.iterator().next().getPropertyPath();
+
+            field.iterator().forEachRemaining(node -> {
+                logger.info(node.getName());
+            });
+            return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage(message, context, messages, field));
+        }
+        Ticket transactionTicket = null;
+        try {
+            transactionTicket = paymentTransactionService.createInstantTransaction(request, merchant);
+            return Results.json().render(transactionTicket);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseUtil.returnJsonResult(400, e.getMessage());
+        }
     }
 
     @FilterWith(MerchantFilter.class)
