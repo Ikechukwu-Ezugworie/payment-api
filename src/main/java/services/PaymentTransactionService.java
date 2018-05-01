@@ -249,4 +249,21 @@ public class PaymentTransactionService {
                 break;
         }
     }
+
+    public PaymentTransaction getPaymentTransactionByTransactionId(String transactionId) {
+        return paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);
+    }
+
+    public Ticket getInstantTransaction(PaymentTransaction paymentTransaction, Merchant merchant) {
+        PaymentChannelConstant paymentChannel = paymentTransaction.getPaymentChannel();
+        switch (paymentChannel) {
+            case PAYDIRECT:
+                break;
+            case QUICKTELLER:
+                return quickTellerService.generateTicket(paymentTransaction, merchant);
+            case MASTERCARD:
+                break;
+        }
+        return null;
+    }
 }

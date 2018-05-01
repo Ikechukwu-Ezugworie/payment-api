@@ -53,6 +53,7 @@ public class Routes implements ApplicationRoutes {
         ///////////////////////////////////////////////////////////////////////
         router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
         router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
+        router.GET().route("/api/v1/transactions/tickets/{transactionId}").with(PaymentTransactionController::getPaymentTransactionTicket);
         router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
 
         ///////////////////////////////////////////////////////////////////////

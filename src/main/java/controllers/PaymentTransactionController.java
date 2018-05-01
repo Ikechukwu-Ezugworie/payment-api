@@ -2,6 +2,7 @@ package controllers;
 
 import com.bw.payment.entity.Merchant;
 import com.bw.payment.entity.PaymentTransaction;
+import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.MerchantDao;
@@ -234,5 +235,36 @@ public class PaymentTransactionController {
         }
 
         return ResponseUtil.returnJsonResult(200, transactionRequestPojo);
+    }
+
+    @FilterWith(MerchantFilter.class)
+    public Result getPaymentTransactionTicket(@PathParam("transactionId") String transactionId, Context context,
+                                              @Merch Merchant merchant) {
+        if (StringUtils.isBlank(transactionId)) {
+            return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage("invalid.transaction.id", context, messages));
+        }
+
+        String hash = context.getHeader(Constants.REQUEST_HASH_HEADER);
+        if (StringUtils.isBlank(hash)) {
+            return ResponseUtil.returnJsonResult(400, "Missing hash header");
+        }
+
+        String ver = PaymentUtil.generateDigest("" + merchant.getCode() + merchant.getApiKey() + transactionId,
+                Constants.SHA_512_ALGORITHM_NAME);
+
+        logger.info(ver);
+        if (!hash.equals(ver)) {
+            return ResponseUtil.returnJsonResult(403, "Invalid request");
+        }
+
+        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
+        if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.PENDING)) {
+            return ResponseUtil.returnJsonResult(400, LocalizationUtils.getLocalizedMessage("not.pending.transaction", context, messages));
+        }
+        Ticket o = paymentTransactionService.getInstantTransaction(paymentTransaction, merchant);
+        if (o == null) {
+            return ResponseUtil.returnJsonResult(400, "Payment method not supported");
+        }
+        return ResponseUtil.returnJsonResult(200, o);
     }
 }
