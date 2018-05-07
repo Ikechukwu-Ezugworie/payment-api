@@ -4,6 +4,7 @@ import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentResponseStatusConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.bw.payment.service.PaymentService;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -21,6 +22,7 @@ import pojo.Ticket;
 import pojo.TransactionNotificationPojo;
 import pojo.quickTeller.QTTransactionQueryResponse;
 import pojo.quickTeller.QuickTellerTicket;
+import services.sequence.NotificationIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
 
@@ -39,6 +41,7 @@ public class QuickTellerService {
     public static final int NOTIFICATION_REJECTED = 1;
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final String TRANSACTION_APPROVED = "00";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -49,6 +52,11 @@ public class QuickTellerService {
     private String SECRET_KEY;
     private String CLIENT_ID;
     private String QUICKTELLER_GET_TRANSACTION_BASEURL;
+
+    @Inject
+    private PaymentTransactionService paymentTransactionService;
+    @Inject
+    private NotificationIdSequence notificationIdSequence;
 
     @Inject
     public QuickTellerService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties, ReverseRouter reverseRouter) {
@@ -63,6 +71,11 @@ public class QuickTellerService {
     }
 
     private void queueNotification(QTTransactionQueryResponse res, PaymentTransaction paymentTransaction) {
+        paymentTransactionDao.saveObject(generateNotification(res, paymentTransaction));
+    }
+
+    private NotificationQueue generateNotification(QTTransactionQueryResponse res, PaymentTransaction paymentTransaction) {
+        Merchant merchant=paymentTransactionDao.getRecordById(Merchant.class,paymentTransaction.getMerchant().getId());
         TransactionNotificationPojo transactionNotificationPojo = new TransactionNotificationPojo();
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
@@ -74,15 +87,16 @@ public class QuickTellerService {
         transactionNotificationPojo.setPaymentDate(res.getTransactionDate());
         transactionNotificationPojo.setPaymentChannelName(PaymentChannelConstant.QUICKTELLER.getValue());
         transactionNotificationPojo.setPaymentProviderPaymentReference(res.getPaymentReference());
+        transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
 
         NotificationQueue notificationQueue = new NotificationQueue();
         notificationQueue.setMessageInJson(PaymentUtil.toJSON(transactionNotificationPojo));
-        notificationQueue.setNotificationUrl(paymentTransaction.getNotificationUrl());
+        notificationQueue.setNotificationUrl(merchant.getNotificationUrl());
         notificationQueue.setNotificationSent(false);
         notificationQueue.setDateCreated(Timestamp.from(Instant.now()));
         notificationQueue.setPaymentTransaction(paymentTransaction);
 
-        paymentTransactionDao.saveObject(notificationQueue);
+        return notificationQueue;
     }
 
     private void saveCurrentPaymentTransactionState(PaymentTransaction paymentTransaction) {
@@ -130,14 +144,14 @@ public class QuickTellerService {
 
             if (response.isSuccessful() && response.code() == 200) {
                 String body = response.body().string();
-                logger.info(body);
+//                logger.info(body);
                 QTTransactionQueryResponse transactionQueryResponse = PaymentUtil.fromJSON(body, QTTransactionQueryResponse.class);
                 if (transactionQueryResponse == null) {
                     return;
                 }
-                if (transactionQueryResponse.getResponseCode().equalsIgnoreCase("00")) {
+                if (transactionQueryResponse.getResponseCode().equalsIgnoreCase(TRANSACTION_APPROVED)) {
                     PaymentTransaction paymentTransaction = paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class,
-                            "transactionId", reference.substring(4, reference.length()));
+                            "providerTransactionReference", reference);
                     logStatusCheckResponse(transactionQueryResponse, paymentTransaction);
                     if (paymentTransaction == null) {
                         return;
@@ -157,10 +171,7 @@ public class QuickTellerService {
                     paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
 
                     paymentTransactionDao.updateObject(paymentTransaction);
-
-                    if (paymentTransaction.getNotifyOnStatusChange()) {
-                        queueNotification(transactionQueryResponse, paymentTransaction);
-                    }
+                    paymentTransactionService.doNotification(generateNotification(transactionQueryResponse, paymentTransaction));
                 }
             }
 
@@ -178,17 +189,27 @@ public class QuickTellerService {
 
         QuickTellerTicket quickTellerTicket = new QuickTellerTicket();
         quickTellerTicket.setPaymentCode(qtPaymentCode);
+        quickTellerTicket.setTransactionId(paymentTransaction.getTransactionId());
         quickTellerTicket.setAmountInKobo(paymentTransaction.getAmountInKobo());
         quickTellerTicket.setCustomerId(paymentTransaction.getTransactionId());
 
         Payer payer = paymentTransactionDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
         quickTellerTicket.setPayerPhone(payer.getPhoneNumber());
         quickTellerTicket.setResponseUrl(baseUrl + notificationUrl);
-        quickTellerTicket.setRequestReference(interswitchPrefix + paymentTransaction.getTransactionId());
+        quickTellerTicket.setRequestReference(generateTicketId(interswitchPrefix));
         quickTellerTicket.setPayerEmail(payer.getEmail());
+
+        paymentTransaction.setProviderTransactionReference(quickTellerTicket.getRequestReference());
+
+        paymentTransactionDao.updateObject(paymentTransaction);
 
         return quickTellerTicket;
 
+    }
+
+    private String generateTicketId(String interswitchPrefix) {
+        String ticketId = paymentTransactionDao.getTicketId();
+        return interswitchPrefix + ticketId;
     }
 
     private void logStatusCheckResponse(QTTransactionQueryResponse transactionQueryResponse, PaymentTransaction paymentTransaction) {

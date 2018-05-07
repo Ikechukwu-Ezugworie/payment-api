@@ -11,10 +11,12 @@ import dao.PaymentTransactionDao;
 import ninja.Context;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.MerchantPaymentValidationPojo;
 import pojo.TransactionNotificationPojo;
+import pojo.TransactionRequestPojo;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.Customer;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
@@ -25,10 +27,12 @@ import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import pojo.payDirect.paymentNotification.response.PaymentResponsePojo;
 import pojo.payDirect.paymentNotification.response.Payments;
+import services.sequence.NotificationIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -50,26 +54,88 @@ public class PayDirectService {
     public static final int NOTIFICATION_REJECTED = 1;
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-
-    private final OkHttpClient client = new OkHttpClient();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Inject
-    PaymentTransactionDao paymentTransactionDao;
-    @Inject
-    NinjaProperties ninjaProperties;
 
-    public CustomerInformationResponse processCustomerValidationRequest(CustomerInformationRequest request, Context context) {
+
+    private OkHttpClient client;
+    private PaymentTransactionDao paymentTransactionDao;
+    private NinjaProperties ninjaProperties;
+    private NotificationIdSequence notificationIdSequence;
+
+    @Inject
+    public PayDirectService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
+                            NotificationIdSequence notificationIdSequence) {
+        this.paymentTransactionDao = paymentTransactionDao;
+        this.ninjaProperties = ninjaProperties;
+        this.notificationIdSequence = notificationIdSequence;
+        this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
+    }
+
+    public CustomerInformationResponse processCustomerValidationRequest(CustomerInformationRequest validationRequest, Context context) {
         CustomerInformationResponse customerInformationResponse = new CustomerInformationResponse();
-        customerInformationResponse.setMerchantReference(request.getMerchantReference());
+        customerInformationResponse.setMerchantReference(validationRequest.getMerchantReference());
 
         PaymentTransaction paymentTransaction = paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId",
-                String.valueOf(request.getCustReference()));
-        if (paymentTransaction == null) {
+                String.valueOf(validationRequest.getCustReference()));
+
+        Merchant merchant = paymentTransactionDao.getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", validationRequest.getMerchantReference());
+
+        if (merchant == null) {
             Customer customer = new Customer();
             customer.setFirstName("");
-            customer.setCustReference(request.getCustReference());
-            customer.setStatus(1);
+            customer.setCustReference(validationRequest.getCustReference());
+            customer.setStatus(CUSTOMER_INVALID);
+            customer.setStatusMessage("Invalid merchant reference");
+            customer.setCustomerReferenceAlternate("");
+
+            Customers customers = new Customers();
+            customers.addCustomer(customer);
+
+            customerInformationResponse.setCustomers(customers);
+            return customerInformationResponse;
+        }
+
+        if (paymentTransaction == null) {
+            try {
+                RequestBody body = RequestBody.create(JSON, PaymentUtil.toJSON(validationRequest));
+                Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
+                Response response = client.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    if (response.code() == 200) {
+                        logger.info("<=== CREATED 200");
+                        TransactionRequestPojo tr = PaymentUtil.fromJSON(response.body().string(), TransactionRequestPojo.class);
+                        paymentTransaction = paymentTransactionDao.createTransaction(tr, merchant, validationRequest.getCustReference());
+
+                    } else if (response.code() == 204) {
+                        logger.info("<=== InVALID TRANSACTION: 204");
+                        Customer customer = new Customer();
+                        customer.setFirstName("");
+                        customer.setCustReference(validationRequest.getCustReference());
+                        customer.setStatus(CUSTOMER_INVALID);
+                        customer.setStatusMessage("Invalid transaction");
+                        customer.setCustomerReferenceAlternate("");
+
+                        Customers customers = new Customers();
+                        customers.addCustomer(customer);
+
+                        customerInformationResponse.setCustomers(customers);
+                        return customerInformationResponse;
+                    }
+                }else {
+                    logger.info("<=== FAILED: "+response.code());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (paymentTransaction == null) {
+            logger.info("<=== PAYMENT NULL");
+            Customer customer = new Customer();
+            customer.setFirstName("");
+            customer.setCustReference(validationRequest.getCustReference());
+            customer.setStatus(CUSTOMER_INVALID);
             customer.setStatusMessage("Invalid transaction");
             customer.setCustomerReferenceAlternate("");
 
@@ -83,7 +149,7 @@ public class PayDirectService {
         if (!paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.INTERSWITCH)) {
             Customer customer = new Customer();
             customer.setFirstName("");
-            customer.setCustReference(request.getCustReference());
+            customer.setCustReference(validationRequest.getCustReference());
             customer.setStatus(1);
             customer.setStatusMessage("Invalid payment provider");
             customer.setCustomerReferenceAlternate("");
@@ -95,38 +161,38 @@ public class PayDirectService {
             return customerInformationResponse;
         }
 
-        if (ninjaProperties.isProd()) {
-            Merchant merchant = paymentTransactionDao.getMerchantByMerchantId(request.getMerchantReference(), PaymentProviderConstant.INTERSWITCH);
-            if (merchant == null) {
-                Customer customer = new Customer();
-                customer.setFirstName("");
-                customer.setCustReference(request.getCustReference());
-                customer.setStatus(1);
-                customer.setStatusMessage("Merchant not found");
-                customer.setCustomerReferenceAlternate("");
-
-                Customers customers = new Customers();
-                customers.addCustomer(customer);
-
-                customerInformationResponse.setCustomers(customers);
-                return customerInformationResponse;
-            }
-
-            if (!paymentTransaction.getMerchant().getId().equals(merchant.getId())) {
-                Customer customer = new Customer();
-                customer.setFirstName("");
-                customer.setCustReference(request.getCustReference());
-                customer.setStatus(1);
-                customer.setStatusMessage("Merchant does not match");
-                customer.setCustomerReferenceAlternate("");
-
-                Customers customers = new Customers();
-                customers.addCustomer(customer);
-
-                customerInformationResponse.setCustomers(customers);
-                return customerInformationResponse;
-            }
-        }
+//        if (ninjaProperties.isProd()) {
+////            paymentTransactionDao.getMerchantByMerchantId(validationRequest.getMerchantReference(), PaymentProviderConstant.INTERSWITCH);
+//            if (merchant == null) {
+//                Customer customer = new Customer();
+//                customer.setFirstName("");
+//                customer.setCustReference(validationRequest.getCustReference());
+//                customer.setStatus(1);
+//                customer.setStatusMessage("Merchant not found");
+//                customer.setCustomerReferenceAlternate("");
+//
+//                Customers customers = new Customers();
+//                customers.addCustomer(customer);
+//
+//                customerInformationResponse.setCustomers(customers);
+//                return customerInformationResponse;
+//            }
+//
+//            if (!paymentTransaction.getMerchant().getId().equals(merchant.getId())) {
+//                Customer customer = new Customer();
+//                customer.setFirstName("");
+//                customer.setCustReference(validationRequest.getCustReference());
+//                customer.setStatus(1);
+//                customer.setStatusMessage("Merchant does not match");
+//                customer.setCustomerReferenceAlternate("");
+//
+//                Customers customers = new Customers();
+//                customers.addCustomer(customer);
+//
+//                customerInformationResponse.setCustomers(customers);
+//                return customerInformationResponse;
+//            }
+//        }
 
         Payer payer = paymentTransactionDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
         List<Item> items = paymentTransactionDao.getPaymentTransactionItems(paymentTransaction.getId(), GenericStatusConstant.ACTIVE);
@@ -248,24 +314,24 @@ public class PayDirectService {
                 break;
             }
 
-            if (paymentTransaction.getValidateTransaction()) {
-                MerchantPaymentValidationPojo val = validatePaymentWithMerchant(paymentPojo, paymentTransaction.getTransactionValidationUrl());
-                if (val == null) {
-                    return null;
-                } else if (!val.isValid()) {
-                    responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
-                    responsePojo.setStatus(NOTIFICATION_REJECTED);
-                    responsePojo.setStatusMessage(val.getReason());
-
-                    Payments payments = new Payments();
-                    payments.addPayment(responsePojo);
-
-                    paymentNotificationResponsePojo.setPayments(payments);
-                    savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
-                            responsePojo.getStatusMessage());
-                    break;
-                }
-            }
+//            if (paymentTransaction.getValidateTransaction()) {
+//                MerchantPaymentValidationPojo val = validatePaymentWithMerchant(paymentPojo, paymentTransaction.getTransactionValidationUrl());
+//                if (val == null) {
+//                    return null;
+//                } else if (!val.isValid()) {
+//                    responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
+//                    responsePojo.setStatus(NOTIFICATION_REJECTED);
+//                    responsePojo.setStatusMessage(val.getReason());
+//
+//                    Payments payments = new Payments();
+//                    payments.addPayment(responsePojo);
+//
+//                    paymentNotificationResponsePojo.setPayments(payments);
+//                    savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
+//                            responsePojo.getStatusMessage());
+//                    break;
+//                }
+//            }
 
 //            if its a reversal request
             if (paymentPojo.getReversal()) {
@@ -279,9 +345,7 @@ public class PayDirectService {
 
                 paymentTransactionDao.updateObject(paymentTransaction);
 
-                if (paymentTransaction.getNotifyOnStatusChange()) {
-                    queueNotification(paymentPojo, paymentTransaction);
-                }
+                queueNotification(paymentPojo, paymentTransaction);
 
                 logger.info("<=== Payment reversed");
                 responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
@@ -311,7 +375,7 @@ public class PayDirectService {
                 break;
             }
 
-            if (!paymentTransaction.getAmountInKobo().equals(getAmountInKobo(paymentPojo.getAmount()))) {
+            if (!isExpectedAmount(paymentPojo, paymentTransaction)) {
                 responsePojo.setStatusMessage(String.format(Locale.ENGLISH, "Invalid amount. Expected N%,.2f",
                         PaymentUtil.getAmountInNaira(paymentTransaction.getAmountInKobo())));
                 responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
@@ -331,12 +395,15 @@ public class PayDirectService {
             saveCurrentPaymentTransactionState(paymentTransaction);
 
             logger.info("<=== Payment success");
-            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+            if (paymentTransaction.getAmountInKobo().equals(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()))) {
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+            } else {
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PARTIAL);
+            }
+            paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountPaidInKobo() + PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
             paymentTransactionDao.updateObject(paymentTransaction);
 
-            if (paymentTransaction.getNotifyOnStatusChange()) {
-                queueNotification(paymentPojo, paymentTransaction);
-            }
+            queueNotification(paymentPojo, paymentTransaction);
 
             responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
             responsePojo.setStatus(NOTIFICATION_RECEIVED);
@@ -350,6 +417,18 @@ public class PayDirectService {
                     responsePojo.getStatusMessage());
         }
         return paymentNotificationResponsePojo;
+    }
+
+    private boolean isExpectedAmount(Payment paymentPojo, PaymentTransaction paymentTransaction) {
+        if (paymentTransaction.getAmountInKobo().equals(getAmountInKobo(paymentPojo.getAmount()))) {
+            return true;
+        }
+
+        if (paymentPojo.getCustReference().startsWith("EDORPX") || paymentPojo.getCustReference().startsWith("AB") ||
+                paymentPojo.getCustReference().startsWith("ECBS")) {
+            return paymentPojo.getAmount().longValue() > 0;
+        }
+        return false;
     }
 
     public MerchantPaymentValidationPojo validatePaymentWithMerchant(Object payload, String url) {
@@ -390,6 +469,7 @@ public class PayDirectService {
     }
 
     private void queueNotification(Payment paymentPojo, PaymentTransaction paymentTransaction) {
+        Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
         TransactionNotificationPojo transactionNotificationPojo = new TransactionNotificationPojo();
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
@@ -403,10 +483,11 @@ public class PayDirectService {
         transactionNotificationPojo.setPaymentChannelName(paymentPojo.getChannelName());
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentPojo.getPaymentReference());
         transactionNotificationPojo.setPaymentMethod(paymentPojo.getPaymentMethod());
+        transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
 
         NotificationQueue notificationQueue = new NotificationQueue();
         notificationQueue.setMessageInJson(PaymentUtil.toJSON(transactionNotificationPojo));
-        notificationQueue.setNotificationUrl(paymentTransaction.getNotificationUrl());
+        notificationQueue.setNotificationUrl(merchant.getNotificationUrl());
         notificationQueue.setNotificationSent(false);
         notificationQueue.setDateCreated(Timestamp.from(Instant.now()));
         notificationQueue.setPaymentTransaction(paymentTransaction);

@@ -17,6 +17,7 @@ public class TransactionNotificationPojo {
     private String paymentChannelName;
     private String paymentProviderPaymentReference;
     private String paymentMethod;
+    private String notificationId;
 
     public String getStatus() {
         return status;
@@ -122,6 +123,14 @@ public class TransactionNotificationPojo {
         this.paymentMethod = paymentMethod;
     }
 
+    public String getNotificationId() {
+        return notificationId;
+    }
+
+    public void setNotificationId(String notificationId) {
+        this.notificationId = notificationId;
+    }
+
     @Override
     public String toString() {
         return "TransactionNotificationPojo{" +
@@ -138,6 +147,7 @@ public class TransactionNotificationPojo {
                 ", paymentChannelName='" + paymentChannelName + '\'' +
                 ", paymentProviderPaymentReference='" + paymentProviderPaymentReference + '\'' +
                 ", paymentMethod='" + paymentMethod + '\'' +
+                ", notificationId='" + notificationId + '\'' +
                 '}';
     }
 }

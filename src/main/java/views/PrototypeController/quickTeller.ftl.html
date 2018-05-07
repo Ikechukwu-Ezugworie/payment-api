@@ -1,12 +1,7 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
 <@layout.myLayout "Interswitch">
 <style>
-    .checkout-button-medium {
-        background: green !important;
-        padding: 8px 24px !important;
-        color: #fff !important;
-        border-radius: none !important;
-    }
+
 </style>
 <div class="container fill" style="margin-top: 10%">
 
@@ -20,9 +15,9 @@ var testMode = true;
 var baseUrl = "";
 QTCheckout.paymentItems = QTCheckout.paymentItems || [];
 QTCheckout.paymentItems.push({
-    paymentCode: '${data.paymentCode}',
+    paymentCode: '95101',
     extraData: {
-        amount: '${data.amountInKobo}',
+        amount:"default",
         buttonSize: 'medium',
         customerId: '${data.customerId}',
         mobileNumber: '${data.mobileNumber}',

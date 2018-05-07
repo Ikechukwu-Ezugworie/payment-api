@@ -41,7 +41,7 @@ public class Routes implements ApplicationRoutes {
         // Quickteller
         ///////////////////////////////////////////////////////////////////////
         router.POST().route("/api/v1/payments/interswitch/quickteller").with(QuickTellerController::doQuickTellerNotification);
-        router.GET().route("/quickteller").with(PrototypeController::quickTeller);
+//        router.GET().route("/quickteller").with(PrototypeController::quickTeller);
 
         ///////////////////////////////////////////////////////////////////////
         // Merchant controller
@@ -52,9 +52,10 @@ public class Routes implements ApplicationRoutes {
         // PaymentTransaction controller
         ///////////////////////////////////////////////////////////////////////
         router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
-        router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
         router.GET().route("/api/v1/transactions/tickets/{transactionId}").with(PaymentTransactionController::getPaymentTransactionTicket);
         router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
+
+        router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
 
         ///////////////////////////////////////////////////////////////////////
         // Notifications controller

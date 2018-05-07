@@ -46,6 +46,7 @@
                 </tbody>
             </table>
             <#list data.customers.customers  as customer>
+            <br>
                 <form action="" method="post">
                     <input type="hidden" value="${(customer.custReference)!""}" class="form-control"
                            id="exampleInputEmail1"
@@ -54,14 +55,17 @@
                     <input type="hidden" value="${(customer.paymentItems.items[0].productCode)!""}"
                            class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
                            placeholder="Enter transaction reference" name="itemCode" required>
-                    <input type="hidden" value="${(customer.amount)!""}" class="form-control" id="exampleInputEmail1"
-                           aria-describedby="emailHelp"
-                           placeholder="Enter transaction reference" name="amount" required>
                     <input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"
                            aria-describedby="emailHelp"
                            placeholder="Enter transaction reference" name="type" required>
-                    <button type="submit" class="btn btn-success btn-lg float-right">
-                        Pay &#8358; ${(customer.amount)!""}</button>
+                    <div  class="form-group form-inline">
+                        <label for="exampleInputAmount">Enter amount<span class="text-danger">*</span></label>
+                        <input type="number" value="${(customer.amount)!""}" class="form-control" id="exampleInputAmount"
+                        aria-describedby="emailHelp"
+                               placeholder="Enter transaction reference" name="amount" required>
+                        <button type="submit" class="btn btn-success btn-lg float-right">
+                            Pay</button>
+                    </div>
                 </form>
             </#list >
         </#if>

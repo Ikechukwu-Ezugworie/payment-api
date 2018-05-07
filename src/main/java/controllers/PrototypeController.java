@@ -107,12 +107,12 @@ public class PrototypeController {
         return Results.redirect("/interswitch");
     }
 
-    public Result quickTeller() {
-        Merchant merchant = merchantDao.getMerchantByCode("M0000001");
-        TransactionRequestPojo request = PaymentUtil.fromJSON("{\"merchantTransactionReferenceId\":\"0000000029\",\"amountInKobo\":34508734,\"notifyOnStatusChange\":true,\"notificationUrl\":\"\",\"paymentProvider\":\"INTERSWITCH\",\"paymentChannel\":\"QUICKTELLER\",\"payer\":{\"firstName\":\"Ramos\",\"lastName\":\"Harrell\",\"email\":\"ramosharrell@automon.com\",\"phoneNumber\":\"08137625011\"},\"items\":[{\"name\":\"ERAS ASSESSMENT\",\"itemId\":\"EDORPX821\",\"quantity\":1,\"priceInKobo\":34508734,\"taxInKobo\":0,\"subTotalInKobo\":34508734,\"totalInKobo\":34508734,\"description\":\"Pools Promoters Weekly Pay Tax - Annual Fee\"}],\"validateTransaction\":false}", TransactionRequestPojo.class);
-        Ticket transactionTicket = paymentTransactionService.createInstantTransaction(request, merchant);
-
-        System.out.println(transactionTicket);
-        return Results.html().render("data", transactionTicket);
-    }
+//    public Result quickTeller() {
+//        Merchant merchant = merchantDao.getMerchantByCode("M0000001");
+//        TransactionRequestPojo request = PaymentUtil.fromJSON("{\"merchantTransactionReferenceId\":\"0000000029\",\"amountInKobo\":34508734,\"notifyOnStatusChange\":true,\"notificationUrl\":\"\",\"paymentProvider\":\"INTERSWITCH\",\"paymentChannel\":\"QUICKTELLER\",\"payer\":{\"firstName\":\"Ramos\",\"lastName\":\"Harrell\",\"email\":\"ramosharrell@automon.com\",\"phoneNumber\":\"08137625011\"},\"items\":[{\"name\":\"ERAS ASSESSMENT\",\"itemId\":\"EDORPX821\",\"quantity\":1,\"priceInKobo\":34508734,\"taxInKobo\":0,\"subTotalInKobo\":34508734,\"totalInKobo\":34508734,\"description\":\"Pools Promoters Weekly Pay Tax - Annual Fee\"}],\"validateTransaction\":false}", TransactionRequestPojo.class);
+//        Ticket transactionTicket = paymentTransactionService.createInstantTransaction(request, merchant);
+//
+//        System.out.println(transactionTicket);
+//        return Results.html().render("data", transactionTicket);
+//    }
 }

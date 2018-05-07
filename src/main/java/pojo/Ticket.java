@@ -8,6 +8,8 @@ public class Ticket {
     private String transactionId;
     private Long amountInKobo;
     private String responseUrl;
+    private String successRedirect;
+    private String failureRedirect;
     private String payerName;
     private String payerPhone;
     private String payerEmail;
@@ -75,5 +77,21 @@ public class Ticket {
 
     public void setProviderMerchantId(String providerMerchantId) {
         this.providerMerchantId = providerMerchantId;
+    }
+
+    public String getSuccessRedirect() {
+        return successRedirect;
+    }
+
+    public void setSuccessRedirect(String successRedirect) {
+        this.successRedirect = successRedirect;
+    }
+
+    public String getFailureRedirect() {
+        return failureRedirect;
+    }
+
+    public void setFailureRedirect(String failureRedirect) {
+        this.failureRedirect = failureRedirect;
     }
 }

@@ -7,10 +7,12 @@ import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
 import pojo.TransactionRequestPojo;
 import pojo.payDirect.paymentNotification.request.Payment;
 import services.sequence.PayerIdSequence;
+import services.sequence.TicketIdSequence;
 import services.sequence.TransactionIdSequence;
 import utils.PaymentUtil;
 
@@ -31,23 +33,27 @@ public class PaymentTransactionDao extends BaseDao {
 
     @Inject
     protected PayerIdSequence payerIdSequence;
+    @Inject
+    protected TicketIdSequence ticketIdSequence;
+
 
     @Transactional
-    public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
+    public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant, String transactionId) {
+        if (StringUtils.isBlank(transactionId)) {
+            transactionId = transactionIdSequence.getNext();
+        }
+
         PaymentTransaction paymentTransaction = new PaymentTransaction();
-        paymentTransaction.setTransactionId(transactionIdSequence.getNext());
+        paymentTransaction.setTransactionId(transactionId);
         paymentTransaction.setDateCreated(PaymentUtil.nowToTimeStamp());
         paymentTransaction.setMerchantTransactionReferenceId(request.getMerchantTransactionReferenceId());
         paymentTransaction.setAmountInKobo(request.getAmountInKobo());
-        paymentTransaction.setNotifyOnStatusChange(request.getNotifyOnStatusChange());
-        paymentTransaction.setNotificationUrl(request.getNotificationUrl());
+        paymentTransaction.setAmountPaidInKobo(0L);
         paymentTransaction.setPaymentProvider(PaymentProviderConstant.fromValue(request.getPaymentProvider()));
         paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
         paymentTransaction.setServiceTypeId(request.getServiceTypeId());
         paymentTransaction.setMerchant(merchant);
         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-        paymentTransaction.setValidateTransaction(request.getValidateTransaction());
-        paymentTransaction.setTransactionValidationUrl(request.getTransactionValidationUrl());
 
         Payer payer = new Payer();
         payer.setPayerId(payerIdSequence.getNext());
@@ -94,6 +100,10 @@ public class PaymentTransactionDao extends BaseDao {
         return paymentTransaction;
     }
 
+    public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
+        return createTransaction(request, merchant, null);
+    }
+
     public List<Item> getPaymentTransactionItems(Long id, GenericStatusConstant status) {
         Query q = entityManagerProvider.get().createQuery("select x from Item x, PaymentTransactionItem pi where pi.paymentTransaction.id=:id and x.id=pi.item.id" +
                 " and x.status=:status");
@@ -113,14 +123,14 @@ public class PaymentTransactionDao extends BaseDao {
         return (getCount(q)) > 0;
     }
 
-    public Merchant getMerchantByMerchantId(String merchantReference, PaymentProviderConstant paymentProvider) {
-        Query q = entityManagerProvider.get().createQuery("select m from Merchant m, MerchantProviderDetails mp where mp.paymentProviderDetails.merchantId=:mid" +
-                " and mp.paymentProviderDetails.name=:name and m.id=mp.merchant.id");
-
-        q.setParameter("mid", merchantReference)
-                .setParameter("name", paymentProvider.getValue());
-        return uniqueResultOrNull(q, Merchant.class);
-    }
+//    public Merchant getMerchantByMerchantId(String merchantReference, PaymentProviderConstant paymentProvider) {
+//        Query q = entityManagerProvider.get().createQuery("select m from Merchant m, MerchantProviderDetails mp where mp.paymentProviderDetails.merchantId=:mid" +
+//                " and mp.paymentProviderDetails.name=:name and m.id=mp.merchant.id");
+//
+//        q.setParameter("mid", merchantReference)
+//                .setParameter("name", paymentProvider.getValue());
+//        return uniqueResultOrNull(q, Merchant.class);
+//    }
 
     public List<NotificationQueue> getPendingNotifications(int max) {
         if (max == 0) {
@@ -155,5 +165,9 @@ public class PaymentTransactionDao extends BaseDao {
                 .setParameter("pc", PaymentChannelConstant.QUICKTELLER);
 
         return uniqueResultOrNull(q, PaymentTransaction.class);
+    }
+
+    public String getTicketId() {
+        return ticketIdSequence.getNext();
     }
 }
