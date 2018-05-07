@@ -40,7 +40,6 @@ public class TransactionRequestPojo {
     @Size(min = 1, message = "validation.not.blank")
     @Valid
     private List<ItemPojo> items;
-    @NotNull(message = "validation.not.null")
     private Boolean validateTransaction;
     private String transactionValidationUrl;
     private boolean instantTransaction = false;

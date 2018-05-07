@@ -55,6 +55,7 @@ public class PaymentTransactionController {
     @FilterWith(MerchantFilter.class)
     public Result createPaymentTransaction(@ContentExtract String payload,
                                            Context context, @Merch Merchant merchant) {
+        logger.info(payload);
         String hash = context.getHeader(Constants.REQUEST_HASH_HEADER);
         if (StringUtils.isBlank(hash)) {
             return ResponseUtil.returnJsonResult(400, "Missing hash header");

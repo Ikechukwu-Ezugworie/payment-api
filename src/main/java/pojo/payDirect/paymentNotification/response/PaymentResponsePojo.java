@@ -5,17 +5,17 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class PaymentResponsePojo {
     @JacksonXmlProperty(localName = "PaymentLogId")
-    private Integer paymentLogId;
+    private String paymentLogId;
     @JacksonXmlProperty(localName = "Status")
     private Integer status;
     @JacksonXmlProperty(localName = "StatusMessage")
     private String statusMessage;
 
-    public Integer getPaymentLogId() {
+    public String getPaymentLogId() {
         return paymentLogId;
     }
 
-    public void setPaymentLogId(Integer paymentLogId) {
+    public void setPaymentLogId(String paymentLogId) {
         this.paymentLogId = paymentLogId;
     }
 

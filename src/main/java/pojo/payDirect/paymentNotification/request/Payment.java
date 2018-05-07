@@ -12,7 +12,7 @@ public class Payment {
     @JacksonXmlProperty(localName = "ProductGroupCode")
     private String productGroupCode;
     @JacksonXmlProperty(localName = "PaymentLogId")
-    private Integer paymentLogId;
+    private String paymentLogId;
     @JacksonXmlProperty(localName = "CustReference")
     private String custReference;
     @JacksonXmlProperty(localName = "AlternateCustReference")
@@ -70,7 +70,7 @@ public class Payment {
     @JacksonXmlProperty(localName = "PaymentCurrency")
     private String paymentCurrency;
     @JacksonXmlProperty(localName = "OriginalPaymentLogId")
-    private Long originalPaymentLogId;
+    private String originalPaymentLogId;
     @JacksonXmlProperty(localName = "OriginalPaymentReference")
     private String originalPaymentReference;
     @JacksonXmlProperty(localName = "Teller")
@@ -94,14 +94,6 @@ public class Payment {
 
     public void setProductGroupCode(String productGroupCode) {
         this.productGroupCode = productGroupCode;
-    }
-
-    public Integer getPaymentLogId() {
-        return paymentLogId;
-    }
-
-    public void setPaymentLogId(Integer paymentLogId) {
-        this.paymentLogId = paymentLogId;
     }
 
     public String getCustReference() {
@@ -328,14 +320,6 @@ public class Payment {
         this.paymentCurrency = paymentCurrency;
     }
 
-    public Long getOriginalPaymentLogId() {
-        return originalPaymentLogId;
-    }
-
-    public void setOriginalPaymentLogId(Long originalPaymentLogId) {
-        this.originalPaymentLogId = originalPaymentLogId;
-    }
-
     public String getOriginalPaymentReference() {
         return originalPaymentReference;
     }
@@ -366,6 +350,22 @@ public class Payment {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getPaymentLogId() {
+        return paymentLogId;
+    }
+
+    public void setPaymentLogId(String paymentLogId) {
+        this.paymentLogId = paymentLogId;
+    }
+
+    public String getOriginalPaymentLogId() {
+        return originalPaymentLogId;
+    }
+
+    public void setOriginalPaymentLogId(String originalPaymentLogId) {
+        this.originalPaymentLogId = originalPaymentLogId;
     }
 
     @Override

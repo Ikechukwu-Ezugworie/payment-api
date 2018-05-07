@@ -3,8 +3,6 @@ package services;
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentChannelConstant;
-import com.bw.payment.enumeration.PaymentProviderConstant;
-import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -13,7 +11,6 @@ import dao.PaymentTransactionDao;
 import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
-import org.apache.commons.lang3.StringUtils;
 import pojo.*;
 import services.sequence.PayerIdSequence;
 import services.sequence.TransactionIdSequence;
@@ -110,11 +107,11 @@ public class PaymentTransactionService {
 
     public PaymentTransaction processTransactionCreationRequest(TransactionRequestPojo request, Merchant merchant) {
 
-        if (request.getValidateTransaction()) {
-            if (StringUtils.isBlank(request.getTransactionValidationUrl())) {
-                throw new IllegalArgumentException("Transaction validation url not set");
-            }
-        }
+//        if (request.getValidateTransaction()) {
+//            if (StringUtils.isBlank(request.getTransactionValidationUrl())) {
+//                throw new IllegalArgumentException("Transaction validation url not set");
+//            }
+//        }
 //        PaymentProviderConstant providerConstant = PaymentProviderConstant.fromValue(request.getPaymentProvider());
 //        switch (providerConstant) {
 //            case INTERSWITCH:
