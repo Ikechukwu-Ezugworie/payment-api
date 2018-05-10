@@ -320,7 +320,7 @@ public class PayDirectService {
         transactionNotificationPojo.setPaymentDate(paymentPojo.getPaymentDate());
         transactionNotificationPojo.setSettlementDate(paymentPojo.getSettlementDate());
         transactionNotificationPojo.setPaymentChannelName(paymentPojo.getChannelName());
-        transactionNotificationPojo.setPaymentProviderPaymentReference(paymentPojo.getPaymentReference());
+        transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentMethod(paymentPojo.getPaymentMethod());
 //        transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
 
