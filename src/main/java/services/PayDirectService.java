@@ -161,39 +161,6 @@ public class PayDirectService {
             return customerInformationResponse;
         }
 
-//        if (ninjaProperties.isProd()) {
-////            paymentTransactionDao.getMerchantByMerchantId(validationRequest.getMerchantReference(), PaymentProviderConstant.INTERSWITCH);
-//            if (merchant == null) {
-//                Customer customer = new Customer();
-//                customer.setFirstName("");
-//                customer.setCustReference(validationRequest.getCustReference());
-//                customer.setStatus(1);
-//                customer.setStatusMessage("Merchant not found");
-//                customer.setCustomerReferenceAlternate("");
-//
-//                Customers customers = new Customers();
-//                customers.addCustomer(customer);
-//
-//                customerInformationResponse.setCustomers(customers);
-//                return customerInformationResponse;
-//            }
-//
-//            if (!paymentTransaction.getMerchant().getId().equals(merchant.getId())) {
-//                Customer customer = new Customer();
-//                customer.setFirstName("");
-//                customer.setCustReference(validationRequest.getCustReference());
-//                customer.setStatus(1);
-//                customer.setStatusMessage("Merchant does not match");
-//                customer.setCustomerReferenceAlternate("");
-//
-//                Customers customers = new Customers();
-//                customers.addCustomer(customer);
-//
-//                customerInformationResponse.setCustomers(customers);
-//                return customerInformationResponse;
-//            }
-//        }
-
         Payer payer = paymentTransactionDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
         List<Item> items = paymentTransactionDao.getPaymentTransactionItems(paymentTransaction.getId(), GenericStatusConstant.ACTIVE);
 
@@ -375,22 +342,22 @@ public class PayDirectService {
                 break;
             }
 
-            if (!isExpectedAmount(paymentPojo, paymentTransaction)) {
-                responsePojo.setStatusMessage(String.format(Locale.ENGLISH, "Invalid amount. Expected N%,.2f",
-                        PaymentUtil.getAmountInNaira(paymentTransaction.getAmountInKobo())));
-                responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
-                responsePojo.setStatus(NOTIFICATION_REJECTED);
-
-                Payments payments = new Payments();
-                payments.addPayment(responsePojo);
-
-                paymentNotificationResponsePojo.setPayments(payments);
-
-                savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
-                        responsePojo.getStatusMessage());
-
-                break;
-            }
+//            if (!isExpectedAmount(paymentPojo, paymentTransaction)) {
+//                responsePojo.setStatusMessage(String.format(Locale.ENGLISH, "Invalid amount. Expected N%,.2f",
+//                        PaymentUtil.getAmountInNaira(paymentTransaction.getAmountInKobo())));
+//                responsePojo.setPaymentLogId(paymentPojo.getPaymentLogId());
+//                responsePojo.setStatus(NOTIFICATION_REJECTED);
+//
+//                Payments payments = new Payments();
+//                payments.addPayment(responsePojo);
+//
+//                paymentNotificationResponsePojo.setPayments(payments);
+//
+//                savePaymentNotificationRequest(paymentPojo, request, false, true, PaymentResponseStatusConstant.REJECTED,
+//                        responsePojo.getStatusMessage());
+//
+//                break;
+//            }
 
             saveCurrentPaymentTransactionState(paymentTransaction);
 

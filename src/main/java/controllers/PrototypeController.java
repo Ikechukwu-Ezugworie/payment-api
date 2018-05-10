@@ -76,7 +76,7 @@ public class PrototypeController {
         String payload = "<PaymentNotificationRequest><ServiceUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</ServiceUrl>" +
                 "<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>" +
                 "<FtpUsername/><FtpPassword/><Payments><Payment><IsRepeated>False</IsRepeated><ProductGroupCode>HTTPGENERICv31</ProductGroupCode>" +
-                "<PaymentLogId>6416218</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
+                "<PaymentLogId>1331"+ transactionId +"</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
                 "<Amount>" + amount + "</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod><PaymentReference>FBN|BRH|ABSA|17-03-2016|091483</PaymentReference>" +
                 "<TerminalId/><ChannelName>Bank Branc</ChannelName><Location>ABAJI</Location><IsReversal>False</IsReversal><PaymentDate>" + sdf.format(new Date()) + "</PaymentDate>" +
                 "<SettlementDate>03/18/2016 00:00:01</SettlementDate><InstitutionId>ABSA</InstitutionId><InstitutionName>Abia State Autoreg</InstitutionName>" +

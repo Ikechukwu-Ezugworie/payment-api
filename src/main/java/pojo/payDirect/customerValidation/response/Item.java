@@ -13,11 +13,11 @@ public class Item {
     private Long quantity;
     @JacksonXmlProperty(localName = "Price")
     private BigDecimal price;
-    @JacksonXmlProperty(localName = "subtotal")
+    @JacksonXmlProperty(localName = "SubTotal")
     private BigDecimal subtotal;
-    @JacksonXmlProperty(localName = "tax")
+    @JacksonXmlProperty(localName = "Tax")
     private BigDecimal tax;
-    @JacksonXmlProperty(localName = "total")
+    @JacksonXmlProperty(localName = "Total")
     private BigDecimal total;
 
 
