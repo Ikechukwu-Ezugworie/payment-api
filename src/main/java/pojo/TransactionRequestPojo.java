@@ -18,6 +18,7 @@ public class TransactionRequestPojo {
     private String transactionId;
     private String dateCreated;
     private String lastUpdated;
+    private String providerTransactionReference;
     @NotBlank(message = "validation.not.null")
     private String merchantTransactionReferenceId;
     @NotNull(message = "validation.not.null")
@@ -194,4 +195,6 @@ public class TransactionRequestPojo {
     public void setInstantTransaction(boolean instantTransaction) {
         this.instantTransaction = instantTransaction;
     }
+
+
 }

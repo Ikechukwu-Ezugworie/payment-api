@@ -71,6 +71,9 @@ public class PayDirectController {
                                 eventReader.close();
                                 CustomerInformationRequest request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
                                 CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
+                                if (customerInformationResponse == null) {
+                                    return Results.xml().status(503);
+                                }
                                 return Results.xml().render(customerInformationResponse);
                             } else if (qName.equalsIgnoreCase("PaymentNotificationRequest")) {
                                 eventReader.close();

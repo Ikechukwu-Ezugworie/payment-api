@@ -91,18 +91,7 @@ public class PaymentTransactionService {
     }
 
     public PayerPojo generatePayerPojo(Payer payer) {
-        if (payer == null) {
-            return null;
-        }
-        PayerPojo payerPojo = new PayerPojo();
-        payerPojo.setId(payer.getId());
-        payerPojo.setPayerId(payer.getPayerId());
-        payerPojo.setFirstName(payer.getFirstName());
-        payerPojo.setLastName(payer.getLastName());
-        payerPojo.setEmail(payer.getEmail());
-        payerPojo.setPhoneNumber(payer.getPhoneNumber());
-
-        return payerPojo;
+        return paymentTransactionDao.getPayerAsPojo(payer);
     }
 
     public PaymentTransaction processTransactionCreationRequest(TransactionRequestPojo request, Merchant merchant) {

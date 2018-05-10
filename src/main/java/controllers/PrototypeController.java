@@ -1,6 +1,5 @@
 package controllers;
 
-import com.bw.payment.entity.Merchant;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -10,8 +9,6 @@ import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
 import org.apache.commons.lang3.StringUtils;
-import pojo.Ticket;
-import pojo.TransactionRequestPojo;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
 import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
@@ -48,24 +45,28 @@ public class PrototypeController {
         if (StringUtils.isBlank(type)) {
             return Results.html();
         }
-        if (type.equalsIgnoreCase("validation")) {
-            String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
-                    "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
-                    itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
+        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
+                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
 
-            try {
-                CustomerInformationRequest request = null;
-                request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
-                CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
-                System.out.println(PaymentUtil.toJSON(customerInformationResponse));
-                if (customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_VALID) {
-                    return Results.html().render("data", customerInformationResponse);
+        try {
+            CustomerInformationRequest request = null;
+            request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
+            CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
+            System.out.println(PaymentUtil.toJSON(customerInformationResponse));
+            if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_INVALID) {
+                String key = type.equalsIgnoreCase("ar") ? "poa" : type.equalsIgnoreCase("rin") ? "directCapture" : "";
+                if (key.equalsIgnoreCase("poa")) {
+                    context.getFlashScope().error("Customer not found. Enter RIN or Phone number instead");
+                } else if (key.equalsIgnoreCase("directCapture")) {
+                    context.getFlashScope().error("Customer not found. Enter Direct capture details");
                 }
-                context.getFlashScope().error(customerInformationResponse.getCustomers().getCustomers().get(0).getStatusMessage());
-            } catch (IOException e) {
-                e.printStackTrace();
+                return Results.html().render(key, "true");
+            } else {
+                return Results.html().render("data", customerInformationResponse);
             }
-            return Results.html();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return Results.html();
     }
@@ -76,15 +77,15 @@ public class PrototypeController {
         String payload = "<PaymentNotificationRequest><ServiceUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</ServiceUrl>" +
                 "<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>" +
                 "<FtpUsername/><FtpPassword/><Payments><Payment><IsRepeated>False</IsRepeated><ProductGroupCode>HTTPGENERICv31</ProductGroupCode>" +
-                "<PaymentLogId>1331"+ transactionId +"</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
+                "<PaymentLogId>1331" + transactionId + "</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
                 "<Amount>" + amount + "</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod><PaymentReference>FBN|BRH|ABSA|17-03-2016|091483</PaymentReference>" +
                 "<TerminalId/><ChannelName>Bank Branc</ChannelName><Location>ABAJI</Location><IsReversal>False</IsReversal><PaymentDate>" + sdf.format(new Date()) + "</PaymentDate>" +
                 "<SettlementDate>03/18/2016 00:00:01</SettlementDate><InstitutionId>ABSA</InstitutionId><InstitutionName>Abia State Autoreg</InstitutionName>" +
-                "<BranchName>ABAJI</BranchName><BankName>First Bank of Nigeria Plc</BankName><FeeName/><CustomerName/><OtherCustomerInfo>|</OtherCustomerInfo>" +
+                "<BranchName>ABAJI</BranchName><BankName>First Bank of Nigeria Plc</BankName><FeeName/><CustomerName>" + context.getParameter("name") + "</CustomerName><OtherCustomerInfo>|</OtherCustomerInfo>" +
                 "<ReceiptNo>1607749469</ReceiptNo><CollectionsAccount>12232345690</CollectionsAccount><ThirdPartyCode/><PaymentItems><PaymentItem>" +
                 "<ItemName>Payment</ItemName><ItemCode>" + itemCode + "</ItemCode><ItemAmount>" + amount + "</ItemAmount><LeadBankCode>FBN</LeadBankCode><LeadBankCbnCode>011</LeadBankCbnCode>" +
                 "<LeadBankName>First Bank of Nigeria Plc</LeadBankName><CategoryCode/><CategoryName/><ItemQuantity>1</ItemQuantity></PaymentItem></PaymentItems>" +
-                "<BankCode>FBN</BankCode><CustomerAddress/><CustomerPhoneNumber/><DepositorName/><DepositSlipNumber>1212343</DepositSlipNumber>" +
+                "<BankCode>FBN</BankCode><CustomerAddress>" + context.getParameter("address") + "</CustomerAddress><CustomerPhoneNumber>" + context.getParameter("phoneNumber") + "</CustomerPhoneNumber><DepositorName/><DepositSlipNumber>1212343</DepositSlipNumber>" +
                 "<PaymentCurrency>566</PaymentCurrency><OriginalPaymentLogId/><OriginalPaymentReference/><Teller>ABAJI13 ABAJI13</Teller></Payment></Payments>" +
                 "</PaymentNotificationRequest>";
 

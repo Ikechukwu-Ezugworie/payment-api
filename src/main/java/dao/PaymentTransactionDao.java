@@ -6,9 +6,11 @@ import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
+import pojo.PayerPojo;
 import pojo.TransactionRequestPojo;
 import pojo.payDirect.paymentNotification.request.Payment;
 import services.sequence.PayerIdSequence;
@@ -26,6 +28,7 @@ import java.util.List;
 /**
  * CREATED BY GIBAH
  */
+@Singleton
 public class PaymentTransactionDao extends BaseDao {
 
     @Inject
@@ -35,12 +38,18 @@ public class PaymentTransactionDao extends BaseDao {
     protected PayerIdSequence payerIdSequence;
     @Inject
     protected TicketIdSequence ticketIdSequence;
+    @Inject
+    protected MerchantDao merchantDao;
 
 
     @Transactional
     public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant, String transactionId) {
         if (StringUtils.isBlank(transactionId)) {
             transactionId = transactionIdSequence.getNext();
+        }
+
+        if (merchant == null) {
+            merchant = merchantDao.getAllRecords(Merchant.class).get(0);
         }
 
         PaymentTransaction paymentTransaction = new PaymentTransaction();
@@ -169,5 +178,25 @@ public class PaymentTransactionDao extends BaseDao {
 
     public String getTicketId() {
         return ticketIdSequence.getNext();
+    }
+
+    public PayerPojo getPayerAsPojo(Long id) {
+        Payer payer = getRecordById(Payer.class, id);
+        return getPayerAsPojo(payer);
+    }
+
+    public PayerPojo getPayerAsPojo(Payer payer) {
+        if (payer == null) {
+            return null;
+        }
+        PayerPojo payerPjo = new PayerPojo();
+        payerPjo.setId(payer.getId());
+        payerPjo.setPayerId(payer.getPayerId());
+        payerPjo.setFirstName(payer.getFirstName());
+        payerPjo.setLastName(payer.getLastName());
+        payerPjo.setEmail(payer.getEmail());
+        payerPjo.setPhoneNumber(payer.getPhoneNumber());
+
+        return payerPjo;
     }
 }
