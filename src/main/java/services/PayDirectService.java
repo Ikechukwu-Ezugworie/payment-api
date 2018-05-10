@@ -4,6 +4,7 @@ import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentResponseStatusConstant;
+import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -236,6 +237,7 @@ public class PayDirectService {
 
             saveCurrentPaymentTransactionState(paymentTransaction);
 
+            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
             paymentTransaction.setProviderTransactionReference(payment.getCustReference());
             paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountPaidInKobo() + PaymentUtil.getAmountInKobo(payment.getAmount()));
             paymentTransactionDao.updateObject(paymentTransaction);
