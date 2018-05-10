@@ -1,60 +1,29 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
-<@layout.myLayout "Interswitch">
+<@layout.myLayout "Pay on account">
 
 <div class="container fill mt-5">
-
     <div class="row">
-
-        <#if (flash.success)??>
-            <div class="alert alert-success">
-            ${flash.success}
-            </div>
-        </#if>
-        <#if (flash.error)??>
-            <div class="alert alert-danger">
-            ${flash.error}
-            </div>
-        </#if>
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <a class="btn btn-lg btn-success" id="sb" href="/interswitch/assessment"> Settle bills /
-                        Assessment</a>
+        <form class="col-md-12 mt-5" id="assForm" action="" method="get">
+            <#if (flash.error)??>
+                <div class="alert alert-danger">
+                ${flash.error}
                 </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-6 text-center">
-                    <a class="btn btn-lg btn-success" id="poa" href="/interswitch/poa"> Pay on Account</a>
-                </div>
-            </div>
-        </div>
-
-    <#--<#if !(poa??) && !(dc??)>-->
-        <form class="col-md-12 mt-5 d-none" id="assForm" action="" method="get">
+            </#if>
             <div class="col-12">
-                <label>Assessment reference or service bill</label>
+                <label>RIN or Phone Number</label>
                 <input type="text" class="form-control" id="ref"
-                       placeholder="Enter assessment reference or service bill" name="transactionId" required>
+                       placeholder="Enter RIN or Phone Number" name="transactionId" required>
                 <input type="hidden" class="form-control" name="type" value="ar" required>
             </div>
-            <div class="col-12 mt-3 text-right">
-                <button class="btn btn-lg btn-success">Proceed</button>
-            </div>
         </form>
-    <#--</#if>-->
-        <form class="col-md-12 mt-5 d-none" id="rinForm" action="" method="get">
-            <div class="col-12">
-                <label>RIN or phone number</label>
-                <input type="text" class="form-control" id="ref"
-                       placeholder="Enter RIN or phone number" name="transactionId" required>
-                <input type="hidden" class="form-control" name="type" value="rin" required>
+        <div class="col-12 mt-3">
+            <div class="col-6">
+                <a href="/interswitch/dir">Direct capture?</a>
             </div>
-            <div class="col-12 mt-3 text-right">
-                <button class="btn btn-lg btn-success">Proceed</button>
+            <div class="col-6 text-right">
+                <button class="btn btn-success float-right" type="submit" id="proceed" form="assForm">Proceed</button>
             </div>
-        </form>
+        </div>
 
         <div class="col-md-12 mt-5" style="margin-top: 10%">
             <#if data??>
@@ -88,7 +57,7 @@
                 </table>
                 <#list data.customers.customers  as customer>
                     <br>
-                    <form action="" method="post">
+                    <form action="/interswitch" method="post">
                         <input type="hidden" value="${(customer.custReference)!""}" class="form-control"
                                id="exampleInputEmail1"
                                aria-describedby="emailHelp"
@@ -107,49 +76,37 @@
                                    placeholder="Enter amount" name="amount" required>
                         </div>
                         <button type="submit" class="btn btn-success btn-lg float-right">
-                            Pay
+                            Make Payment
                         </button>
                     </form>
                 </#list >
             </#if>
-            <#if directCapture??>
-                <hr>
-                <form class="row" action="" method="post">
-                    <div class="alert alert-info col-12"> Enter your details to continue</div>
-                    <div class="form-group col-12">
-                        <label class="mr-2">Name: </label>
-                        <input name="name" class="form-control" required>
-                    </div>
-                    <div class="form-group col-12">
-                        <label class="mr-2">Phone number: </label>
-                        <input name="phoneNumber" class="form-control" required>
-                    </div>
-                    <div class="form-group col-12">
-                        <label class="mr-2">Address: </label>
-                        <input name="address" class="form-control">
-                    </div>
-                    <div class="form-group col-12">
-                        <label class="mr-2">Email: </label>
-                        <input name="email" class="form-control">
-                    </div>
-                    <div class="form-group col-12">
-                        <label class="mr-2">Amount (&#8358;): </label>
-                        <input name="amount" class="form-control" pattern="[0-9]+" required>
-                    </div>
-                    <div class="form-group col-12">
-                        <label class="mr-2">Description of payment: </label>
-                        <input name="desc" class="form-control" required>
-                    </div>
-                    <input name="payType" value="dc" type="hidden" class="form-control" required>
-                    <div class="form-group col-12">
-                        <button class="btn btn-lg btn-success float-right">Make payment</button>
-                    </div>
-                </form>
-            </#if>
 
         </div>
-    </div>
 
+    </div>
+</div>
+<script>
+    //    $(document).ready(function () {
+    //        $("#proceed").click(function () {
+    //            var tid = $("#ref").val();
+    //            $.ajax({
+    //                url: "/interswitch?transactionId=" + tid + "&type=ar",
+    //                type: "GET",
+    //                dataType: "json",
+    //                success: function (data) {
+    //                    console.log(data);
+    //                },
+    //                error: function (xhr, status) {
+    //                    alert("Sorry, there was a problem!");
+    //                },
+    //                complete: function (xhr, status) {
+    //                    //$('#showresults').slideDown('slow')
+    //                }
+    //            });
+    //        })
+    //    });
+</script>
 <#--<form action="" method="get">-->
 <#--<div class="form-group">-->
 <#--<label for="exampleInputEmail1">Transaction reference<span style="color: darkred">*</span></label>-->
@@ -219,44 +176,4 @@
 <#--</#if>-->
 
 <#--</div>-->
-</div>
-<#--<script>-->
-<#--var poa = '${(poa)!""}'-->
-<#--$(document).ready(function () {-->
-<#--$("#sb").click(function () {-->
-<#--hidePoa();-->
-<#--showAss();-->
-<#--});-->
-
-<#--$("#poa").click(function () {-->
-<#--showPoa();-->
-<#--hideAss();-->
-<#--});-->
-
-<#--if (poa === "true") {-->
-<#--showPoa();-->
-<#--}-->
-<#--});-->
-
-<#--function hideAss() {-->
-<#--if (!$("#assForm").hasClass('d-none')) {-->
-<#--$("#assForm").addClass('d-none')-->
-<#--}-->
-<#--}-->
-
-<#--function showAss() {-->
-<#--$("#assForm").removeClass('d-none');-->
-<#--console.log("show ass ref")-->
-<#--}-->
-
-<#--function hidePoa() {-->
-<#--if (!$("#rinForm").hasClass('d-none')) {-->
-<#--$("#rinForm").addClass('d-none')-->
-<#--}-->
-<#--}-->
-
-<#--function showPoa() {-->
-<#--$("#rinForm").removeClass('d-none');-->
-<#--}-->
-<#--</script>-->
 </@layout.myLayout>

@@ -1,0 +1,130 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+<@layout.myLayout "Interswitch">
+
+<div class="container fill mt-5">
+    <div class="row">
+        <form class="row" action="/interswitch" method="post">
+            <div class="alert alert-info col-12"> Enter your details to continue</div>
+            <div class="form-group col-12">
+                <label class="mr-2">Name: </label>
+                <input name="name" class="form-control" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Phone number: </label>
+                <input name="phoneNumber" class="form-control" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Address: </label>
+                <input name="address" class="form-control">
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Email: </label>
+                <input name="email" type="email" class="form-control">
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Amount (&#8358;): </label>
+                <input name="amount" class="form-control" pattern="[0-9]+" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Description of payment: </label>
+                <input name="desc" class="form-control" required>
+            </div>
+            <input name="payType" value="dc" type="hidden" class="form-control" required>
+            <div class="form-group col-12">
+                <button class="btn btn-success float-right">Make payment</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<script>
+    //    $(document).ready(function () {
+    //        $("#proceed").click(function () {
+    //            var tid = $("#ref").val();
+    //            $.ajax({
+    //                url: "/interswitch?transactionId=" + tid + "&type=ar",
+    //                type: "GET",
+    //                dataType: "json",
+    //                success: function (data) {
+    //                    console.log(data);
+    //                },
+    //                error: function (xhr, status) {
+    //                    alert("Sorry, there was a problem!");
+    //                },
+    //                complete: function (xhr, status) {
+    //                    //$('#showresults').slideDown('slow')
+    //                }
+    //            });
+    //        })
+    //    });
+</script>
+<#--<form action="" method="get">-->
+<#--<div class="form-group">-->
+<#--<label for="exampleInputEmail1">Transaction reference<span style="color: darkred">*</span></label>-->
+<#--<input type="text" value="${(data.customers.customers[0].custReference)!""}" class="form-control"-->
+<#--id="exampleInputEmail1" aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="transactionId" required>-->
+<#--<input type="hidden" value="validation" class="form-control" id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="type" required>-->
+<#--</div>-->
+<#--<button type="submit" class="btn btn-success btn-lg float-right">CONTINUE</button>-->
+<#--</form>-->
+<#--<div style="margin-top: 10%">-->
+<#--<#if data??>-->
+<#--<table class="table table-striped">-->
+<#--<tbody>-->
+<#--<#list data.customers.customers  as customer>-->
+<#--<tr>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>First Name</th>-->
+<#--<td>${(customer.firstName)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Last Name</th>-->
+<#--<td>${(customer.lastName)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Email</th>-->
+<#--<td>${(customer.email)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Phone</th>-->
+<#--<td>${(customer.phone)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Amount</th>-->
+<#--<td>${(customer.amount)!""}</td>-->
+<#--</tr>-->
+<#--</#list>-->
+<#--</tbody>-->
+<#--</table>-->
+<#--<#list data.customers.customers  as customer>-->
+<#--<br>-->
+<#--<form action="" method="post">-->
+<#--<input type="hidden" value="${(customer.custReference)!""}" class="form-control"-->
+<#--id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="transactionId" required>-->
+<#--<input type="hidden" value="${(customer.paymentItems.items[0].productCode)!""}"-->
+<#--class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="itemCode" required>-->
+<#--<input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="type" required>-->
+<#--<div class="form-group form-inline">-->
+<#--<label for="exampleInputAmount">Enter amount<span class="text-danger">*</span></label>-->
+<#--<input type="text" value="${(customer.amount)!""}" class="form-control" id="exampleInputAmount"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="amount" required>-->
+<#--<button type="submit" class="btn btn-success btn-lg float-right">-->
+<#--Pay-->
+<#--</button>-->
+<#--</div>-->
+<#--</form>-->
+<#--</#list >-->
+<#--</#if>-->
+
+<#--</div>-->
+</@layout.myLayout>

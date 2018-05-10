@@ -20,7 +20,6 @@ package conf;
 
 import controllers.*;
 import ninja.AssetsController;
-import ninja.Results;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
 
@@ -36,8 +35,10 @@ public class Routes implements ApplicationRoutes {
         ///////////////////////////////////////////////////////////////////////
         router.POST().route("/api/v1/payments/interswitch/paydirect").with(PayDirectController::doPayDirectRequest);
         router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
+        router.GET().route("/interswitch/assessment").with(PrototypeController::assRef);
+        router.GET().route("/interswitch/poa").with(PrototypeController::poa);
+        router.GET().route("/interswitch/dir").with(PrototypeController::dirCap);
         router.POST().route("/interswitch").with(PrototypeController::doMakePay);
-        router.GET().route("/interswitch/amount").with(() -> Results.html().template("/PrototypeController/amount.ftl.html"));
 
         ///////////////////////////////////////////////////////////////////////
         // Quickteller

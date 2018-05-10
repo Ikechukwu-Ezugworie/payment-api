@@ -43,32 +43,33 @@ public class PrototypeController {
                                  @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
         System.out.println("<=== processing payment");
         if (StringUtils.isBlank(type)) {
-            return Results.html();
-        }
-        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
-                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
-                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
-
-        try {
-            CustomerInformationRequest request = null;
-            request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
-            CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
-            System.out.println(PaymentUtil.toJSON(customerInformationResponse));
-            if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_INVALID) {
-                String key = type.equalsIgnoreCase("ar") ? "poa" : type.equalsIgnoreCase("rin") ? "directCapture" : "";
-                if (key.equalsIgnoreCase("poa")) {
-                    context.getFlashScope().error("Customer not found. Enter RIN or Phone number instead");
-                } else if (key.equalsIgnoreCase("directCapture")) {
-                    context.getFlashScope().error("Customer not found. Enter Direct capture details");
-                }
-                return Results.html().render(key, "true");
-            } else {
-                return Results.html().render("data", customerInformationResponse);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return Results.html();
+//        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
+//                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+//                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
+//
+//        try {
+//            CustomerInformationRequest request = null;
+//            request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
+//            CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
+//            System.out.println(PaymentUtil.toJSON(customerInformationResponse));
+//            if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_INVALID) {
+//                return Results.badRequest().json();
+////                String key = type.equalsIgnoreCase("ar") ? "poa" : type.equalsIgnoreCase("rin") ? "directCapture" : "";
+////                if (key.equalsIgnoreCase("poa")) {
+////                    context.getFlashScope().error("Customer not found. Enter RIN or Phone number instead");
+////                } else if (key.equalsIgnoreCase("directCapture")) {
+////                    context.getFlashScope().error("Customer not found. Enter Direct capture details");
+////                }
+////                return Results.badRequest().json().render(key, "true");
+//            } else {
+//                return Results.json().render("data", customerInformationResponse);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return Results.badRequest().json();
     }
 
     public Result doMakePay(@Param("amount") String amount, @Param("transactionId") String transactionId,
@@ -77,7 +78,7 @@ public class PrototypeController {
         String payload = "<PaymentNotificationRequest><ServiceUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</ServiceUrl>" +
                 "<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>" +
                 "<FtpUsername/><FtpPassword/><Payments><Payment><IsRepeated>False</IsRepeated><ProductGroupCode>HTTPGENERICv31</ProductGroupCode>" +
-                "<PaymentLogId>1331" + transactionId + "</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
+                "<PaymentLogId>1331" + transactionId + new Date().getTime() + "</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
                 "<Amount>" + amount + "</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod><PaymentReference>FBN|BRH|ABSA|17-03-2016|091483</PaymentReference>" +
                 "<TerminalId/><ChannelName>Bank Branc</ChannelName><Location>ABAJI</Location><IsReversal>False</IsReversal><PaymentDate>" + sdf.format(new Date()) + "</PaymentDate>" +
                 "<SettlementDate>03/18/2016 00:00:01</SettlementDate><InstitutionId>ABSA</InstitutionId><InstitutionName>Abia State Autoreg</InstitutionName>" +
@@ -106,6 +107,96 @@ public class PrototypeController {
         }
         context.getFlashScope().error("Error making payment");
         return Results.redirect("/interswitch");
+    }
+
+    public Result assRef(@Param("amount") String amount, @Param("transactionId") String transactionId,
+                         @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
+        if (StringUtils.isBlank(transactionId)) {
+            return Results.html().template("/views/PrototypeController/assRef.ftl.html");
+        }
+
+        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
+                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
+        try {
+            CustomerInformationRequest request = null;
+            request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
+            CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
+            System.out.println(PaymentUtil.toJSON(customerInformationResponse));
+            if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_INVALID) {
+                context.getFlashScope().error("No customer information found. Try pay on account.");
+                return Results.html();
+            } else {
+                return Results.html().render("data", customerInformationResponse);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        context.getFlashScope().error("No customer information found. Try pay on account.");
+        return Results.html();
+    }
+
+    public Result poa(@Param("amount") String amount, @Param("transactionId") String transactionId,
+                      @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
+        if (StringUtils.isBlank(transactionId)) {
+            return Results.html().template("/views/PrototypeController/poa.ftl.html");
+        }
+        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
+                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
+
+        try {
+            CustomerInformationRequest request = null;
+            request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
+            CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
+            System.out.println(PaymentUtil.toJSON(customerInformationResponse));
+            if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_INVALID) {
+                context.getFlashScope().error("No customer information found. Try direct capture.");
+                return Results.html();
+            } else {
+                return Results.html().render("data", customerInformationResponse);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        context.getFlashScope().error("No customer information found. Try direct capture.");
+        return Results.html();
+    }
+
+    public Result dirCap(@Param("amount") String amount, @Param("transactionId") String transactionId,
+                         @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
+        return Results.html();
+    }
+
+    public Result cusData(@Param("amount") String amount, @Param("transactionId") String transactionId,
+                          @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
+        if (StringUtils.isBlank(transactionId)) {
+            return Results.html().template("/views/PrototypeController/assRef.ftl.html");
+        }
+        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
+                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
+
+        try {
+            CustomerInformationRequest request = null;
+            request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
+            CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
+            System.out.println(PaymentUtil.toJSON(customerInformationResponse));
+            if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_INVALID) {
+                String key = type.equalsIgnoreCase("ar") ? "poa" : type.equalsIgnoreCase("rin") ? "directCapture" : "";
+                if (key.equalsIgnoreCase("poa")) {
+                    context.getFlashScope().error("Customer not found. Enter RIN or Phone number instead");
+                } else if (key.equalsIgnoreCase("directCapture")) {
+                    context.getFlashScope().error("Customer not found. Enter Direct capture details");
+                }
+                return Results.html().render(key, "true");
+            } else {
+                return Results.html().render("data", customerInformationResponse);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Results.html();
     }
 
 //    public Result quickTeller() {

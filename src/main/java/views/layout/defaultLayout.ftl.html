@@ -10,9 +10,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="/assets/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional theme -->
-    <link rel="stylesheet" href="/assets/webjars/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
           integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!-- Latest compiled and minified JavaScript -->
@@ -61,12 +59,6 @@
 <body class="fill">
     <#include "header.ftl.html"/>
 <div class="container fill">
-
-    <#if (flash.error)??>
-        <div class="alert alert-danger">
-        ${flash.error}
-        </div>
-    </#if>
 
     <#if (flash.success)??>
         <div class="alert alert-success">
