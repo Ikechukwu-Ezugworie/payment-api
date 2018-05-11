@@ -339,6 +339,7 @@ public class PayDirectService {
         transactionNotificationPojo.setPaymentChannelName(paymentPojo.getChannelName());
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentMethod(paymentPojo.getPaymentMethod());
+        transactionNotificationPojo.setDescription(paymentPojo.getPaymentItems().getPaymentItems().get(0).getCategoryName());
 //        transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
 
         PayerPojo payerPojo = paymentTransactionDao.getPayerAsPojo(paymentTransaction.getPayer().getId());

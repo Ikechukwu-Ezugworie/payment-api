@@ -39,12 +39,11 @@ public class PrototypeController {
     @Inject
     private MerchantDao merchantDao;
 
+
     public Result interswitchPay(@Param("amount") String amount, @Param("transactionId") String transactionId,
                                  @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
-        System.out.println("<=== processing payment");
-        if (StringUtils.isBlank(type)) {
-        }
-        return Results.html();
+        System.out.println("<=== processing payment" + transactionId + amount);
+        return Results.html().render("tid", transactionId).render("amount", amount == null ? null : PaymentUtil.getFormattedMoneyDisplay(amount + "00"));
 //        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
 //                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
 //                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
@@ -85,7 +84,7 @@ public class PrototypeController {
                 "<BranchName>ABAJI</BranchName><BankName>First Bank of Nigeria Plc</BankName><FeeName/><CustomerName>" + context.getParameter("name") + "</CustomerName><OtherCustomerInfo>|</OtherCustomerInfo>" +
                 "<ReceiptNo>1607749469</ReceiptNo><CollectionsAccount>12232345690</CollectionsAccount><ThirdPartyCode/><PaymentItems><PaymentItem>" +
                 "<ItemName>Payment</ItemName><ItemCode>" + itemCode + "</ItemCode><ItemAmount>" + amount + "</ItemAmount><LeadBankCode>FBN</LeadBankCode><LeadBankCbnCode>011</LeadBankCbnCode>" +
-                "<LeadBankName>First Bank of Nigeria Plc</LeadBankName><CategoryCode/><CategoryName/><ItemQuantity>1</ItemQuantity></PaymentItem></PaymentItems>" +
+                "<LeadBankName>First Bank of Nigeria Plc</LeadBankName><CategoryCode/><CategoryName>" + context.getParameter("desc") + "</CategoryName><ItemQuantity>1</ItemQuantity></PaymentItem></PaymentItems>" +
                 "<BankCode>FBN</BankCode><CustomerAddress>" + context.getParameter("address") + "</CustomerAddress><CustomerPhoneNumber>" + context.getParameter("phoneNumber") + "</CustomerPhoneNumber><DepositorName/><DepositSlipNumber>1212343</DepositSlipNumber>" +
                 "<PaymentCurrency>566</PaymentCurrency><OriginalPaymentLogId/><OriginalPaymentReference/><Teller>ABAJI13 ABAJI13</Teller></Payment></Payments>" +
                 "</PaymentNotificationRequest>";
@@ -97,11 +96,11 @@ public class PrototypeController {
             if (paymentNotificationResponsePojo == null) {
                 context.getFlashScope().error("Could not contact end system");
             } else if (paymentNotificationResponsePojo.getPayments().getPayment().get(0).getStatus() == PayDirectService.NOTIFICATION_RECEIVED) {
-                context.getFlashScope().success("Payment success");
+                context.getFlashScope().success("Your payment was success");
             } else {
                 context.getFlashScope().error(paymentNotificationResponsePojo.getPayments().getPayment().get(0).getStatusMessage());
             }
-            return Results.redirect("/interswitch");
+            return Results.redirect("/interswitch?transactionId=" + transactionId + "&amount=" + amount);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -112,7 +111,7 @@ public class PrototypeController {
     public Result assRef(@Param("amount") String amount, @Param("transactionId") String transactionId,
                          @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
         if (StringUtils.isBlank(transactionId)) {
-            return Results.html().template("/views/PrototypeController/assRef.ftl.html");
+            return Results.html().template("/views/PrototypeController/assRef.ftl.html").render("tid", transactionId);
         }
 
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
@@ -127,13 +126,13 @@ public class PrototypeController {
                 context.getFlashScope().error("No customer information found. Try pay on account.");
                 return Results.html();
             } else {
-                return Results.html().render("data", customerInformationResponse);
+                return Results.html().render("data", customerInformationResponse).render("tid", transactionId);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         context.getFlashScope().error("No customer information found. Try pay on account.");
-        return Results.html();
+        return Results.html().render("tid", transactionId);
     }
 
     public Result poa(@Param("amount") String amount, @Param("transactionId") String transactionId,

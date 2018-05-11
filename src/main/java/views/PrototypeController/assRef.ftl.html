@@ -1,7 +1,7 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
 <@layout.myLayout "Interswitch">
 
-<div class="container fill mt-5">
+<div class="container fill mt-5 mb-5">
     <div class="row">
         <form class="col-md-12 mt-5" id="assForm" action="" method="get">
             <#if (flash.error)??>
@@ -11,17 +11,20 @@
             </#if>
             <div class="col-12">
                 <label>Assessment reference or service bill</label>
-                <input type="text" class="form-control" id="ref"
+                <input type="text" class="form-control" id="ref" value="${(tid)!""}"
                        placeholder="Enter assessment reference or service bill" name="transactionId" required>
                 <input type="hidden" class="form-control" name="type" value="ar" required>
             </div>
         </form>
         <div class="col-12 mt-3">
-            <div class="col-6">
-                <a href="/interswitch/poa">Pay on account?</a>
-            </div>
-            <div class="col-6 text-right">
-                <button class="btn btn-success float-right" type="submit" id="proceed" form="assForm">Proceed</button>
+            <div class="row p-2">
+                <div class="col-6">
+                    <a href="/interswitch/poa">Pay on account?</a>
+                </div>
+                <div class="col-6 text-right">
+                    <button class="btn btn-success float-right" type="submit" id="proceed" form="assForm">Proceed
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -33,31 +36,20 @@
                         <tr>
                         </tr>
                         <tr>
-                            <th>First Name</th>
+                            <th>Name</th>
                             <td>${(customer.firstName)!""}</td>
                         </tr>
                         <tr>
-                            <th>Last Name</th>
-                            <td>${(customer.lastName)!""}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>${(customer.email)!""}</td>
-                        </tr>
-                        <tr>
-                            <th>Phone</th>
-                            <td>${(customer.phone)!""}</td>
-                        </tr>
-                        <tr>
                             <th>Amount</th>
-                            <td>${(customer.amount)!""}</td>
+                            <td><b style="color: darkred">&#8358;${(customer.amount)?string(",##0.00")!""}</b></td>
                         </tr>
                         </#list>
                     </tbody>
                 </table>
+                <hr class="mt-4">
                 <#list data.customers.customers  as customer>
                     <br>
-                    <form action="/interswitch" method="post">
+                    <form action="/interswitch" method="post" class="row">
                         <input type="hidden" value="${(customer.custReference)!""}" class="form-control"
                                id="exampleInputEmail1"
                                aria-describedby="emailHelp"
@@ -68,16 +60,17 @@
                         <input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"
                                aria-describedby="emailHelp"
                                placeholder="Enter transaction reference" name="type" required>
-                        <div class="form-group">
-                            <label for="exampleInputAmount">Enter amount to pay<span
-                                    class="text-danger">*</span></label>
+                        <div class="form-group col-md-8">
+                            <label for="exampleInputAmount">Enter amount to pay (&#8358;)</label>
                             <input type="text" class="form-control" id="exampleInputAmount"
                                    aria-describedby="emailHelp" pattern="[0-9]+"
                                    placeholder="Enter amount" name="amount" required>
                         </div>
-                        <button type="submit" class="btn btn-success btn-lg float-right">
-                            Pay
-                        </button>
+                        <div class="form-group col-md-4 mt-4 p-1">
+                            <button type="submit" class="btn btn-success col-12">
+                                Post
+                            </button>
+                        </div>
                     </form>
                 </#list >
             </#if>

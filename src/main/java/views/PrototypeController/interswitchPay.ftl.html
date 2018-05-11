@@ -1,7 +1,7 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
 <@layout.myLayout "Interswitch">
 
-<div class="container fill mt-5">
+<div class="container fill mt-5 mb-5">
 
     <div class="row">
 
@@ -9,23 +9,41 @@
             <div class="alert alert-success col-12">
             ${flash.success}
             </div>
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr class="text-center">
+                        <h4>Payment details</h4>
+                    </tr>
+                    <tr>
+                        <th>Reference</th>
+                        <td>${(tid)!""}</td>
+                    </tr>
+                    <tr>
+                        <th>Amount</th>
+                        <td><b style="color: darkgreen">&#8358;${(amount)}</b></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
         </#if>
         <#if (flash.error)??>
             <div class="alert alert-danger col-12">
             ${flash.error}
             </div>
         </#if>
-        <div class="col-md-6">
+        <hr class="col-12 mt-5">
+        <div class="col-md-6 mt-5">
             <div class="row">
                 <div class="col-12 text-center">
-                    <a class="btn btn-lg btn-success" id="sb" href="/interswitch/assessment"> Settle bills /
-                        Assessment</a>
+                    <a class="btn btn-lg btn-success" id="sb" href="/interswitch/assessment"> Settle bills </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mt-5">
             <div class="row">
-                <div class="col-md-6 text-center">
+                <div class="col-md-12 text-center">
                     <a class="btn btn-lg btn-success" id="poa" href="/interswitch/poa"> Pay on Account</a>
                 </div>
             </div>
