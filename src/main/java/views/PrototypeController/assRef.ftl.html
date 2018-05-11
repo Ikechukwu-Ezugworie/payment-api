@@ -57,7 +57,7 @@
                 </table>
                 <#list data.customers.customers  as customer>
                     <br>
-                    <form action="" method="post">
+                    <form action="/interswitch" method="post">
                         <input type="hidden" value="${(customer.custReference)!""}" class="form-control"
                                id="exampleInputEmail1"
                                aria-describedby="emailHelp"
