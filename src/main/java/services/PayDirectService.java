@@ -16,6 +16,7 @@ import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.*;
+import pojo.payDirect.customerValidation.EndSystemCustomerValidationResponse;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.Customer;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
@@ -97,23 +98,39 @@ public class PayDirectService {
 
             if (response.isSuccessful()) {
                 String s = response.body().string();
-                Type type = new TypeToken<ApiResponse<TransactionRequestPojo>>() {
+                Type type = new TypeToken<ApiResponse<EndSystemCustomerValidationResponse>>() {
                 }.getType();
                 if (response.code() == 200) {
-                    ApiResponse<TransactionRequestPojo> r = PaymentUtil.fromJSON(s, type);
+                    ApiResponse<EndSystemCustomerValidationResponse> r = PaymentUtil.fromJSON(s, type);
 
-                    TransactionRequestPojo tr = r.getData();
-                    Customer customer = new Customer();
-                    customer.setFirstName(tr.getPayer().getFirstName());
-                    customer.setAmount(PaymentUtil.getAmountInNaira(tr.getAmountInKobo()));
-                    customer.setCustReference(validationRequest.getCustReference());
-                    customer.setStatus(0);
+                    EndSystemCustomerValidationResponse tr = r.getData();
 
-                    Customers customers = new Customers();
-                    customers.addCustomer(customer);
+                    if (!tr.getPaymentStatus().equalsIgnoreCase("PAID")) {
+                        Customer customer = new Customer();
+                        customer.setFirstName(tr.getPayer().getFirstName());
+                        customer.setAmount(PaymentUtil.getAmountInNaira(tr.getAmountInKobo()));
+                        customer.setCustReference(validationRequest.getCustReference());
+                        customer.setStatus(0);
 
-                    customerInformationResponse.setCustomers(customers);
-                    return customerInformationResponse;
+                        Customers customers = new Customers();
+                        customers.addCustomer(customer);
+
+                        customerInformationResponse.setCustomers(customers);
+                        return customerInformationResponse;
+                    } else {
+                        Customer customer = new Customer();
+                        customer.setFirstName("");
+                        customer.setCustReference(validationRequest.getCustReference());
+                        customer.setStatus(CUSTOMER_INVALID);
+                        customer.setStatusMessage("This reference has already been fully paid for.");
+                        customer.setCustomerReferenceAlternate("");
+
+                        Customers customers = new Customers();
+                        customers.addCustomer(customer);
+
+                        customerInformationResponse.setCustomers(customers);
+                        return customerInformationResponse;
+                    }
 
                 }
             } else if (response.code() == 404) {
