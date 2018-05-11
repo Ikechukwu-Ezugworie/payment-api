@@ -96,11 +96,11 @@ public class PrototypeController {
             if (paymentNotificationResponsePojo == null) {
                 context.getFlashScope().error("Could not contact end system");
             } else if (paymentNotificationResponsePojo.getPayments().getPayment().get(0).getStatus() == PayDirectService.NOTIFICATION_RECEIVED) {
-                context.getFlashScope().success("Your payment was success");
+                context.getFlashScope().success("Your payment was successful");
             } else {
                 context.getFlashScope().error(paymentNotificationResponsePojo.getPayments().getPayment().get(0).getStatusMessage());
             }
-            return Results.redirect("/interswitch?transactionId=" + transactionId + "&amount=" + amount);
+            return Results.redirect("/interswitch?transactionId=" + (StringUtils.isBlank(transactionId) ? context.getParameter("phoneNumber") : transactionId) + "&amount=" + amount);
         } catch (IOException e) {
             e.printStackTrace();
         }
