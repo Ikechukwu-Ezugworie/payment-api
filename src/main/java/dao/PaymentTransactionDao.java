@@ -63,6 +63,9 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setServiceTypeId(request.getServiceTypeId());
         paymentTransaction.setMerchant(merchant);
         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+        paymentTransaction.setCustomerTransactionReference(request.getCustomerTransactionReference());
+
+        System.out.println("<=== cref"+request.getCustomerTransactionReference());
 
         Payer payer = new Payer();
         payer.setPayerId(payerIdSequence.getNext());
@@ -70,6 +73,7 @@ public class PaymentTransactionDao extends BaseDao {
         payer.setLastName(request.getPayer().getLastName());
         payer.setEmail(request.getPayer().getEmail());
         payer.setPhoneNumber(request.getPayer().getPhoneNumber());
+//        payer.setAddress(request.getPayer().getAddress());
 
         saveObject(payer);
 
@@ -198,5 +202,13 @@ public class PaymentTransactionDao extends BaseDao {
         payerPjo.setPhoneNumber(payer.getPhoneNumber());
 
         return payerPjo;
+    }
+
+    public PaymentTransaction getPaymentTransactionForReversal(Payment payment) {
+        return getPaymentTransactionByProviderPaymentReference(payment.getOriginalPaymentReference());
+    }
+
+    public PaymentTransaction getPaymentTransactionByProviderPaymentReference(String providerReference) {
+       return getUniqueRecordByProperty(PaymentTransaction.class,"providerTransactionReference",providerReference);
     }
 }

@@ -91,13 +91,16 @@ public class PayDirectService {
             return customerInformationResponse;
         }
 
-        try {
+        try {            System.out.println("<== req body" + PaymentUtil.toJSON(validationRequest));
+
             RequestBody body = RequestBody.create(JSON, PaymentUtil.toJSON(validationRequest));
             Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
             Response response = client.newCall(request).execute();
+            System.out.println("<== rescode" + response.code());
 
             if (response.isSuccessful()) {
                 String s = response.body().string();
+                System.out.println("<== " + s);
                 Type type = new TypeToken<ApiResponse<EndSystemCustomerValidationResponse>>() {
                 }.getType();
                 if (response.code() == 200) {
@@ -156,9 +159,9 @@ public class PayDirectService {
     @Transactional
     public PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, Context context) {
         PaymentNotificationResponse paymentNotificationResponsePojo = new PaymentNotificationResponse();
-//
+        Payments payments = new Payments();
+        paymentNotificationResponsePojo.setPayments(payments);
 
-        PaymentResponsePojo responsePojo = new PaymentResponsePojo();
         if (request.getPayments() == null) {
             return null;
         }
@@ -168,14 +171,15 @@ public class PayDirectService {
 //            if is duplicate notification
             if (paymentTransactionDao.isDuplicateNotification(payment) && paymentTransactionDao.isProcessed(payment)) {
                 logger.info("<=== duplicate notification");
+                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                 responsePojo.setPaymentLogId(payment.getPaymentLogId());
                 responsePojo.setStatus(NOTIFICATION_RECEIVED);
                 responsePojo.setStatusMessage("Duplicate notification");
 
-                Payments payments = new Payments();
-                payments.addPayment(responsePojo);
+                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
 
-                paymentNotificationResponsePojo.setPayments(payments);
+                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                        responsePojo.getStatusMessage());
                 break;
             }
 
@@ -188,9 +192,11 @@ public class PayDirectService {
 
             try {
                 PayerPojo payerPojo = new PayerPojo();
+
                 payerPojo.setFirstName(payment.getCustomerName());
                 payerPojo.setLastName("");
                 payerPojo.setEmail("");
+                payerPojo.setAddress(payment.getCustomerAddress());
                 payerPojo.setPhoneNumber(payment.getCustomerPhoneNumber());
 
                 transactionRequestPojo.setPayer(payerPojo);
@@ -198,18 +204,54 @@ public class PayDirectService {
                 e.printStackTrace();
             }
 
+            if (payment.getReversal()) {
+                PaymentTransaction trReversal = paymentTransactionDao.getPaymentTransactionForReversal(payment);
+                if (trReversal == null) {
+                    PaymentResponsePojo responsePojo = new PaymentResponsePojo();
+                    responsePojo.setPaymentLogId(payment.getPaymentLogId());
+                    responsePojo.setStatus(NOTIFICATION_REJECTED);
+                    responsePojo.setStatusMessage("Transaction to be reversed does not exist");
+
+                    paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
+
+                    savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                            responsePojo.getStatusMessage());
+                    break;
+                }
+
+                saveCurrentPaymentTransactionState(trReversal);
+
+                trReversal.setPaymentTransactionStatus(PaymentTransactionStatus.CANCELED);
+
+                queueNotification(payment, trReversal);
+
+                paymentTransactionDao.updateObject(trReversal);
+
+                logger.info("<=== Payment reversed");
+                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
+                responsePojo.setPaymentLogId(payment.getPaymentLogId());
+                responsePojo.setStatus(NOTIFICATION_RECEIVED);
+                responsePojo.setStatusMessage("Transaction reversal successful");
+
+                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
+
+                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.ACCEPTED,
+                        responsePojo.getStatusMessage());
+
+                break;
+            }
+
             PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
 
 //            check if transaction exists
             if (paymentTransaction == null) {
+                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                 responsePojo.setPaymentLogId(payment.getPaymentLogId());
                 responsePojo.setStatus(NOTIFICATION_REJECTED);
                 responsePojo.setStatusMessage("Invalid transaction");
 
-                Payments payments = new Payments();
-                payments.addPayment(responsePojo);
+                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
 
-                paymentNotificationResponsePojo.setPayments(payments);
                 savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
                         responsePojo.getStatusMessage());
                 break;
@@ -217,14 +259,13 @@ public class PayDirectService {
 
 //            check if the transaction has the right provider
             if (!paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.INTERSWITCH)) {
+                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                 responsePojo.setPaymentLogId(payment.getPaymentLogId());
                 responsePojo.setStatus(NOTIFICATION_REJECTED);
                 responsePojo.setStatusMessage("Invalid provider");
 
-                Payments payments = new Payments();
-                payments.addPayment(responsePojo);
+                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
 
-                paymentNotificationResponsePojo.setPayments(payments);
                 savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
                         responsePojo.getStatusMessage());
                 break;
@@ -239,14 +280,13 @@ public class PayDirectService {
             }
 
             if (dateOfPayment == null || dateOfPayment.after(new Date())) {
+                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                 responsePojo.setPaymentLogId(payment.getPaymentLogId());
                 responsePojo.setStatus(NOTIFICATION_REJECTED);
                 responsePojo.setStatusMessage("Invalid payment date");
 
-                Payments payments = new Payments();
-                payments.addPayment(responsePojo);
+                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
 
-                paymentNotificationResponsePojo.setPayments(payments);
                 savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
                         responsePojo.getStatusMessage());
                 break;
@@ -255,19 +295,18 @@ public class PayDirectService {
             saveCurrentPaymentTransactionState(paymentTransaction);
 
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
-            paymentTransaction.setProviderTransactionReference(payment.getCustReference());
-            paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountPaidInKobo() + PaymentUtil.getAmountInKobo(payment.getAmount()));
+            paymentTransaction.setCustomerTransactionReference(payment.getCustReference());
+            paymentTransaction.setProviderTransactionReference(payment.getPaymentReference());
+            paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(payment.getAmount()));
             paymentTransactionDao.updateObject(paymentTransaction);
 
             queueNotification(payment, paymentTransaction);
 
+            PaymentResponsePojo responsePojo = new PaymentResponsePojo();
             responsePojo.setPaymentLogId(payment.getPaymentLogId());
             responsePojo.setStatus(NOTIFICATION_RECEIVED);
 
-            Payments payments = new Payments();
-            payments.addPayment(responsePojo);
-
-            paymentNotificationResponsePojo.setPayments(payments);
+            paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
 
             savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.ACCEPTED,
                     responsePojo.getStatusMessage());
@@ -313,8 +352,7 @@ public class PayDirectService {
         paymentResponseLog.setPaymentLogId(String.valueOf(paymentPojo.getPaymentLogId()));
         paymentResponseLog.setResponseDump(PaymentUtil.toJSON(request));
         paymentResponseLog.setDateCreated(Timestamp.from(Instant.now()));
-        paymentResponseLog.setPaymentTransaction(paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId",
-                paymentPojo.getCustReference()));
+        paymentResponseLog.setPaymentTransaction(paymentTransactionDao.getPaymentTransactionByProviderPaymentReference(paymentPojo.getPaymentReference()));
         paymentResponseLog.setValidated(wasValidated);
         paymentResponseLog.setProcessed(wasProcessed);
         paymentResponseLog.setStatus(status);
@@ -340,7 +378,9 @@ public class PayDirectService {
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentMethod(paymentPojo.getPaymentMethod());
         transactionNotificationPojo.setDescription(paymentPojo.getPaymentItems().getPaymentItems().get(0).getCategoryName());
-//        transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
+        transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
+        transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
+        transactionNotificationPojo.setMerchantTransactionReference(paymentTransaction.getMerchantTransactionReferenceId());
 
         PayerPojo payerPojo = paymentTransactionDao.getPayerAsPojo(paymentTransaction.getPayer().getId());
         transactionNotificationPojo.setPayer(payerPojo);

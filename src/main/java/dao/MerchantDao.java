@@ -36,34 +36,37 @@ public class MerchantDao extends BaseDao {
         merchant.setApiKey(PaymentUtil.generateApiKey());
         merchant.setName(request.getName());
         merchant.setDateCreated(Timestamp.from(Instant.now()));
+        merchant.setPaydirectMerchantReference(request.getPaydirectMerchantReference());
+        merchant.setLookupUrl(request.getLookupUrl());
+        merchant.setNotificationUrl(request.getNotificationUrl());
 
         entityManagerProvider.get().persist(merchant);
 
-        for (PaymentProviderDetailsPojo paymentProviderDetailsPojo : request.getPaymentProviders()) {
-            PaymentProviderDetails paymentProviderDetails = getMerchantPaymentProviderDetails(merchant.getId(),
-                    PaymentProviderConstant.fromValue(paymentProviderDetailsPojo.getName()));
-
-            if (paymentProviderDetails != null) {
-                throw new IllegalArgumentException("Payment provider details already exist for " + paymentProviderDetails.getName().getValue());
-            }
-
-            paymentProviderDetails = new PaymentProviderDetails();
-            paymentProviderDetails.setName(PaymentProviderConstant.fromValue(paymentProviderDetailsPojo.getName()));
-            paymentProviderDetails.setMerchantId(paymentProviderDetailsPojo.getMerchantId());
-            paymentProviderDetails.setApiKey(paymentProviderDetailsPojo.getApiKey());
-            paymentProviderDetails.setProviderUrl(paymentProviderDetailsPojo.getProviderUrl());
-            paymentProviderDetails.setServiceUsername(paymentProviderDetailsPojo.getServiceUsername());
-            paymentProviderDetails.setServicePassword(PasswordService.hashPassword(paymentProviderDetailsPojo.getServicePassword()));
-
-            MerchantProviderDetails merchantProviderDetails = new MerchantProviderDetails();
-            merchantProviderDetails.setDateCreated(PaymentUtil.nowToTimeStamp());
-            merchantProviderDetails.setStatus(GenericStatusConstant.ACTIVE);
-            merchantProviderDetails.setMerchant(merchant);
-            merchantProviderDetails.setPaymentProviderDetails(paymentProviderDetails);
-
-            entityManagerProvider.get().persist(paymentProviderDetails);
-            entityManagerProvider.get().persist(merchantProviderDetails);
-        }
+//        for (PaymentProviderDetailsPojo paymentProviderDetailsPojo : request.getPaymentProviders()) {
+//            PaymentProviderDetails paymentProviderDetails = getMerchantPaymentProviderDetails(merchant.getId(),
+//                    PaymentProviderConstant.fromValue(paymentProviderDetailsPojo.getName()));
+//
+//            if (paymentProviderDetails != null) {
+//                throw new IllegalArgumentException("Payment provider details already exist for " + paymentProviderDetails.getName().getValue());
+//            }
+//
+//            paymentProviderDetails = new PaymentProviderDetails();
+//            paymentProviderDetails.setName(PaymentProviderConstant.fromValue(paymentProviderDetailsPojo.getName()));
+//            paymentProviderDetails.setMerchantId(paymentProviderDetailsPojo.getMerchantId());
+//            paymentProviderDetails.setApiKey(paymentProviderDetailsPojo.getApiKey());
+//            paymentProviderDetails.setProviderUrl(paymentProviderDetailsPojo.getProviderUrl());
+//            paymentProviderDetails.setServiceUsername(paymentProviderDetailsPojo.getServiceUsername());
+//            paymentProviderDetails.setServicePassword(PasswordService.hashPassword(paymentProviderDetailsPojo.getServicePassword()));
+//
+//            MerchantProviderDetails merchantProviderDetails = new MerchantProviderDetails();
+//            merchantProviderDetails.setDateCreated(PaymentUtil.nowToTimeStamp());
+//            merchantProviderDetails.setStatus(GenericStatusConstant.ACTIVE);
+//            merchantProviderDetails.setMerchant(merchant);
+//            merchantProviderDetails.setPaymentProviderDetails(paymentProviderDetails);
+//
+//            entityManagerProvider.get().persist(paymentProviderDetails);
+//            entityManagerProvider.get().persist(merchantProviderDetails);
+//        }
 
         return merchant;
     }

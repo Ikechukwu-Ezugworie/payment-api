@@ -20,6 +20,7 @@ import utils.Constants;
 import utils.PaymentUtil;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -43,7 +44,7 @@ public class PrototypeController {
     public Result interswitchPay(@Param("amount") String amount, @Param("transactionId") String transactionId,
                                  @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
         System.out.println("<=== processing payment" + transactionId + amount);
-        return Results.html().render("tid", transactionId).render("amount", amount == null ? null : PaymentUtil.getFormattedMoneyDisplay(amount + "00"));
+        return Results.html().render("tid", transactionId).render("amount", amount == null ? null : PaymentUtil.getFormattedMoneyDisplay(PaymentUtil.getAmountInKobo(new BigDecimal(amount))));
 //        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
 //                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
 //                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
@@ -78,14 +79,18 @@ public class PrototypeController {
                 "<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>" +
                 "<FtpUsername/><FtpPassword/><Payments><Payment><IsRepeated>False</IsRepeated><ProductGroupCode>HTTPGENERICv31</ProductGroupCode>" +
                 "<PaymentLogId>1331" + transactionId + new Date().getTime() + "</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
-                "<Amount>" + amount + "</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod><PaymentReference>FBN|BRH|ABSA|17-03-2016|091483</PaymentReference>" +
+                "<Amount>" + amount + "</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod><PaymentReference>FBN|BRH|ABSA|17-03-2016|" + new Date().getTime() + "</PaymentReference>" +
                 "<TerminalId/><ChannelName>Bank Branc</ChannelName><Location>ABAJI</Location><IsReversal>False</IsReversal><PaymentDate>" + sdf.format(new Date()) + "</PaymentDate>" +
                 "<SettlementDate>03/18/2016 00:00:01</SettlementDate><InstitutionId>ABSA</InstitutionId><InstitutionName>Abia State Autoreg</InstitutionName>" +
                 "<BranchName>ABAJI</BranchName><BankName>First Bank of Nigeria Plc</BankName><FeeName/><CustomerName>" + context.getParameter("name") + "</CustomerName><OtherCustomerInfo>|</OtherCustomerInfo>" +
                 "<ReceiptNo>1607749469</ReceiptNo><CollectionsAccount>12232345690</CollectionsAccount><ThirdPartyCode/><PaymentItems><PaymentItem>" +
                 "<ItemName>Payment</ItemName><ItemCode>" + itemCode + "</ItemCode><ItemAmount>" + amount + "</ItemAmount><LeadBankCode>FBN</LeadBankCode><LeadBankCbnCode>011</LeadBankCbnCode>" +
-                "<LeadBankName>First Bank of Nigeria Plc</LeadBankName><CategoryCode/><CategoryName>" + context.getParameter("desc") + "</CategoryName><ItemQuantity>1</ItemQuantity></PaymentItem></PaymentItems>" +
-                "<BankCode>FBN</BankCode><CustomerAddress>" + context.getParameter("address") + "</CustomerAddress><CustomerPhoneNumber>" + context.getParameter("phoneNumber") + "</CustomerPhoneNumber><DepositorName/><DepositSlipNumber>1212343</DepositSlipNumber>" +
+                "<LeadBankName>First Bank of Nigeria Plc</LeadBankName><CategoryCode/>";
+        if (context.getParameter("desc") != null) {
+            payload += "<CategoryName>" + context.getParameter("desc") + "</CategoryName>";
+        }
+        payload += "<ItemQuantity>1</ItemQuantity></PaymentItem></PaymentItems><BankCode>FBN</BankCode><CustomerAddress>" +
+                context.getParameter("address") + "</CustomerAddress><CustomerPhoneNumber>" + context.getParameter("phoneNumber") + "</CustomerPhoneNumber><DepositorName/><DepositSlipNumber>1212343</DepositSlipNumber>" +
                 "<PaymentCurrency>566</PaymentCurrency><OriginalPaymentLogId/><OriginalPaymentReference/><Teller>ABAJI13 ABAJI13</Teller></Payment></Payments>" +
                 "</PaymentNotificationRequest>";
 
@@ -101,10 +106,15 @@ public class PrototypeController {
                 context.getFlashScope().error(paymentNotificationResponsePojo.getPayments().getPayment().get(0).getStatusMessage());
             }
             return Results.redirect("/interswitch?transactionId=" + (StringUtils.isBlank(transactionId) ? context.getParameter("phoneNumber") : transactionId) + "&amount=" + amount);
-        } catch (IOException e) {
+        } catch (
+                IOException e)
+
+        {
             e.printStackTrace();
         }
-        context.getFlashScope().error("Error making payment");
+        context.getFlashScope().
+
+                error("Error making payment");
         return Results.redirect("/interswitch");
     }
 
@@ -115,7 +125,7 @@ public class PrototypeController {
         }
 
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
-                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                "<MerchantReference>13425356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
                 itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
         try {
             CustomerInformationRequest request = null;

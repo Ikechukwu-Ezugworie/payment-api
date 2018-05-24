@@ -10,12 +10,11 @@ public class PayerPojo {
     private String payerId;
     @NotBlank(message = "validation.not.null")
     private String firstName;
-    @NotBlank(message = "validation.not.null")
     private String lastName;
-    @NotBlank(message = "validation.not.null")
     private String email;
     @NotBlank(message = "validation.not.null")
     private String phoneNumber;
+    private String address;
 
     public Long getId() {
         return id;
@@ -63,5 +62,13 @@ public class PayerPojo {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

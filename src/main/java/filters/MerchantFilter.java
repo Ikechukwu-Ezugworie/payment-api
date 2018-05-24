@@ -25,6 +25,8 @@ public class MerchantFilter implements Filter {
             return ResponseUtil.returnJsonResult(400, "Missing merchant code header");
         }
 
+        System.out.println("<=== merchant code = "+ merchantIdentifier);
+
         Merchant merchant = merchantDao.getMerchantByCode(merchantIdentifier);
         if (merchant == null) {
             return ResponseUtil.returnJsonResult(Result.SC_401_UNAUTHORIZED, "Merchant not found");

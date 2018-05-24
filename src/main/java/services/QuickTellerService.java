@@ -18,6 +18,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pojo.PayerPojo;
 import pojo.Ticket;
 import pojo.TransactionNotificationPojo;
 import pojo.quickTeller.QTTransactionQueryResponse;
@@ -75,19 +76,33 @@ public class QuickTellerService {
     }
 
     private NotificationQueue generateNotification(QTTransactionQueryResponse res, PaymentTransaction paymentTransaction) {
-        Merchant merchant=paymentTransactionDao.getRecordById(Merchant.class,paymentTransaction.getMerchant().getId());
+        Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
+        System.out.println("<=== "+merchant.getName()+" : "+merchant.getNotificationUrl());
+
         TransactionNotificationPojo transactionNotificationPojo = new TransactionNotificationPojo();
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
+        transactionNotificationPojo.setDescription(res.getResponseDescription());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setReceiptNumber(res.getPaymentReference());
-        transactionNotificationPojo.setAmountPaidInKobo(paymentTransaction.getAmountInKobo());
+        transactionNotificationPojo.setAmountPaidInKobo(paymentTransaction.getAmountPaidInKobo());
         transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
         transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentDate(res.getTransactionDate());
         transactionNotificationPojo.setPaymentChannelName(PaymentChannelConstant.QUICKTELLER.getValue());
         transactionNotificationPojo.setPaymentProviderPaymentReference(res.getPaymentReference());
         transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
+        System.out.println("<=== XXXXXXXXXX"+ paymentTransaction.getCustomerTransactionReference());
+        transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
+        transactionNotificationPojo.setMerchantTransactionReference(paymentTransaction.getMerchantTransactionReferenceId());
+
+        PayerPojo payerPojo=new PayerPojo();
+        payerPojo.setFirstName(paymentTransaction.getPayer().getFirstName());
+        payerPojo.setLastName(paymentTransaction.getPayer().getLastName());
+        payerPojo.setEmail(paymentTransaction.getPayer().getEmail());
+        payerPojo.setPhoneNumber(paymentTransaction.getPayer().getPhoneNumber());
+//        payerPojo.setAddress(paymentTransaction.getPayer().getetAPhoneNumber());
+        transactionNotificationPojo.setPayer(payerPojo);
 
         NotificationQueue notificationQueue = new NotificationQueue();
         notificationQueue.setMessageInJson(PaymentUtil.toJSON(transactionNotificationPojo));
@@ -141,7 +156,7 @@ public class QuickTellerService {
                     .header("Hash", hash)
                     .build();
             Response response = client.newCall(request).execute();
-
+            System.out.println("<=== qt response code "+ response.code());
             if (response.isSuccessful() && response.code() == 200) {
                 String body = response.body().string();
 //                logger.info(body);
@@ -167,12 +182,16 @@ public class QuickTellerService {
 
                     saveCurrentPaymentTransactionState(paymentTransaction);
 
+                    paymentTransaction.setAmountPaidInKobo(transactionQueryResponse.getAmount());
                     paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
                     paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
 
                     paymentTransactionDao.updateObject(paymentTransaction);
+                    generateNotification(transactionQueryResponse, paymentTransaction);
                     paymentTransactionService.doNotification(generateNotification(transactionQueryResponse, paymentTransaction));
                 }
+            }else{
+                System.out.println("<=== qt response");
             }
 
         } catch (Exception e) {

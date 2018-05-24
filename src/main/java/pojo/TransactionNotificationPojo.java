@@ -19,6 +19,8 @@ public class TransactionNotificationPojo {
     private String paymentMethod;
     private String notificationId;
     private String description;
+    private String merchantTransactionReference;
+    private String customerTransactionReference;
     private PayerPojo payer;
 
     public String getStatus() {
@@ -149,6 +151,22 @@ public class TransactionNotificationPojo {
         this.description = description;
     }
 
+    public String getMerchantTransactionReference() {
+        return merchantTransactionReference;
+    }
+
+    public void setMerchantTransactionReference(String merchantTransactionReference) {
+        this.merchantTransactionReference = merchantTransactionReference;
+    }
+
+    public String getCustomerTransactionReference() {
+        return customerTransactionReference;
+    }
+
+    public void setCustomerTransactionReference(String customerTransactionReference) {
+        this.customerTransactionReference = customerTransactionReference;
+    }
+
     @Override
     public String toString() {
         return "TransactionNotificationPojo{" +
@@ -167,6 +185,8 @@ public class TransactionNotificationPojo {
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", notificationId='" + notificationId + '\'' +
                 ", description='" + description + '\'' +
+                ", merchantTransactionReference='" + merchantTransactionReference + '\'' +
+                ", customerTransactionReference='" + customerTransactionReference + '\'' +
                 ", payer=" + payer +
                 '}';
     }

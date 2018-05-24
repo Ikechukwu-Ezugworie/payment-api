@@ -44,6 +44,7 @@ public class TransactionRequestPojo {
     private Boolean validateTransaction;
     private String transactionValidationUrl;
     private boolean instantTransaction = false;
+    private String customerTransactionReference;
 
     public Long getId() {
         return id;
@@ -196,5 +197,19 @@ public class TransactionRequestPojo {
         this.instantTransaction = instantTransaction;
     }
 
+    public String getProviderTransactionReference() {
+        return providerTransactionReference;
+    }
 
+    public void setProviderTransactionReference(String providerTransactionReference) {
+        this.providerTransactionReference = providerTransactionReference;
+    }
+
+    public String getCustomerTransactionReference() {
+        return customerTransactionReference;
+    }
+
+    public void setCustomerTransactionReference(String customerTransactionReference) {
+        this.customerTransactionReference = customerTransactionReference;
+    }
 }
