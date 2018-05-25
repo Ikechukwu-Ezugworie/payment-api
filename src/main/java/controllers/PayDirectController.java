@@ -1,17 +1,17 @@
 package controllers;
 
+import com.bw.payment.entity.RawDump;
+import com.bw.payment.enumeration.PaymentChannelConstant;
+import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dao.MerchantDao;
-import dao.PaymentTransactionDao;
 import extractors.ContentExtract;
 import filters.InterswitchFilter;
 import ninja.Context;
 import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
-import ninja.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
@@ -20,6 +20,7 @@ import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import services.PayDirectService;
 import services.PaymentTransactionService;
+import utils.PaymentUtil;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -29,6 +30,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 /**
  * CREATED BY GIBAH
@@ -38,12 +41,6 @@ import java.io.IOException;
 public class PayDirectController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Inject
-    private Messages messages;
-    @Inject
-    private MerchantDao merchantDao;
-    @Inject
-    private PaymentTransactionDao paymentTransactionDao;
-    @Inject
     private PaymentTransactionService paymentTransactionService;
     @Inject
     private PayDirectService payDirectService;
@@ -52,6 +49,13 @@ public class PayDirectController {
     private XmlMapper xmlMapper;
 
     public Result doPayDirectRequest(@ContentExtract String payload, Context context) {
+        RawDump rawDump = new RawDump();
+        rawDump.setRequest(payload);
+        rawDump.setDateCreated(Timestamp.from(Instant.now()));
+        rawDump.setPaymentProvider(PaymentProviderConstant.INTERSWITCH);
+        rawDump.setPaymentChannel(PaymentChannelConstant.PAYDIRECT);
+
+        logger.info("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         try {
             byte[] byteArray = payload.getBytes("UTF-8");
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
@@ -66,11 +70,14 @@ public class PayDirectController {
                         case XMLStreamConstants.START_ELEMENT:
                             StartElement startElement = event.asStartElement();
                             String qName = startElement.getName().getLocalPart();
-                            logger.info("<===" + qName);
                             if (qName.equalsIgnoreCase("CustomerInformationRequest")) {
                                 eventReader.close();
                                 CustomerInformationRequest request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
+                                System.out.println("<=== VALIDATION: " + request.toString());
                                 CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
+                                rawDump.setResponse(customerInformationResponse == null ? null : PaymentUtil.toJSON(customerInformationResponse));
+                                rawDump.setDescription("CUSTOMER VALIDATION");
+                                paymentTransactionService.dump(rawDump);
                                 if (customerInformationResponse == null) {
                                     return Results.xml().status(503);
                                 }
@@ -78,8 +85,11 @@ public class PayDirectController {
                             } else if (qName.equalsIgnoreCase("PaymentNotificationRequest")) {
                                 eventReader.close();
                                 PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
-                                logger.info(request.toString());
+                                logger.debug("<=== PAYMENT NOTIFICATION: " + request.toString());
                                 PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
+                                rawDump.setResponse(paymentNotificationResponsePojo == null ? null : PaymentUtil.toJSON(paymentNotificationResponsePojo));
+                                rawDump.setDescription("PAYMENT NOTIFICATION");
+                                paymentTransactionService.dump(rawDump);
                                 return Results.ok().xml().render(paymentNotificationResponsePojo);
                             }
                             break;
@@ -89,6 +99,8 @@ public class PayDirectController {
             }
         } catch (XMLStreamException | IOException e) {
             e.printStackTrace();
+            rawDump.setDescription("An error occurred: " + e.getMessage());
+            paymentTransactionService.dump(rawDump);
         }
         return Results.badRequest().xml();
     }

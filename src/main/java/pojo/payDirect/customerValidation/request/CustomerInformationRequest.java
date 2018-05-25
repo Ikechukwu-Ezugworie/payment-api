@@ -82,4 +82,17 @@ public class CustomerInformationRequest {
         this.amount = amount;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "CustomerInformationRequest{" +
+                "serviceUsername='" + serviceUsername + '\'' +
+                ", servicePassword='" + servicePassword + '\'' +
+                ", merchantReference='" + merchantReference + '\'' +
+                ", custReference='" + custReference + '\'' +
+                ", paymentItemCode='" + paymentItemCode + '\'' +
+                ", thirdPartyCode='" + thirdPartyCode + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }
