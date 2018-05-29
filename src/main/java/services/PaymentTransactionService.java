@@ -135,6 +135,7 @@ public class PaymentTransactionService {
     }
 
     private void notificationSent(NotificationQueue notificationQueue) {
+        notificationQueue.setNotificationSent(true);
         paymentTransactionDao.updateObject(notificationQueue);
     }
 
@@ -167,7 +168,6 @@ public class PaymentTransactionService {
             Response response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                notificationQueue.setNotificationSent(true);
                 notificationSent(notificationQueue);
                 return;
             }
