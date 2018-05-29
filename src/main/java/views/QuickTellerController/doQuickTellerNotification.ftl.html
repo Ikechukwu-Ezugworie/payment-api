@@ -26,17 +26,9 @@
 </div>
 <script type="text/javascript">
     var successUrl = '${(successUrl)!""}';
-    if (successUrl || successUrl !== "") {
-        setTimeout(function () {
-        <#--successUrl = insertParam('success', 'true');-->
-        <#--successUrl = insertParam('amount', '&#8358;${(amount)!"0"}');-->
-//            redirect(successUrl);
-//            $(this).trigger('post-message', [{
-//                event: 'unload-bookmarklet'
-//            }]);
-            window.parent.postMessage({success: true, amount: '${(amount)!"0"}', redirect: successUrl}, '*');
-        }, 3000);
-    }
+    setTimeout(function () {
+        window.top.postMessage({success: true, amount: '${(amount)!"0"}', redirect: successUrl}, '*');
+    }, 3000);
 </script>
 </#if>
 <#if fail??>
@@ -56,18 +48,9 @@
 </div>
 <script type="text/javascript">
     var failUrl = '${(failUrl)!""}';
-    if (failUrl || failUrl !== "") {
-        setTimeout(function () {
-        <#--failUrl = insertParam('success', 'false');-->
-        <#--failUrl = insertParam('why', '${(why)!""}');-->
-//            redirect(failUrl);
-//            $(this).trigger('post-message', [{
-//                event: 'unload-bookmarklet'
-//            }]);
-            window.top.postMessage({success: false, why: '${(why)!""}', redirect: failUrl}, '*');
-        }, 4000);
-    }
-    <#--window.top.location.href = '${fail}';-->
+    setTimeout(function () {
+        window.top.postMessage({success: false, why: '${(why)!""}', redirect: failUrl}, '*');
+    }, 4000);
 </script>
 </#if>
 <script>

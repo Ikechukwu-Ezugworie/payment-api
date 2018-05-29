@@ -35,6 +35,7 @@
         <mapping resource="com/bw/payment/entity/PaymentResponseLog.hbm.xml"/>
         <mapping resource="com/bw/payment/entity/PaymentTransactionStateLog.hbm.xml"/>
         <mapping resource="com/bw/payment/entity/Payer.hbm.xml"/>
+        <mapping resource="com/bw/payment/entity/RawDump.hbm.xml"/>
         <mapping resource="com/bw/audittrail/AuditTrail.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

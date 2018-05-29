@@ -19,7 +19,6 @@ public class TransactionRequestPojo {
     private String dateCreated;
     private String lastUpdated;
     private String providerTransactionReference;
-    @NotBlank(message = "validation.not.null")
     private String merchantTransactionReferenceId;
     @NotNull(message = "validation.not.null")
     private Long amountInKobo;
@@ -37,8 +36,6 @@ public class TransactionRequestPojo {
     @NotNull(message = "validation.not.null")
     @Valid
     private PayerPojo payer;
-    @NotNull(message = "validation.not.null")
-    @Size(min = 1, message = "validation.not.blank")
     @Valid
     private List<ItemPojo> items;
     private Boolean validateTransaction;
