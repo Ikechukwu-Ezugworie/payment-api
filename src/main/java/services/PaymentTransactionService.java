@@ -186,4 +186,9 @@ public class PaymentTransactionService {
     public void dump(RawDump rawDump) {
         paymentTransactionDao.saveObject(rawDump);
     }
+
+    @Transactional
+    public void updateDump(RawDump rawDump) {
+        paymentTransactionDao.updateObject(rawDump);
+    }
 }

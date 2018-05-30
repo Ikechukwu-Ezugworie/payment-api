@@ -17,7 +17,8 @@
 <#if success??>
 <div style="width: 100%; padding: 2%;">
     <h2 class="text-success text-center" style="margin-top: 20px;"><b>TRANSACTION SUCCESSFUL</b></h2>
-    <p style="margin-top: 20px" class="text-center">Your payment of <b>&#8358;${(amount/100)?string(",##0.00")!""}</b>
+    <p style="margin-top: 20px" class="text-center">Your payment <#if (amount)??>of
+        <b>&#8358;${(amount/100)?string(",##0.00")}</b></#if>
         was
         successful</p>
     <p class="text-center">

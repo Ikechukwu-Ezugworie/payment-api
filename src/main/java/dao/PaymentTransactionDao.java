@@ -65,7 +65,7 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
         paymentTransaction.setCustomerTransactionReference(request.getCustomerTransactionReference());
 
-        System.out.println("<=== cref"+request.getCustomerTransactionReference());
+        System.out.println("<=== cref" + request.getCustomerTransactionReference());
 
         Payer payer = new Payer();
         payer.setPayerId(payerIdSequence.getNext());
@@ -209,6 +209,18 @@ public class PaymentTransactionDao extends BaseDao {
     }
 
     public PaymentTransaction getPaymentTransactionByProviderPaymentReference(String providerReference) {
-       return getUniqueRecordByProperty(PaymentTransaction.class,"providerTransactionReference",providerReference);
+        return getUniqueRecordByProperty(PaymentTransaction.class, "providerTransactionReference", providerReference);
+    }
+
+    public List<PaymentTransaction> getPendingPaymentTransactions(PaymentProviderConstant paymentProvider, PaymentChannelConstant paymentChannel, Integer batch) {
+        EntityManager entityManager = entityManagerProvider.get();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PaymentTransaction> criteriaQuery = criteriaBuilder.createQuery(PaymentTransaction.class);
+        Root<PaymentTransaction> root = criteriaQuery.from(PaymentTransaction.class);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("paymentProvider"), paymentProvider))
+                .where(criteriaBuilder.equal(root.get("paymentChannel"), paymentChannel))
+                .where(criteriaBuilder.equal(root.get("paymentTransactionStatus"), PaymentTransactionStatus.PENDING));
+
+        return resultsList(entityManager.createQuery(criteriaQuery).setMaxResults(batch));
     }
 }
