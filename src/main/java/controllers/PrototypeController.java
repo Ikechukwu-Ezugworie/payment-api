@@ -152,7 +152,7 @@ public class PrototypeController {
             return Results.html().template("/views/PrototypeController/poa.ftl.html");
         }
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
-                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                "<MerchantReference>" + MERCHANT_REF + "</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
                 itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
 
         try {
