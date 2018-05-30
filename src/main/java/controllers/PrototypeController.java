@@ -29,6 +29,7 @@ import java.util.Date;
  */
 @Singleton
 public class PrototypeController {
+    private static final String MERCHANT_REF = "13425356";
     @Inject
     private XmlMapper xmlMapper;
     @Inject
@@ -125,7 +126,7 @@ public class PrototypeController {
         }
 
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
-                "<MerchantReference>13425356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                "<MerchantReference>" + MERCHANT_REF + "</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
                 itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
         try {
             CustomerInformationRequest request = null;
@@ -183,7 +184,7 @@ public class PrototypeController {
             return Results.html().template("/views/PrototypeController/assRef.ftl.html");
         }
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
-                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
+                "<MerchantReference>" + MERCHANT_REF + "</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
                 itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
 
         try {
