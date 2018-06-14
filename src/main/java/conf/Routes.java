@@ -49,7 +49,7 @@ public class Routes implements ApplicationRoutes {
         ///////////////////////////////////////////////////////////////////////
         // Merchant controller
         ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);
+//        router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);
 
         ///////////////////////////////////////////////////////////////////////
         // PaymentTransaction controller

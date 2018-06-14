@@ -25,9 +25,9 @@ import okhttp3.OkHttpClient;
 public class Module extends AbstractModule {
 
     protected void configure() {
-        
-        bind(StartupActions.class);
         bind(OkHttpClient.class).toInstance(new OkHttpClient());
+
+        bind(StartupActions.class);
         
     }
 

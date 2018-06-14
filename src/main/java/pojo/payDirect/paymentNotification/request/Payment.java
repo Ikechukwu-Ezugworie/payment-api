@@ -50,7 +50,7 @@ public class Payment {
     @JacksonXmlProperty(localName = "CustomerName")
     private String customerName;
     @JacksonXmlProperty(localName = "OtherCustomerInfo")
-    private String otherCustomerInfo;
+    private OtherCustomerInfo otherCustomerInfo;
     @JacksonXmlProperty(localName = "ReceiptNo")
     private String receiptNo;
     @JacksonXmlProperty(localName = "CollectionsAccount")
@@ -79,6 +79,14 @@ public class Payment {
     private Integer status;
     @JacksonXmlProperty(localName = "PaymentItems")
     private PaymentItems paymentItems;
+
+
+    @JacksonXmlProperty(localName = "CustomerCategory")
+    private String customerCategory;
+    @JacksonXmlProperty(localName = "EconomicActivitiesID")
+    private String economicActivitiesId;
+
+
 
     public Boolean getRepeated() {
         return isRepeated;
@@ -240,12 +248,28 @@ public class Payment {
         this.customerName = customerName;
     }
 
-    public String getOtherCustomerInfo() {
+    public OtherCustomerInfo getOtherCustomerInfo() {
         return otherCustomerInfo;
     }
 
-    public void setOtherCustomerInfo(String otherCustomerInfo) {
+    public void setOtherCustomerInfo(OtherCustomerInfo otherCustomerInfo) {
         this.otherCustomerInfo = otherCustomerInfo;
+    }
+
+    public String getCustomerCategory() {
+        return customerCategory;
+    }
+
+    public void setCustomerCategory(String customerCategory) {
+        this.customerCategory = customerCategory;
+    }
+
+    public String getEconomicActivitiesId() {
+        return economicActivitiesId;
+    }
+
+    public void setEconomicActivitiesId(String economicActivitiesId) {
+        this.economicActivitiesId = economicActivitiesId;
     }
 
     public String getReceiptNo() {

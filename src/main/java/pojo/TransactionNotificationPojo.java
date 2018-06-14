@@ -3,7 +3,7 @@ package pojo;
 /**
  * CREATED BY GIBAH
  */
-public class TransactionNotificationPojo {
+public class TransactionNotificationPojo<T> {
     private String status;
     private String transactionId;
     private String datePaymentReceived;
@@ -22,6 +22,8 @@ public class TransactionNotificationPojo {
     private String merchantTransactionReference;
     private String customerTransactionReference;
     private PayerPojo payer;
+
+    private T actualNotification;
 
     public String getStatus() {
         return status;
@@ -167,6 +169,14 @@ public class TransactionNotificationPojo {
         this.customerTransactionReference = customerTransactionReference;
     }
 
+    public T getActualNotification() {
+        return actualNotification;
+    }
+
+    public void setActualNotification(T actualNotification) {
+        this.actualNotification = actualNotification;
+    }
+
     @Override
     public String toString() {
         return "TransactionNotificationPojo{" +
@@ -188,6 +198,7 @@ public class TransactionNotificationPojo {
                 ", merchantTransactionReference='" + merchantTransactionReference + '\'' +
                 ", customerTransactionReference='" + customerTransactionReference + '\'' +
                 ", payer=" + payer +
+                ", actualNotification=" + actualNotification +
                 '}';
     }
 }

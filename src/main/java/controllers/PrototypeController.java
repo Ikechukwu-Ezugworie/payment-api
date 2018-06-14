@@ -75,28 +75,10 @@ public class PrototypeController {
 
     public Result doMakePay(@Param("amount") String amount, @Param("transactionId") String transactionId,
                             @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
-        SimpleDateFormat sdf = new SimpleDateFormat(Constants.INTERSWITCH_DATE_FORMAT);
-        String payload = "<PaymentNotificationRequest><ServiceUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</ServiceUrl>" +
-                "<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>" +
-                "<FtpUsername/><FtpPassword/><Payments><Payment><IsRepeated>False</IsRepeated><ProductGroupCode>HTTPGENERICv31</ProductGroupCode>" +
-                "<PaymentLogId>1331" + transactionId + new Date().getTime() + "</PaymentLogId><CustReference>" + transactionId + "</CustReference><AlternateCustReference>--N/A--</AlternateCustReference>" +
-                "<Amount>" + amount + "</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod><PaymentReference>FBN|BRH|ABSA|17-03-2016|" + new Date().getTime() + "</PaymentReference>" +
-                "<TerminalId/><ChannelName>Bank Branc</ChannelName><Location>ABAJI</Location><IsReversal>False</IsReversal><PaymentDate>" + sdf.format(new Date()) + "</PaymentDate>" +
-                "<SettlementDate>03/18/2016 00:00:01</SettlementDate><InstitutionId>ABSA</InstitutionId><InstitutionName>Abia State Autoreg</InstitutionName>" +
-                "<BranchName>ABAJI</BranchName><BankName>First Bank of Nigeria Plc</BankName><FeeName/><CustomerName>" + context.getParameter("name") + "</CustomerName><OtherCustomerInfo>|</OtherCustomerInfo>" +
-                "<ReceiptNo>1607749469</ReceiptNo><CollectionsAccount>12232345690</CollectionsAccount><ThirdPartyCode/><PaymentItems><PaymentItem>" +
-                "<ItemName>Payment</ItemName><ItemCode>" + itemCode + "</ItemCode><ItemAmount>" + amount + "</ItemAmount><LeadBankCode>FBN</LeadBankCode><LeadBankCbnCode>011</LeadBankCbnCode>" +
-                "<LeadBankName>First Bank of Nigeria Plc</LeadBankName><CategoryCode/>";
-        if (context.getParameter("desc") != null) {
-            payload += "<CategoryName>" + context.getParameter("desc") + "</CategoryName>";
-        }
-        payload += "<ItemQuantity>1</ItemQuantity></PaymentItem></PaymentItems><BankCode>FBN</BankCode><CustomerAddress>" +
-                context.getParameter("address") + "</CustomerAddress><CustomerPhoneNumber>" + context.getParameter("phoneNumber") + "</CustomerPhoneNumber><DepositorName/><DepositSlipNumber>1212343</DepositSlipNumber>" +
-                "<PaymentCurrency>566</PaymentCurrency><OriginalPaymentLogId/><OriginalPaymentReference/><Teller>ABAJI13 ABAJI13</Teller></Payment></Payments>" +
-                "</PaymentNotificationRequest>";
+        String payload = generatePayload(amount, transactionId, itemCode, context);
 
         try {
-            System.out.println("<=== processing payment");
+            System.out.println("<=== processing payment " + payload);
             PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
             PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
             if (paymentNotificationResponsePojo == null) {
@@ -209,12 +191,52 @@ public class PrototypeController {
         return Results.html();
     }
 
-//    public Result quickTeller() {
-//        Merchant merchant = merchantDao.getMerchantByCode("M0000001");
-//        TransactionRequestPojo request = PaymentUtil.fromJSON("{\"merchantTransactionReferenceId\":\"0000000029\",\"amountInKobo\":34508734,\"notifyOnStatusChange\":true,\"notificationUrl\":\"\",\"paymentProvider\":\"INTERSWITCH\",\"paymentChannel\":\"QUICKTELLER\",\"payer\":{\"firstName\":\"Ramos\",\"lastName\":\"Harrell\",\"email\":\"ramosharrell@automon.com\",\"phoneNumber\":\"08137625011\"},\"items\":[{\"name\":\"ERAS ASSESSMENT\",\"itemId\":\"EDORPX821\",\"quantity\":1,\"priceInKobo\":34508734,\"taxInKobo\":0,\"subTotalInKobo\":34508734,\"totalInKobo\":34508734,\"description\":\"Pools Promoters Weekly Pay Tax - Annual Fee\"}],\"validateTransaction\":false}", TransactionRequestPojo.class);
-//        Ticket transactionTicket = paymentTransactionService.createInstantTransaction(request, merchant);
-//
-//        System.out.println(transactionTicket);
-//        return Results.html().render("data", transactionTicket);
-//    }
+    private String generatePayload(String amount, String transactionId, String itemCode, Context context) {
+        SimpleDateFormat sdf = new SimpleDateFormat(Constants.INTERSWITCH_DATE_FORMAT);
+        StringBuilder payloadBuilder = new StringBuilder();
+        payloadBuilder.append("<PaymentNotificationRequest><ServiceUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</ServiceUrl>")
+                .append("<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>")
+                .append("<FtpUsername/><FtpPassword/><Payments><Payment><IsRepeated>False</IsRepeated><ProductGroupCode>HTTPGENERICv31</ProductGroupCode>")
+                .append("<PaymentLogId>1331").append(transactionId).append(new Date().getTime()).append("</PaymentLogId><CustReference>")
+                .append(transactionId).append("</CustReference>").append("<AlternateCustReference>").append(context.getParameter("cCat")).append("</AlternateCustReference>")
+                .append("<Amount>").append(amount).append("</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod>")
+                .append("<PaymentReference>FBN|BRH|ABSA|17-03-2016|").append(new Date().getTime()).append("</PaymentReference>")
+                .append("<TerminalId/><ChannelName>Bank Branc</ChannelName><Location>ABAJI</Location><IsReversal>False</IsReversal>")
+                .append("<PaymentDate>").append(sdf.format(new Date())).append("</PaymentDate>")
+                .append("<SettlementDate>03/18/2016 00:00:01</SettlementDate><InstitutionId>ABSA</InstitutionId><InstitutionName>Abia State Autoreg</InstitutionName>")
+                .append("<BranchName>ABAJI</BranchName><BankName>First Bank of Nigeria Plc</BankName><FeeName/>")
+                .append("<CustomerName>").append(context.getParameter("name")).append("</CustomerName>")
+                .append("<OtherCustomerInfo>");
+        //other customer info
+        if (StringUtils.isNotBlank(context.getParameter("email"))) {
+            payloadBuilder.append("<EmailAddress>").append(context.getParameter("email")).append("</EmailAddress>");
+        }
+        if (StringUtils.isNotBlank(context.getParameter("eaid"))) {
+            payloadBuilder.append("<EconomicsActivitiesID>").append(context.getParameter("eaid")).append("</EconomicsActivitiesID>");
+        }
+        if (StringUtils.isNotBlank(context.getParameter("taxOfficeId"))) {
+            payloadBuilder.append("<TaxOfficeID>").append(context.getParameter("taxOfficeId")).append("</TaxOfficeID>");
+        }
+        if (StringUtils.isNotBlank(context.getParameter("nid"))) {
+            payloadBuilder.append("<NationalID>").append(context.getParameter("nid")).append("</NationalID>");
+        }
+        if (StringUtils.isNotBlank(context.getParameter("notMethod"))) {
+            payloadBuilder.append("<NotificationMethod>").append(context.getParameter("notMethod")).append("</NotificationMethod>");
+        }
+        payloadBuilder.append("</OtherCustomerInfo>")
+                .append("<ReceiptNo>1607749469</ReceiptNo><CollectionsAccount>12232345690</CollectionsAccount><ThirdPartyCode/><PaymentItems><PaymentItem>")
+                .append("<ItemName>Payment</ItemName>")
+                .append("<ItemCode>").append(itemCode).append("</ItemCode>")
+                .append("<ItemAmount>").append(amount).append("</ItemAmount>")
+                .append("<LeadBankCode>FBN</LeadBankCode><LeadBankCbnCode>011</LeadBankCbnCode>")
+                .append("<LeadBankName>First Bank of Nigeria Plc</LeadBankName><CategoryCode/>");
+        if (context.getParameter("desc") != null) {
+            payloadBuilder.append("<CategoryName>").append(context.getParameter("desc")).append("</CategoryName>");
+        }
+        payloadBuilder.append("<ItemQuantity>1</ItemQuantity></PaymentItem></PaymentItems><BankCode>FBN</BankCode><CustomerAddress>")
+                .append(context.getParameter("address")).append("</CustomerAddress><CustomerPhoneNumber>").append(context.getParameter("phoneNumber"))
+                .append("</CustomerPhoneNumber><DepositorName/><DepositSlipNumber>1212343</DepositSlipNumber>")
+                .append("<PaymentCurrency>566</PaymentCurrency><OriginalPaymentLogId/><OriginalPaymentReference/><Teller>ABAJI13 ABAJI13</Teller></Payment></Payments></PaymentNotificationRequest>");
+        return payloadBuilder.toString();
+    }
 }

@@ -60,6 +60,11 @@ public class BaseDao {
         }
     }
 
+    <T> long getCount(TypedQuery<T> tTypedQuery) {
+        Long c = (Long) tTypedQuery.getSingleResult();
+        return c == null ? 0 : c;
+    }
+
     <T> List<T> resultsList(TypedQuery<T> tTypedQuery) {
         try {
             return tTypedQuery.getResultList();
