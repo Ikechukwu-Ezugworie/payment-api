@@ -17,9 +17,9 @@ public abstract class SequenceService {
     }
 
     private void init() {
-        this.entityManagerProvider.get().getTransaction().begin();
+//        this.entityManagerProvider.get().getTransaction().begin();
         this.entityManagerProvider.get().createNativeQuery(String.format("DO $$ BEGIN CREATE SEQUENCE %s; EXCEPTION WHEN duplicate_table THEN END $$ LANGUAGE plpgsql;", sequenceName)).executeUpdate();
-        this.entityManagerProvider.get().getTransaction().commit();
+//        this.entityManagerProvider.get().getTransaction().commit();
     }
 
     Long getNextLong() {
