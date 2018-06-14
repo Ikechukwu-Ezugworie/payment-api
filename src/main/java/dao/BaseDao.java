@@ -120,6 +120,7 @@ public class BaseDao {
             setting = new Setting();
             setting.setName(name);
             setting.setValue(value);
+            setting.setDescription(name);
         } else if (overwrite) {
             setting.setValue(value);
         }
