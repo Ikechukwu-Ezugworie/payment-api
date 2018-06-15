@@ -23,10 +23,10 @@ public abstract class SequenceService {
     }
 
     Long getNextLong() {
-        if (!initialized) {
+//        if (!initialized) {
             this.init();
-            initialized = true;
-        }
+//            initialized = true;
+//        }
         EntityManager entityManager = this.entityManagerProvider.get();
         Query query = entityManager.createNativeQuery(String.format("select nextval ('%s')", sequenceName));
         Number number = (Number) query.getSingleResult();

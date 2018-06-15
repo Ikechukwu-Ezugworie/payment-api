@@ -3,19 +3,17 @@ package controllers;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dao.MerchantDao;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
+import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
 import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import services.PayDirectService;
-import services.PaymentTransactionService;
-import services.QuickTellerService;
 import utils.Constants;
 import utils.PaymentUtil;
 
@@ -29,23 +27,27 @@ import java.util.Date;
  */
 @Singleton
 public class PrototypeController {
-    private static final String MERCHANT_REF = "13425356";
-    @Inject
+    private static String MERCHANT_REF = "6405";
     private XmlMapper xmlMapper;
-    @Inject
     private PayDirectService payDirectService;
-    @Inject
-    private QuickTellerService quickTellerService;
-    @Inject
-    private PaymentTransactionService paymentTransactionService;
-    @Inject
-    private MerchantDao merchantDao;
+    private NinjaProperties ninjaProperties;
 
+    @Inject
+    public PrototypeController(XmlMapper xmlMapper, PayDirectService payDirectService, NinjaProperties ninjaProperties) {
+        this.xmlMapper = xmlMapper;
+        this.payDirectService = payDirectService;
+        this.ninjaProperties = ninjaProperties;
+
+        if (this.ninjaProperties.isDev()) {
+            MERCHANT_REF = "13425356";
+        }
+    }
 
     public Result interswitchPay(@Param("amount") String amount, @Param("transactionId") String transactionId,
                                  @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
         System.out.println("<=== processing payment" + transactionId + amount);
-        return Results.html().render("tid", transactionId).render("amount", amount == null ? null : PaymentUtil.getFormattedMoneyDisplay(PaymentUtil.getAmountInKobo(new BigDecimal(amount))));
+        return Results.html().render("tid", transactionId).render("amount", amount == null ? null :
+                PaymentUtil.getFormattedMoneyDisplay(PaymentUtil.getAmountInKobo(new BigDecimal(amount))));
 //        String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
 //                "<MerchantReference>1342356</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +
 //                itemCode + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
