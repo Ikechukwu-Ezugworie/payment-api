@@ -111,3 +111,4 @@ local.properties
 .scala_dependencies
 .worksheet
 target
+*.DS_Store
