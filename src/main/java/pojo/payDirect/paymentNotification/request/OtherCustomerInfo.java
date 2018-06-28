@@ -13,6 +13,9 @@ public class OtherCustomerInfo {
     private String nationalId;
     @JacksonXmlProperty(localName = "NotificationMethod")
     private String notificationMethod;
+    @JacksonXmlProperty(localName = "PhoneNumber")
+    private String phoneNumber;
+    private String rawValue;
 
     public String getEmailAddress() {
         return emailAddress;
@@ -46,6 +49,22 @@ public class OtherCustomerInfo {
         this.notificationMethod = notificationMethod;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getRawValue() {
+        return rawValue;
+    }
+
+    public void setRawValue(String rawValue) {
+        this.rawValue = rawValue;
+    }
+
     @Override
     public String toString() {
         return "OtherCustomerInfo{" +
@@ -53,6 +72,8 @@ public class OtherCustomerInfo {
                 ", taxOfficeId='" + taxOfficeId + '\'' +
                 ", nationalId='" + nationalId + '\'' +
                 ", notificationMethod='" + notificationMethod + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", rawValue='" + rawValue + '\'' +
                 '}';
     }
 }

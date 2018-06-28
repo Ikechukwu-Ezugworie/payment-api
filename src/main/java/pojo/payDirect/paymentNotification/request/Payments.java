@@ -18,4 +18,11 @@ public class Payments {
     public void setPayment(List<Payment> payment) {
         this.payment = payment;
     }
+
+    @Override
+    public String toString() {
+        return "Payments{" +
+                "payment=" + payment +
+                '}';
+    }
 }

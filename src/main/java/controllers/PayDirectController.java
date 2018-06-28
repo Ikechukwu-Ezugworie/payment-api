@@ -3,6 +3,12 @@ package controllers;
 import com.bw.payment.entity.RawDump;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -16,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
+import pojo.payDirect.paymentNotification.request.OtherCustomerInfo;
 import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import services.PayDirectService;
@@ -40,13 +47,36 @@ import java.time.Instant;
 @FilterWith(InterswitchFilter.class)
 public class PayDirectController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Inject
     private PaymentTransactionService paymentTransactionService;
-    @Inject
     private PayDirectService payDirectService;
 
-    @Inject
     private XmlMapper xmlMapper;
+
+    @Inject
+    public PayDirectController(PaymentTransactionService paymentTransactionService, PayDirectService payDirectService, XmlMapper xmlMapper) {
+        this.paymentTransactionService = paymentTransactionService;
+        this.payDirectService = payDirectService;
+        this.xmlMapper = xmlMapper;
+
+        SimpleModule simpleModule = new SimpleModule();
+
+        StdDeserializer<OtherCustomerInfo> stdDeserializer = new StdDeserializer<OtherCustomerInfo>(OtherCustomerInfo.class) {
+            @Override
+            public OtherCustomerInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+                JsonToken jsonToken = jsonParser.getCurrentToken();
+
+                if (jsonToken.equals(JsonToken.VALUE_STRING)) {
+                    OtherCustomerInfo otherCustomerInfo = new OtherCustomerInfo();
+                    otherCustomerInfo.setRawValue(jsonParser.getValueAsString());
+                    logger.info("<== string value");
+                    return otherCustomerInfo;
+                }
+                return null;
+            }
+        };
+        simpleModule.addDeserializer(OtherCustomerInfo.class, stdDeserializer);
+        this.xmlMapper.registerModule(simpleModule);
+    }
 
     public Result doPayDirectRequest(@ContentExtract String payload, Context context) {
         RawDump rawDump = new RawDump();
@@ -85,7 +115,7 @@ public class PayDirectController {
                             } else if (qName.equalsIgnoreCase("PaymentNotificationRequest")) {
                                 eventReader.close();
                                 PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
-                                logger.debug("<=== PAYMENT NOTIFICATION: " + request.toString());
+                                logger.info("<=== PAYMENT NOTIFICATION: " + request.toString());
                                 PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
                                 rawDump.setResponse(paymentNotificationResponsePojo == null ? null : PaymentUtil.toJSON(paymentNotificationResponsePojo));
                                 rawDump.setDescription("PAYMENT NOTIFICATION");
