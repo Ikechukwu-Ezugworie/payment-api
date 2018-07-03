@@ -18,13 +18,17 @@
 package conf;
 
 
+import com.google.inject.Inject;
 import controllers.*;
 import ninja.AssetsController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
+import ninja.utils.NinjaProperties;
 
 public class Routes implements ApplicationRoutes {
 
+    @Inject
+    private NinjaProperties ninjaProperties;
     @Override
     public void init(Router router) {  
         
@@ -36,11 +40,13 @@ public class Routes implements ApplicationRoutes {
         router.POST().route("/api/v1/payments/interswitch/paydirect").with(PayDirectController::doPayDirectRequest);
 
 
-        router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
-        router.GET().route("/interswitch/assessment").with(PrototypeController::assRef);
-        router.GET().route("/interswitch/poa").with(PrototypeController::poa);
-        router.GET().route("/interswitch/dir").with(PrototypeController::dirCap);
-        router.POST().route("/interswitch").with(PrototypeController::doMakePay);
+        if (!ninjaProperties.isProd()) {
+            router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
+            router.GET().route("/interswitch/assessment").with(PrototypeController::assRef);
+            router.GET().route("/interswitch/poa").with(PrototypeController::poa);
+            router.GET().route("/interswitch/dir").with(PrototypeController::dirCap);
+            router.POST().route("/interswitch").with(PrototypeController::doMakePay);
+        }
 
         ///////////////////////////////////////////////////////////////////////
         // Quick teller

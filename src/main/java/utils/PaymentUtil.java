@@ -811,4 +811,24 @@ public class PaymentUtil {
         String payload = "{ \"merchantTransactionReferenceId\": \"000000012\", \"amountInKobo\": 5000000, \"paymentProvider\": \"INTERSWITCH\", \"paymentChannel\": \"PAYDIRECT\", \"payer\": { \"firstName\": \"JOhn\", \"lastName\": \"Doe\", \"email\": \"jdoe@gmail.com\", \"phoneNumber\": \"01212023023\" } }";
         System.out.println(generateDigest("M0000003" + "de769088d33a77b20a874b3fbace7e12" + payload, Constants.SHA_512_ALGORITHM_NAME));
     }
+
+    public static String getFirstNameFromFullName(String customerName) {
+        if (StringUtils.isNotBlank(customerName)) {
+            if (customerName.trim().contains(" ")) {
+                String names[] = customerName.trim().split(" ");
+                return names[0];
+            }
+        }
+        return customerName;
+    }
+
+    public static String getLastNameFromFullName(String customerName) {
+        if (StringUtils.isNotBlank(customerName)) {
+            if (customerName.trim().contains(" ")) {
+                String names[] = customerName.trim().split(" ");
+                return names[1];
+            }
+        }
+        return "";
+    }
 }

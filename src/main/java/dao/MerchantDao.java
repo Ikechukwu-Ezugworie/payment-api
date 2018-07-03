@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * CREATED BY GIBAH
@@ -69,4 +70,14 @@ public class MerchantDao extends BaseDao {
         return getCount(entityManager.createQuery(cq));
     }
 
+    public Optional<String> getFirstMerchantReference() {
+        EntityManager entityManager = entityManagerProvider.get();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<String> cq = cb.createQuery(String.class);
+        Root<Merchant> root = cq.from(Merchant.class);
+
+        cq.select(root.get("paydirectMerchantReference"));
+
+        return Optional.ofNullable(uniqueResultOrNull(entityManager.createQuery(cq).setMaxResults(1)));
+    }
 }

@@ -194,8 +194,10 @@ public class PayDirectService {
             try {
                 PayerPojo payerPojo = new PayerPojo();
 
-                payerPojo.setFirstName(payment.getCustomerName());
-                payerPojo.setLastName("");
+                String fName = PaymentUtil.getFirstNameFromFullName(payment.getCustomerName());
+                String lName = PaymentUtil.getLastNameFromFullName(payment.getCustomerName());
+                payerPojo.setFirstName(fName);
+                payerPojo.setLastName(lName);
                 payerPojo.setEmail("");
                 payerPojo.setAddress(payment.getCustomerAddress());
                 payerPojo.setPhoneNumber(payment.getCustomerPhoneNumber());
@@ -405,5 +407,9 @@ public class PayDirectService {
         paymentTransactionStateLog.setPaymentTransaction(paymentTransaction);
 
         paymentTransactionDao.saveObject(paymentTransactionStateLog);
+    }
+
+    public String getDefaultMerchantReference() {
+        return merchantDao.getFirstMerchantReference().orElse("6405");
     }
 }

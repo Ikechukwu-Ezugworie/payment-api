@@ -40,6 +40,8 @@ public class PrototypeController {
 
         if (this.ninjaProperties.isDev()) {
             MERCHANT_REF = "13425356";
+        } else {
+            MERCHANT_REF = payDirectService.getDefaultMerchantReference();
         }
     }
 
