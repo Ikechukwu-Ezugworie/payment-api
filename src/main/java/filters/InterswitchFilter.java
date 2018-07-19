@@ -26,16 +26,15 @@ public class InterswitchFilter implements Filter {
     @Override
     public Result filter(FilterChain filterChain, Context context) {
 
+        String requestIp = "";
         if (ninjaProperties.isDev()) {
             logger.info("<== Dev mode detected. Allowing all IPs");
             return filterChain.next(context);
+        } else if (ninjaProperties.isTest()) {
+            requestIp = context.getRemoteAddr();
+        } else {
+            requestIp = context.getHeader("x_forwarded_for");
         }
-
-        logger.info("<== Raw Header: " + context.getHeader("x_forwarded_for"));
-
-
-        logger.info("<== Raw Header [ALL]: " + context.getHeaders());
-        String requestIp = context.getRemoteAddr();
 
         if (StringUtils.isBlank(requestIp)) {
             return ResponseUtil.returnJsonResult(403, "Cannot read request IP address");
