@@ -33,7 +33,7 @@ public class InterswitchFilter implements Filter {
         } else if (ninjaProperties.isTest()) {
             requestIp = context.getRemoteAddr();
         } else {
-            requestIp = context.getHeader("x_forwarded_for");
+            requestIp = context.getHeader("x-forwarded-for");
         }
 
         if (StringUtils.isBlank(requestIp)) {
