@@ -19,9 +19,9 @@ import utils.ResponseUtil;
 public class InterswitchFilter implements Filter {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Inject
-    BaseDao baseDao;
+    private BaseDao baseDao;
     @Inject
-    NinjaProperties ninjaProperties;
+    private NinjaProperties ninjaProperties;
 
     @Override
     public Result filter(FilterChain filterChain, Context context) {
