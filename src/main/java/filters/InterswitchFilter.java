@@ -31,6 +31,10 @@ public class InterswitchFilter implements Filter {
             return filterChain.next(context);
         }
 
+        logger.info("<== Raw Header: " + context.getHeader("x_forwarded_for"));
+
+
+        logger.info("<== Raw Header [ALL]: " + context.getHeaders());
         String requestIp = context.getRemoteAddr();
 
         if (StringUtils.isBlank(requestIp)) {
