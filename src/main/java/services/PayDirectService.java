@@ -32,6 +32,7 @@ import utils.PaymentUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -112,7 +113,7 @@ public class PayDirectService {
                     if (!tr.getPaymentStatus().equalsIgnoreCase("PAID")) {
                         Customer customer = new Customer();
                         customer.setFirstName(tr.getPayer().getFirstName());
-                        customer.setAmount(PaymentUtil.getAmountInNaira(tr.getAmountInKobo()));
+                        customer.setAmount(new BigDecimal(0));
                         customer.setCustReference(validationRequest.getCustReference());
                         customer.setStatus(0);
 
