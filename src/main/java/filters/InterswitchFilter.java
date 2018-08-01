@@ -39,6 +39,12 @@ public class InterswitchFilter implements Filter {
             return ResponseUtil.returnJsonResult(403, "No IP whitelisted");
         }
 
+        if (ninjaProperties.isTest()) {
+            if ("ALL".equalsIgnoreCase(whitelist)) {
+                return filterChain.next(context);
+            }
+        }
+
         if (whitelist.contains(",")) {
             String[] ips = whitelist.split(",");
             for (String ip : ips) {
