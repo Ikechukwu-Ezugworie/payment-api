@@ -223,4 +223,21 @@ public class PaymentTransactionDao extends BaseDao {
 
         return resultsList(entityManager.createQuery(criteriaQuery).setMaxResults(batch));
     }
+
+    public Merchant getMerchant(String merchantReference) {
+        List<Merchant> merchants = getAllRecords(Merchant.class);
+        if (merchants.size() < 1) {
+            System.out.println("<== NO MERCHANT HAS BEEN REGISTERED xx");
+            return null;
+        }
+        if (merchants.size() > 1 && StringUtils.isBlank(merchantReference)) {
+            System.out.println("<== RETURNING FIRST OF MANY MERCHANTS xx");
+            return merchants.get(0);
+        }
+        if (merchants.size() > 1 && !StringUtils.isBlank(merchantReference)) {
+            System.out.println("<== RETURNING MERCHANT BY MERCHANT REF " + merchantReference + " xx");
+            return getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", merchantReference);
+        }
+        return merchants.get(0);
+    }
 }

@@ -3,6 +3,12 @@ package controllers;
 import com.bw.payment.entity.RawDump;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -16,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
+import pojo.payDirect.paymentNotification.request.OtherCustomerInfo;
 import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import services.PayDirectService;
@@ -51,24 +58,46 @@ public class PayDirectController {
         this.payDirectService = payDirectService;
         this.xmlMapper = xmlMapper;
 
-//        SimpleModule simpleModule = new SimpleModule();
-//
-//        StdDeserializer<OtherCustomerInfo> stdDeserializer = new StdDeserializer<OtherCustomerInfo>(OtherCustomerInfo.class) {
-//            @Override
-//            public OtherCustomerInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-//                JsonToken jsonToken = jsonParser.getCurrentToken();
-//
-//                if (jsonToken.equals(JsonToken.VALUE_STRING)) {
-//                    OtherCustomerInfo otherCustomerInfo = new OtherCustomerInfo();
-//                    otherCustomerInfo.setRawValue(jsonParser.getValueAsString());
-//                    logger.info("<== string value");
-//                    return otherCustomerInfo;
+        SimpleModule simpleModule = new SimpleModule();
+
+        StdDeserializer<OtherCustomerInfo> stdDeserializer = new StdDeserializer<OtherCustomerInfo>(OtherCustomerInfo.class) {
+            @Override
+            public OtherCustomerInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+                JsonToken jsonToken = jsonParser.getCurrentToken();
+
+                if (jsonToken.equals(JsonToken.VALUE_STRING)) {
+                    OtherCustomerInfo otherCustomerInfo = new OtherCustomerInfo();
+                    otherCustomerInfo.setRawValue(jsonParser.getValueAsString());
+                    return otherCustomerInfo;
+                }
+//                else if(jsonToken.equals(JsonToken.VALUE_EMBEDDED_OBJECT)){
+//                    JsonToken currentToken = null;
+//                    String name = null;
+//                    while ((currentToken = jsonParser.nextValue()) != null) {
+//                        switch (currentToken) {
+//                            case START_OBJECT:
+//                                break;
+//                            case VALUE_STRING:
+//                                switch (jsonParser.getCurrentName()) {
+//                                    case "value":
+//                                        name = jsonParser.getText();
+//                                        break;
+//                                }
+//                                break;
+//                            case END_OBJECT:
+//                                if(name != null)
+//                                    return TipoPersonaFG.valueOf(name);
+//                                else
+//                                    return null;
+//                        }
+//                    }
+//                    return TipoPersonaFG.valueOf(name);
 //                }
-//                return null;
-//            }
-//        };
-//        simpleModule.addDeserializer(OtherCustomerInfo.class, stdDeserializer);
-//        this.xmlMapper.registerModule(simpleModule);
+                return null;
+            }
+        };
+        simpleModule.addDeserializer(OtherCustomerInfo.class, stdDeserializer);
+        this.xmlMapper.registerModule(simpleModule);
     }
 
     public Result doPayDirectRequest(@ContentExtract String payload, Context context) {
@@ -77,6 +106,7 @@ public class PayDirectController {
         rawDump.setDateCreated(Timestamp.from(Instant.now()));
         rawDump.setPaymentProvider(PaymentProviderConstant.INTERSWITCH);
         rawDump.setPaymentChannel(PaymentChannelConstant.PAYDIRECT);
+        paymentTransactionService.dump(rawDump);
 
         logger.info("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         try {
@@ -109,7 +139,7 @@ public class PayDirectController {
                                 eventReader.close();
                                 PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
                                 logger.info("<=== PAYMENT NOTIFICATION: " + request.toString());
-                                PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
+                                PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, rawDump, context);
                                 rawDump.setResponse(paymentNotificationResponsePojo == null ? null : PaymentUtil.toJSON(paymentNotificationResponsePojo));
                                 rawDump.setDescription("PAYMENT NOTIFICATION");
                                 paymentTransactionService.dump(rawDump);

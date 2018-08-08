@@ -184,7 +184,10 @@ public class PaymentTransactionService {
 
     @Transactional
     public void dump(RawDump rawDump) {
-        paymentTransactionDao.saveObject(rawDump);
+        if (rawDump.getId() == null) {
+            paymentTransactionDao.saveObject(rawDump);
+        }
+        paymentTransactionDao.updateObject(rawDump);
     }
 
     @Transactional

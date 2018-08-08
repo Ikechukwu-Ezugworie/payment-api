@@ -74,7 +74,8 @@ public class PayDirectService {
         CustomerInformationResponse customerInformationResponse = new CustomerInformationResponse();
         customerInformationResponse.setMerchantReference(validationRequest.getMerchantReference());
 
-        Merchant merchant = paymentTransactionDao.getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", validationRequest.getMerchantReference());
+//        Merchant merchant = paymentTransactionDao.getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", validationRequest.getMerchantReference());
+        Merchant merchant = paymentTransactionDao.getMerchant(validationRequest.getMerchantReference());
 
         if (merchant == null) {
             Customer customer = new Customer();
@@ -158,7 +159,7 @@ public class PayDirectService {
     }
 
     @Transactional
-    public PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, Context context) {
+    public PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, RawDump rawDump, Context context) {
         PaymentNotificationResponse paymentNotificationResponsePojo = new PaymentNotificationResponse();
         Payments payments = new Payments();
         paymentNotificationResponsePojo.setPayments(payments);
@@ -209,6 +210,7 @@ public class PayDirectService {
 
             if (payment.getReversal()) {
                 PaymentTransaction trReversal = paymentTransactionDao.getPaymentTransactionForReversal(payment);
+
                 if (trReversal == null) {
                     PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                     responsePojo.setPaymentLogId(payment.getPaymentLogId());
@@ -225,6 +227,7 @@ public class PayDirectService {
                 saveCurrentPaymentTransactionState(trReversal);
 
                 trReversal.setPaymentTransactionStatus(PaymentTransactionStatus.CANCELED);
+                trReversal.setRawDump(rawDump);
 
                 queueNotification(payment, trReversal);
 
@@ -301,6 +304,7 @@ public class PayDirectService {
             paymentTransaction.setCustomerTransactionReference(payment.getCustReference());
             paymentTransaction.setProviderTransactionReference(payment.getPaymentReference());
             paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(payment.getAmount()));
+            paymentTransaction.setRawDump(rawDump);
             paymentTransactionDao.updateObject(paymentTransaction);
 
             queueNotification(payment, paymentTransaction);
