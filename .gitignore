@@ -112,3 +112,8 @@ local.properties
 .worksheet
 target
 *.DS_Store
+.idea/compiler.xml
+.idea/dataSources.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
