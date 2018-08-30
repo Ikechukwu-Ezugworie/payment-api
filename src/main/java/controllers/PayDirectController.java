@@ -32,7 +32,6 @@ import utils.PaymentUtil;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayInputStream;
@@ -84,6 +83,7 @@ public class PayDirectController {
         rawDump.setDateCreated(Timestamp.from(Instant.now()));
         rawDump.setPaymentProvider(PaymentProviderConstant.INTERSWITCH);
         rawDump.setPaymentChannel(PaymentChannelConstant.PAYDIRECT);
+        paymentTransactionService.dump(rawDump);
 
         logger.info("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         try {
@@ -116,7 +116,7 @@ public class PayDirectController {
                                 eventReader.close();
                                 PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
                                 logger.info("<=== PAYMENT NOTIFICATION: " + request.toString());
-                                PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
+                                PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, rawDump, context);
                                 rawDump.setResponse(paymentNotificationResponsePojo == null ? null : PaymentUtil.toJSON(paymentNotificationResponsePojo));
                                 rawDump.setDescription("PAYMENT NOTIFICATION");
                                 paymentTransactionService.dump(rawDump);
@@ -127,7 +127,7 @@ public class PayDirectController {
                 }
                 eventReader.close();
             }
-        } catch (XMLStreamException | IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             rawDump.setDescription("An error occurred: " + e.getMessage());
             paymentTransactionService.dump(rawDump);

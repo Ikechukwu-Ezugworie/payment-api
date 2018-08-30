@@ -3,7 +3,6 @@ package services;
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentChannelConstant;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
@@ -11,7 +10,10 @@ import dao.PaymentTransactionDao;
 import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
-import pojo.*;
+import pojo.ItemPojo;
+import pojo.PayerPojo;
+import pojo.Ticket;
+import pojo.TransactionRequestPojo;
 import services.sequence.PayerIdSequence;
 import services.sequence.TransactionIdSequence;
 import utils.Constants;
@@ -163,16 +165,14 @@ public class PaymentTransactionService {
             RequestBody body = RequestBody.create(JSON, notificationQueue.getMessageInJson());
             System.out.println("<==== processing notification : " + notificationQueue.getMessageInJson());
             Request request = new Request.Builder().url(notificationQueue.getNotificationUrl()).post(body).build();
-            TransactionNotificationPojo transactionNotificationPojo = new Gson().fromJson(notificationQueue.getMessageInJson(), TransactionNotificationPojo.class);
-            System.out.println(transactionNotificationPojo.toString());
-            Response response = client.newCall(request).execute();
 
-            if (response.isSuccessful()) {
-                notificationSent(notificationQueue);
-                return;
+            try (Response response = client.newCall(request).execute()) {
+                if (response.code() == 200) {
+                    notificationSent(notificationQueue);
+                    return;
+                }
+                System.out.println("<== noitification response code " + request.url() + " : " + response.code());
             }
-
-            System.out.println("<== noitification response code " + request.url() + " : " + response.code());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -184,6 +184,13 @@ public class PaymentTransactionService {
 
     @Transactional
     public void dump(RawDump rawDump) {
+        if (rawDump == null) {
+            return;
+        }
+        if (rawDump.getId() != null) {
+            paymentTransactionDao.updateObject(rawDump);
+            return;
+        }
         paymentTransactionDao.saveObject(rawDump);
     }
 

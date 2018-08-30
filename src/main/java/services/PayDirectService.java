@@ -34,9 +34,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
 
 import static utils.PaymentUtil.getAmountInKobo;
 
@@ -59,16 +57,18 @@ public class PayDirectService {
     private PaymentTransactionDao paymentTransactionDao;
     private NinjaProperties ninjaProperties;
     private NotificationIdSequence notificationIdSequence;
-    @Inject
     private MerchantDao merchantDao;
+    private PaymentTransactionService paymentTransactionService;
 
     @Inject
     public PayDirectService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
-                            NotificationIdSequence notificationIdSequence) {
+                            NotificationIdSequence notificationIdSequence, MerchantDao merchantDao, PaymentTransactionService paymentTransactionService) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.ninjaProperties = ninjaProperties;
         this.notificationIdSequence = notificationIdSequence;
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
+        this.merchantDao = merchantDao;
+        this.paymentTransactionService = paymentTransactionService;
     }
 
     public CustomerInformationResponse processCustomerValidationRequest(CustomerInformationRequest validationRequest, Context context) {
@@ -159,7 +159,7 @@ public class PayDirectService {
     }
 
     @Transactional
-    public PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, Context context) {
+    public PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, RawDump rawDump, Context context) {
         PaymentNotificationResponse paymentNotificationResponsePojo = new PaymentNotificationResponse();
         Payments payments = new Payments();
         paymentNotificationResponsePojo.setPayments(payments);
@@ -246,6 +246,10 @@ public class PayDirectService {
             }
 
             PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
+            if (rawDump != null) {
+                rawDump.setPaymentTransaction(paymentTransaction);
+                paymentTransactionService.dump(rawDump);
+            }
 
 //            check if transaction exists
             if (paymentTransaction == null) {
@@ -275,26 +279,26 @@ public class PayDirectService {
                 break;
             }
 
-            Date dateOfPayment = null;
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat(Constants.INTERSWITCH_DATE_FORMAT);
-                dateOfPayment = sdf.parse(payment.getPaymentDate());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (dateOfPayment == null || dateOfPayment.after(new Date())) {
-                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
-                responsePojo.setPaymentLogId(payment.getPaymentLogId());
-                responsePojo.setStatus(NOTIFICATION_REJECTED);
-                responsePojo.setStatusMessage("Invalid payment date");
-
-                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
-
-                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
-                        responsePojo.getStatusMessage());
-                break;
-            }
+//            Date dateOfPayment = null;
+//            try {
+//                SimpleDateFormat sdf = new SimpleDateFormat(Constants.INTERSWITCH_DATE_FORMAT);
+//                dateOfPayment = sdf.parse(payment.getPaymentDate());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            if (dateOfPayment == null || dateOfPayment.after(new Date())) {
+//                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
+//                responsePojo.setPaymentLogId(payment.getPaymentLogId());
+//                responsePojo.setStatus(NOTIFICATION_REJECTED);
+//                responsePojo.setStatusMessage("Invalid payment date");
+//
+//                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
+//
+//                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
+//                        responsePojo.getStatusMessage());
+//                break;
+//            }
 
             saveCurrentPaymentTransactionState(paymentTransaction);
 

@@ -83,8 +83,9 @@ public class PrototypeController {
 
         try {
             System.out.println("<=== processing payment " + payload);
+
             PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
-            PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, context);
+            PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, null, context);
             if (paymentNotificationResponsePojo == null) {
                 context.getFlashScope().error("Could not contact end system");
             } else if (paymentNotificationResponsePojo.getPayments().getPayment().get(0).getStatus() == PayDirectService.NOTIFICATION_RECEIVED) {
