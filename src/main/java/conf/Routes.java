@@ -44,7 +44,7 @@ public class Routes implements ApplicationRoutes {
             router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
             router.GET().route("/interswitch/assessment").with(PrototypeController::assRef);
             router.GET().route("/interswitch/poa").with(PrototypeController::poa);
-            router.GET().route("/interswitch/dir").with(PrototypeController::dirCap);
+            router.GET().route("/interiswitch/dir").with(PrototypeController::dirCap);
             router.POST().route("/interswitch").with(PrototypeController::doMakePay);
         }
 

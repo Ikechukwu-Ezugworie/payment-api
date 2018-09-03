@@ -67,9 +67,31 @@ public class PayDirectController {
                 if (jsonToken.equals(JsonToken.VALUE_STRING)) {
                     OtherCustomerInfo otherCustomerInfo = new OtherCustomerInfo();
                     otherCustomerInfo.setRawValue(jsonParser.getValueAsString());
-                    logger.info("<== string value");
                     return otherCustomerInfo;
                 }
+//                else if(jsonToken.equals(JsonToken.VALUE_EMBEDDED_OBJECT)){
+//                    JsonToken currentToken = null;
+//                    String name = null;
+//                    while ((currentToken = jsonParser.nextValue()) != null) {
+//                        switch (currentToken) {
+//                            case START_OBJECT:
+//                                break;
+//                            case VALUE_STRING:
+//                                switch (jsonParser.getCurrentName()) {
+//                                    case "value":
+//                                        name = jsonParser.getText();
+//                                        break;
+//                                }
+//                                break;
+//                            case END_OBJECT:
+//                                if(name != null)
+//                                    return TipoPersonaFG.valueOf(name);
+//                                else
+//                                    return null;
+//                        }
+//                    }
+//                    return TipoPersonaFG.valueOf(name);
+//                }
                 return null;
             }
         };
