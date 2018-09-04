@@ -31,8 +31,7 @@ public class Routes implements ApplicationRoutes {
     private NinjaProperties ninjaProperties;
     @Override
     public void init(Router router) {  
-        
-        router.GET().route("/").with(ApplicationController::index);
+
 
         ///////////////////////////////////////////////////////////////////////
         // Interswitch
@@ -41,33 +40,34 @@ public class Routes implements ApplicationRoutes {
 
 
         if (!ninjaProperties.isProd()) {
+            router.GET().route("/").with(ApplicationController::index);
             router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
             router.GET().route("/interswitch/assessment").with(PrototypeController::assRef);
             router.GET().route("/interswitch/poa").with(PrototypeController::poa);
             router.GET().route("/interiswitch/dir").with(PrototypeController::dirCap);
             router.POST().route("/interswitch").with(PrototypeController::doMakePay);
-        }
 
-        ///////////////////////////////////////////////////////////////////////
-        // Quick teller
-        ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/payments/interswitch/quickteller").with(QuickTellerController::doQuickTellerNotification);
-        router.GET().route("/api/v1/payments/interswitch/quickteller/update").with(QuickTellerController::updatePendingPayment);
+            ///////////////////////////////////////////////////////////////////////
+            // Quick teller
+            ///////////////////////////////////////////////////////////////////////
+            router.POST().route("/api/v1/payments/interswitch/quickteller").with(QuickTellerController::doQuickTellerNotification);
+            router.GET().route("/api/v1/payments/interswitch/quickteller/update").with(QuickTellerController::updatePendingPayment);
 
-        ///////////////////////////////////////////////////////////////////////
-        // Merchant controller
-        ///////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////
+            // Merchant controller
+            ///////////////////////////////////////////////////////////////////////
 //        router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);
 
-        ///////////////////////////////////////////////////////////////////////
-        // PaymentTransaction controller
-        ///////////////////////////////////////////////////////////////////////
-        router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
-        router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
-        router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
-        router.GET().route("/api/v1/transactions/tickets/{transactionId}").with(PaymentTransactionController::getPaymentTransactionTicket);
+            ///////////////////////////////////////////////////////////////////////
+            // PaymentTransaction controller
+            ///////////////////////////////////////////////////////////////////////
+            router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
+            router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
+            router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
+            router.GET().route("/api/v1/transactions/tickets/{transactionId}").with(PaymentTransactionController::getPaymentTransactionTicket);
 
-        router.POST().route("/api/v1/transactions/ticket/new").with(PaymentTransactionController::createTicketForNewTransaction);
+            router.POST().route("/api/v1/transactions/ticket/new").with(PaymentTransactionController::createTicketForNewTransaction);
+        }
 
         ///////////////////////////////////////////////////////////////////////
         // Notifications controller

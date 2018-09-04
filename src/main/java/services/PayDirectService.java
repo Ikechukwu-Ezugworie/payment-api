@@ -32,7 +32,6 @@ import utils.PaymentUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -114,7 +113,7 @@ public class PayDirectService {
                     if (!tr.getPaymentStatus().equalsIgnoreCase("PAID")) {
                         Customer customer = new Customer();
                         customer.setFirstName(tr.getPayer().getFirstName());
-                        customer.setAmount(new BigDecimal(0));
+                        customer.setAmount(PaymentUtil.getAmountInNaira(tr.getAmountInKobo()));
                         customer.setCustReference(validationRequest.getCustReference());
                         customer.setStatus(0);
 
@@ -228,7 +227,6 @@ public class PayDirectService {
                 saveCurrentPaymentTransactionState(trReversal);
 
                 trReversal.setPaymentTransactionStatus(PaymentTransactionStatus.CANCELED);
-                trReversal.setRawDump(rawDump);
 
                 queueNotification(payment, trReversal);
 
@@ -309,7 +307,6 @@ public class PayDirectService {
             paymentTransaction.setCustomerTransactionReference(payment.getCustReference());
             paymentTransaction.setProviderTransactionReference(payment.getPaymentReference());
             paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(payment.getAmount()));
-            paymentTransaction.setRawDump(rawDump);
             paymentTransactionDao.updateObject(paymentTransaction);
 
             queueNotification(payment, paymentTransaction);

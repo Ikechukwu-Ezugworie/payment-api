@@ -60,11 +60,19 @@
                         <input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"
                                aria-describedby="emailHelp"
                                placeholder="Enter transaction reference" name="type" required>
-                        <div class="form-group col-md-8">
+                        <div class="form-group col-md-6">
                             <label for="exampleInputAmount">Enter amount to pay (&#8358;)</label>
                             <input type="text" class="form-control" id="exampleInputAmount"
                                    aria-describedby="emailHelp" pattern="[0-9]+\.?[0-9]+"
                                    placeholder="Enter amount" name="amount" required>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="exampleInput">Invalid CustRef?<span
+                                    class="text-danger">*</span></label>
+                            <select class="form-control" id="exampleInput" name="noCR" required>
+                                <option value="false">NO</option>
+                                <option value="true">YES</option>
+                            </select>
                         </div>
                         <div class="form-group col-md-4 mt-4 p-1">
                             <button type="submit" class="btn btn-success col-12">
