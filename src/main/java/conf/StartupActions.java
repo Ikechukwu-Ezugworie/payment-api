@@ -30,12 +30,16 @@ public class StartupActions {
     private SetupService setupService;
 
     @Inject
-    public StartupActions(NinjaProperties ninjaProperties, ObjectMapper objectMapper, XmlMapper xmlMapper,
-                          Provider<EntityManager> entityManagerProvider, SetupService setupService) {
+    public StartupActions(
+            Provider<EntityManager> entityManagerProvider,
+            NinjaProperties ninjaProperties,
+            ObjectMapper objectMapper,
+            XmlMapper xmlMapper,
+            SetupService setupService) {
+        this.entityManagerProvider = entityManagerProvider;
         this.ninjaProperties = ninjaProperties;
         this.objectMapper = objectMapper;
         this.xmlMapper = xmlMapper;
-        this.entityManagerProvider = entityManagerProvider;
         this.setupService = setupService;
     }
 

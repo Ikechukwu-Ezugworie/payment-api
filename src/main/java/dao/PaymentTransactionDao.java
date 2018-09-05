@@ -63,6 +63,9 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setServiceTypeId(request.getServiceTypeId());
         paymentTransaction.setMerchant(merchant);
         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+        paymentTransaction.setCustomerTransactionReference(request.getCustomerTransactionReference());
+
+        System.out.println("<=== cref" + request.getCustomerTransactionReference());
 
         Payer payer = new Payer();
         payer.setPayerId(payerIdSequence.getNext());
@@ -70,6 +73,7 @@ public class PaymentTransactionDao extends BaseDao {
         payer.setLastName(request.getPayer().getLastName());
         payer.setEmail(request.getPayer().getEmail());
         payer.setPhoneNumber(request.getPayer().getPhoneNumber());
+//        payer.setAddress(request.getPayer().getAddress());
 
         saveObject(payer);
 
@@ -198,5 +202,42 @@ public class PaymentTransactionDao extends BaseDao {
         payerPjo.setPhoneNumber(payer.getPhoneNumber());
 
         return payerPjo;
+    }
+
+    public PaymentTransaction getPaymentTransactionForReversal(Payment payment) {
+        return getPaymentTransactionByProviderPaymentReference(payment.getOriginalPaymentReference());
+    }
+
+    public PaymentTransaction getPaymentTransactionByProviderPaymentReference(String providerReference) {
+        return getUniqueRecordByProperty(PaymentTransaction.class, "providerTransactionReference", providerReference);
+    }
+
+    public List<PaymentTransaction> getPendingPaymentTransactions(PaymentProviderConstant paymentProvider, PaymentChannelConstant paymentChannel, Integer batch) {
+        EntityManager entityManager = entityManagerProvider.get();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PaymentTransaction> criteriaQuery = criteriaBuilder.createQuery(PaymentTransaction.class);
+        Root<PaymentTransaction> root = criteriaQuery.from(PaymentTransaction.class);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("paymentProvider"), paymentProvider))
+                .where(criteriaBuilder.equal(root.get("paymentChannel"), paymentChannel))
+                .where(criteriaBuilder.equal(root.get("paymentTransactionStatus"), PaymentTransactionStatus.PENDING));
+
+        return resultsList(entityManager.createQuery(criteriaQuery).setMaxResults(batch));
+    }
+
+    public Merchant getMerchant(String merchantReference) {
+        List<Merchant> merchants = getAllRecords(Merchant.class);
+        if (merchants.size() < 1) {
+            System.out.println("<== NO MERCHANT HAS BEEN REGISTERED xx");
+            return null;
+        }
+        if (merchants.size() > 1 && StringUtils.isBlank(merchantReference)) {
+            System.out.println("<== RETURNING FIRST OF MANY MERCHANTS xx");
+            return merchants.get(0);
+        }
+        if (merchants.size() > 1 && !StringUtils.isBlank(merchantReference)) {
+            System.out.println("<== RETURNING MERCHANT BY MERCHANT REF " + merchantReference + " xx");
+            return getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", merchantReference);
+        }
+        return merchants.get(0);
     }
 }

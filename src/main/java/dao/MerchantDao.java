@@ -1,21 +1,22 @@
 package dao;
 
 import com.bw.payment.entity.Merchant;
-import com.bw.payment.entity.MerchantProviderDetails;
 import com.bw.payment.entity.PaymentProviderDetails;
-import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import pojo.MerchantRequestPojo;
-import pojo.PaymentProviderDetailsPojo;
-import services.PasswordService;
 import services.sequence.MerchantIdentifierSequence;
 import utils.PaymentUtil;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * CREATED BY GIBAH
@@ -36,34 +37,11 @@ public class MerchantDao extends BaseDao {
         merchant.setApiKey(PaymentUtil.generateApiKey());
         merchant.setName(request.getName());
         merchant.setDateCreated(Timestamp.from(Instant.now()));
+        merchant.setPaydirectMerchantReference(request.getPaydirectMerchantReference());
+        merchant.setLookupUrl(request.getLookupUrl());
+        merchant.setNotificationUrl(request.getNotificationUrl());
 
         entityManagerProvider.get().persist(merchant);
-
-        for (PaymentProviderDetailsPojo paymentProviderDetailsPojo : request.getPaymentProviders()) {
-            PaymentProviderDetails paymentProviderDetails = getMerchantPaymentProviderDetails(merchant.getId(),
-                    PaymentProviderConstant.fromValue(paymentProviderDetailsPojo.getName()));
-
-            if (paymentProviderDetails != null) {
-                throw new IllegalArgumentException("Payment provider details already exist for " + paymentProviderDetails.getName().getValue());
-            }
-
-            paymentProviderDetails = new PaymentProviderDetails();
-            paymentProviderDetails.setName(PaymentProviderConstant.fromValue(paymentProviderDetailsPojo.getName()));
-            paymentProviderDetails.setMerchantId(paymentProviderDetailsPojo.getMerchantId());
-            paymentProviderDetails.setApiKey(paymentProviderDetailsPojo.getApiKey());
-            paymentProviderDetails.setProviderUrl(paymentProviderDetailsPojo.getProviderUrl());
-            paymentProviderDetails.setServiceUsername(paymentProviderDetailsPojo.getServiceUsername());
-            paymentProviderDetails.setServicePassword(PasswordService.hashPassword(paymentProviderDetailsPojo.getServicePassword()));
-
-            MerchantProviderDetails merchantProviderDetails = new MerchantProviderDetails();
-            merchantProviderDetails.setDateCreated(PaymentUtil.nowToTimeStamp());
-            merchantProviderDetails.setStatus(GenericStatusConstant.ACTIVE);
-            merchantProviderDetails.setMerchant(merchant);
-            merchantProviderDetails.setPaymentProviderDetails(paymentProviderDetails);
-
-            entityManagerProvider.get().persist(paymentProviderDetails);
-            entityManagerProvider.get().persist(merchantProviderDetails);
-        }
 
         return merchant;
     }
@@ -81,4 +59,25 @@ public class MerchantDao extends BaseDao {
         return uniqueResultOrNull(q, PaymentProviderDetails.class);
     }
 
+    public long getNumberOfMerchantRecords() {
+        EntityManager entityManager = entityManagerProvider.get();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Merchant> root = cq.from(Merchant.class);
+
+        cq.select(cb.count(root));
+
+        return getCount(entityManager.createQuery(cq));
+    }
+
+    public Optional<String> getFirstMerchantReference() {
+        EntityManager entityManager = entityManagerProvider.get();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<String> cq = cb.createQuery(String.class);
+        Root<Merchant> root = cq.from(Merchant.class);
+
+        cq.select(root.get("paydirectMerchantReference"));
+
+        return Optional.ofNullable(uniqueResultOrNull(entityManager.createQuery(cq).setMaxResults(1)));
+    }
 }

@@ -3,7 +3,6 @@ package services;
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentChannelConstant;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
@@ -11,7 +10,10 @@ import dao.PaymentTransactionDao;
 import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
-import pojo.*;
+import pojo.ItemPojo;
+import pojo.PayerPojo;
+import pojo.Ticket;
+import pojo.TransactionRequestPojo;
 import services.sequence.PayerIdSequence;
 import services.sequence.TransactionIdSequence;
 import utils.Constants;
@@ -19,6 +21,8 @@ import utils.PaymentUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * CREATED BY GIBAH
@@ -125,99 +129,6 @@ public class PaymentTransactionService {
 //        }
 //    }
 
-    @Transactional
-    public void processPendingNotifications() {
-        List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(10);
-        System.out.println("<==== processing notifications : " + notificationQueues.size());
-        for (NotificationQueue notificationQueue : notificationQueues) {
-            doNotification(notificationQueue);
-        }
-    }
-
-    private void notificationSent(NotificationQueue notificationQueue) {
-        paymentTransactionDao.updateObject(notificationQueue);
-    }
-
-//    public Ticket createInstantTransaction(TransactionRequestPojo request, Merchant merchant) {
-////        validateTransactionRequest(request, merchant);
-//        PaymentTransaction paymentTransaction = new PaymentTransaction();
-//        paymentTransaction.setTransactionId(transactionIdSequence.getNext());
-//        paymentTransaction.setDateCreated(PaymentUtil.nowToTimeStamp());
-//        paymentTransaction.setMerchantTransactionReferenceId(request.getMerchantTransactionReferenceId());
-//        paymentTransaction.setAmountInKobo(request.getAmountInKobo());
-//        paymentTransaction.setNotifyOnStatusChange(request.getNotifyOnStatusChange());
-//        paymentTransaction.setNotificationUrl(request.getNotificationUrl());
-//        paymentTransaction.setPaymentProvider(PaymentProviderConstant.fromValue(request.getPaymentProvider()));
-//        paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
-//        paymentTransaction.setServiceTypeId(request.getServiceTypeId());
-//        paymentTransaction.setMerchant(merchant);
-//        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-//        paymentTransaction.setValidateTransaction(request.getValidateTransaction());
-//        paymentTransaction.setTransactionValidationUrl(request.getTransactionValidationUrl());
-//
-//        Payer payer = new Payer();
-//        payer.setPayerId(payerIdSequence.getNext());
-//        payer.setFirstName(request.getPayer().getFirstName());
-//        payer.setLastName(request.getPayer().getLastName());
-//        payer.setEmail(request.getPayer().getEmail());
-//        payer.setPhoneNumber(request.getPayer().getPhoneNumber());
-//
-//        paymentTransactionDao.saveObject(payer);
-//
-//        paymentTransaction.setPayer(payer);
-//        paymentTransactionDao.saveObject(paymentTransaction);
-//
-//        if (request.getItems() != null) {
-//            for (ItemPojo itemPojo : request.getItems()) {
-//                Item item = new Item();
-//                item.setName(itemPojo.getName());
-//                item.setItemId(itemPojo.getItemId());
-//                item.setQuantity(itemPojo.getQuantity());
-//                item.setPriceInKobo(itemPojo.getPriceInKobo());
-//                item.setTaxInKobo(itemPojo.getTaxInKobo());
-//                item.setSubTotalInKobo(itemPojo.getSubTotalInKobo());
-//                item.setTotalInKobo(itemPojo.getTotalInKobo());
-//                item.setDescription(itemPojo.getDescription());
-//                item.setStatus(GenericStatusConstant.ACTIVE);
-//
-//                paymentTransactionDao.saveObject(item);
-//
-//                PaymentTransactionItem paymentTransactionItem = new PaymentTransactionItem();
-//                paymentTransactionItem.setItem(item);
-//                paymentTransactionItem.setPaymentTransaction(paymentTransaction);
-//                paymentTransactionDao.saveObject(paymentTransactionItem);
-//
-//            }
-//        }
-//
-//        PaymentRequestLog paymentTransactionRequestLog = new PaymentRequestLog();
-//        paymentTransactionRequestLog.setRequestDump(PaymentUtil.toJSON(request));
-//        paymentTransactionRequestLog.setDateCreated(PaymentUtil.nowToTimeStamp());
-//        paymentTransactionRequestLog.setPaymentTransaction(paymentTransaction);
-//
-//        paymentTransactionDao.saveObject(paymentTransactionRequestLog);
-//
-//        return quickTellerService.generateTicket(paymentTransaction, merchant);
-//    }
-
-//    private void validateTransactionRequest(TransactionRequestPojo request, Merchant merchant) {
-//        if (request.getValidateTransaction()) {
-//            if (StringUtils.isBlank(request.getTransactionValidationUrl())) {
-//                throw new IllegalArgumentException("Transaction validation url not set");
-//            }
-//        }
-//        PaymentProviderConstant providerConstant = PaymentProviderConstant.fromValue(request.getPaymentProvider());
-//        switch (providerConstant) {
-//            case INTERSWITCH:
-//                validateInterswitchTransactionRequest(request, merchant);
-//                break;
-//            case REMITA:
-//                break;
-//            case NIBBS:
-//                break;
-//        }
-//    }
-
     public PaymentTransaction getPaymentTransactionByTransactionId(String transactionId) {
         return paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);
     }
@@ -237,28 +148,19 @@ public class PaymentTransactionService {
     }
 
     @Transactional
-    public void doNotification(NotificationQueue notificationQueue) {
-        try {
-            RequestBody body = RequestBody.create(JSON, notificationQueue.getMessageInJson());
-            System.out.println("<==== processing notification : " + notificationQueue.getMessageInJson());
-            Request request = new Request.Builder().url(notificationQueue.getNotificationUrl()).post(body).build();
-            TransactionNotificationPojo transactionNotificationPojo = new Gson().fromJson(notificationQueue.getMessageInJson(), TransactionNotificationPojo.class);
-            System.out.println(transactionNotificationPojo.toString());
-            Response response = client.newCall(request).execute();
-
-            if (response.isSuccessful()) {
-                notificationQueue.setNotificationSent(true);
-                notificationSent(notificationQueue);
-                return;
-            }
-
-            System.out.println("<== noitification response code " + request.url() + " : " + response.code());
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void dump(RawDump rawDump) {
+        if (rawDump == null) {
+            return;
         }
-
-        if (notificationQueue.getId() == null) {
-            paymentTransactionDao.saveObject(notificationQueue);
+        if (rawDump.getId() != null) {
+            paymentTransactionDao.updateObject(rawDump);
+            return;
         }
+        paymentTransactionDao.saveObject(rawDump);
+    }
+
+    @Transactional
+    public void updateDump(RawDump rawDump) {
+        paymentTransactionDao.updateObject(rawDump);
     }
 }

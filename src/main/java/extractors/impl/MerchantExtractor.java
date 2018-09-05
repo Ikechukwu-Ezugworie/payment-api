@@ -10,7 +10,9 @@ public class MerchantExtractor implements ArgumentExtractor<Merchant> {
     @Override
     public Merchant extract(Context context) {
 
-        return (Merchant) context.getAttribute(Constants.MERCHANT_CONTEXT_KEY);
+        Merchant merchant = (Merchant) context.getAttribute(Constants.MERCHANT_CONTEXT_KEY);
+        context.setAttribute(Constants.MERCHANT_CONTEXT_KEY, null);
+        return merchant;
 
     }
 

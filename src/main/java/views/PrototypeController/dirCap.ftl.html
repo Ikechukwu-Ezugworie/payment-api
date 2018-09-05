@@ -2,9 +2,18 @@
 <@layout.myLayout "Interswitch">
 
 <div class="container fill mt-5 mb-5">
-    <div class="row">
+    <div class="row mb-5">
         <form class="row" action="/interswitch" method="post">
             <div class="alert alert-info col-12"> Enter your details to continue</div>
+            <div class="form-group col-12">
+                <label class="mr-2">Customer category: </label>
+                <select name="cCat" id="cCat" class="form-control" required>
+                    <option value="">- SELECT A CATEGORY -</option>
+                    <option value="1">INDIVIDUAL</option>
+                    <option value="2">COMPANY</option>
+                    <option value="4">GOVERNMENT</option>
+                </select>
+            </div>
             <div class="form-group col-12">
                 <label class="mr-2">Name: </label>
                 <input name="name" class="form-control" required>
@@ -29,6 +38,30 @@
                 <label class="mr-2">Description of payment: </label>
                 <input name="desc" class="form-control" required>
             </div>
+            <div class="form-group col-12 mt-5">
+                <hr>
+                <h5>OTHER CUSTOMER INFORMATION</h5>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Economic Activities ID: </label>
+                <select name="eaid" id="eaid" class="form-control" required>
+                    <option value="">- SELECT AN OPTION -</option>
+                </select>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Tax office ID: </label>
+                <select name="taxOfficeId" id="taxOfficeId" class="form-control" required>
+                    <option value="">- SELECT AN OPTION -</option>
+                </select>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">National ID: </label>
+                <input name="nid" class="form-control" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Notification method: </label>
+                <input name="notMethod" class="form-control" required>
+            </div>
             <input name="payType" value="dc" type="hidden" class="form-control" required>
             <div class="form-group col-12">
                 <button class="btn btn-success float-right">Make payment</button>
@@ -38,25 +71,79 @@
     </div>
 </div>
 <script>
-    //    $(document).ready(function () {
-    //        $("#proceed").click(function () {
-    //            var tid = $("#ref").val();
-    //            $.ajax({
-    //                url: "/interswitch?transactionId=" + tid + "&type=ar",
-    //                type: "GET",
-    //                dataType: "json",
-    //                success: function (data) {
-    //                    console.log(data);
-    //                },
-    //                error: function (xhr, status) {
-    //                    alert("Sorry, there was a problem!");
-    //                },
-    //                complete: function (xhr, status) {
-    //                    //$('#showresults').slideDown('slow')
-    //                }
-    //            });
-    //        })
-    //    });
+    var eAcs;
+    $(document).ready(function () {
+        $('#cCat').change(function () {
+            var selected = $(this).find("option:selected").attr('value');
+            if (eAcs !== null) {
+                $("#eaid option").remove();
+                $.each(eAcs, function (index, item) {
+                    if (item.TaxPayerTypeID == selected) {
+                        $("#eaid").append( // Append an object to the inside of the select box
+                                $("<option></option>") // Yes you can do this.
+                                        .text(item.EconomicActivitiesName)
+                                        .val(item.EconomicActivitiesID)
+                        );
+                    }
+                });
+            }
+            // $.getJSON("/ajax/portal-accounts?type=" + encodeURIComponent(selected), null, function (data) {
+            //     $("#portalAccount option").remove();
+            //     $("#portalAccount").append( // Append an object to the inside of the select box
+            //             $("<option></option>") // Yes you can do this.
+            //                     .text("- SELECT A PORTAL ACCOUNT -")
+            //                     .val("")
+            //     );
+            //     $.each(data, function (index, item) {
+            //         $("#portalAccount").append( // Append an object to the inside of the select box
+            //                 $("<option></option>") // Yes you can do this.
+            //                         .text(item.displayName)
+            //                         .val(item.id)
+            //         );
+            //     });
+            // });
+        });
+
+        $.getJSON("https://api.eirsautomation.xyz/ReferenceData/EconomicActivities/List?TaxPayerTypeID=", null, function (data) {
+            // $("#cCat option").remove();
+            eAcs = data.Result;
+            // $.each(data.Result, function (index, item) {
+            //     $("#cCat").append( // Append an object to the inside of the select box
+            //             var cca;
+            //             for(var i=0; i<eAcs.length;i++){
+            //                 if(cca===null){
+            //                     cca=eAcs[i]
+            //                 }else {
+            //
+            //                 }
+            //
+            //             }
+            //             $("<option></option>") // Yes you can do this.
+            //                     .text(item)
+            //                     .val(item)
+            //     );
+            // });
+        });
+
+        $.getJSON("https://api.eirsautomation.xyz/ReferenceData/TaxOffice/List", null, function (data) {
+            console.log(data);
+            $("taxOfficeId option").remove();
+            if (data != null) {
+                $.each(data.Result, function (index, item) {
+                    $("#taxOfficeId").append( // Append an object to the inside of the select box
+                            $("<option></option>") // Yes you can do this.
+                                    .text(item.TaxOfficeName)
+                                    .val(item.TaxOfficeID)
+                    );
+                });
+            }
+        });
+    })
+    ;
+
+    function fetchEActivities() {
+
+    }
 </script>
 <#--<form action="" method="get">-->
 <#--<div class="form-group">-->

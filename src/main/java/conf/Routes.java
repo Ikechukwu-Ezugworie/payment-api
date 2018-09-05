@@ -18,47 +18,56 @@
 package conf;
 
 
+import com.google.inject.Inject;
 import controllers.*;
 import ninja.AssetsController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
+import ninja.utils.NinjaProperties;
 
 public class Routes implements ApplicationRoutes {
 
+    @Inject
+    private NinjaProperties ninjaProperties;
     @Override
     public void init(Router router) {  
-        
-        router.GET().route("/").with(ApplicationController::index);
+
 
         ///////////////////////////////////////////////////////////////////////
         // Interswitch
         ///////////////////////////////////////////////////////////////////////
         router.POST().route("/api/v1/payments/interswitch/paydirect").with(PayDirectController::doPayDirectRequest);
-        router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
-        router.GET().route("/interswitch/assessment").with(PrototypeController::assRef);
-        router.GET().route("/interswitch/poa").with(PrototypeController::poa);
-        router.GET().route("/interswitch/dir").with(PrototypeController::dirCap);
-        router.POST().route("/interswitch").with(PrototypeController::doMakePay);
 
-        ///////////////////////////////////////////////////////////////////////
-        // Quickteller
-        ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/payments/interswitch/quickteller").with(QuickTellerController::doQuickTellerNotification);
-//        router.GET().route("/quickteller").with(PrototypeController::quickTeller);
 
-        ///////////////////////////////////////////////////////////////////////
-        // Merchant controller
-        ///////////////////////////////////////////////////////////////////////
-        router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);
+        if (!ninjaProperties.isProd()) {
+            router.GET().route("/").with(ApplicationController::index);
+            router.GET().route("/interswitch").with(PrototypeController::interswitchPay);
+            router.GET().route("/interswitch/assessment").with(PrototypeController::assRef);
+            router.GET().route("/interswitch/poa").with(PrototypeController::poa);
+            router.GET().route("/interiswitch/dir").with(PrototypeController::dirCap);
+            router.POST().route("/interswitch").with(PrototypeController::doMakePay);
 
-        ///////////////////////////////////////////////////////////////////////
-        // PaymentTransaction controller
-        ///////////////////////////////////////////////////////////////////////
-        router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
-        router.GET().route("/api/v1/transactions/tickets/{transactionId}").with(PaymentTransactionController::getPaymentTransactionTicket);
-        router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
+            ///////////////////////////////////////////////////////////////////////
+            // Quick teller
+            ///////////////////////////////////////////////////////////////////////
+            router.POST().route("/api/v1/payments/interswitch/quickteller").with(QuickTellerController::doQuickTellerNotification);
+            router.GET().route("/api/v1/payments/interswitch/quickteller/update").with(QuickTellerController::updatePendingPayment);
 
-        router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
+            ///////////////////////////////////////////////////////////////////////
+            // Merchant controller
+            ///////////////////////////////////////////////////////////////////////
+//        router.POST().route("/api/v1/merchant").with(MerchantController::createMerchant);
+
+            ///////////////////////////////////////////////////////////////////////
+            // PaymentTransaction controller
+            ///////////////////////////////////////////////////////////////////////
+            router.GET().route("/api/v1/transactions").with(PaymentTransactionController::getPaymentTransactionDetails);
+            router.GET().route("/api/v1/transactions/{transactionId}/status").with(PaymentTransactionController::getPaymentTransactionStatus);
+            router.POST().route("/api/v1/transactions").with(PaymentTransactionController::createPaymentTransaction);
+            router.GET().route("/api/v1/transactions/tickets/{transactionId}").with(PaymentTransactionController::getPaymentTransactionTicket);
+
+            router.POST().route("/api/v1/transactions/ticket/new").with(PaymentTransactionController::createTicketForNewTransaction);
+        }
 
         ///////////////////////////////////////////////////////////////////////
         // Notifications controller

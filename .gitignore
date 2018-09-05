@@ -4,12 +4,12 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
-.idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
+.idea/artifacts/
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml
 .idea/**/sqlDataSources.xml
@@ -53,7 +53,6 @@ fabric.properties
 ### Example user template
 
 # IntelliJ project files
-.idea
 *.iml
 out
 gen### Eclipse template
@@ -111,3 +110,9 @@ local.properties
 .scala_dependencies
 .worksheet
 target
+*.DS_Store
+.idea/compiler.xml
+.idea/dataSources.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
