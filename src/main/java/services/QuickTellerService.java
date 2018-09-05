@@ -55,12 +55,10 @@ public class QuickTellerService {
     private String QUICKTELLER_GET_TRANSACTION_BASEURL;
 
     @Inject
-    private PaymentTransactionService paymentTransactionService;
-    @Inject
     private NotificationIdSequence notificationIdSequence;
 
     @Inject
-    public QuickTellerService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties, ReverseRouter reverseRouter) {
+    public QuickTellerService(PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties, ReverseRouter reverseRouter) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.ninjaProperties = ninjaProperties;
         this.reverseRouter = reverseRouter;
@@ -166,7 +164,6 @@ public class QuickTellerService {
 
                     paymentTransactionDao.updateObject(paymentTransaction);
                     generateNotification(transactionQueryResponse, paymentTransaction);
-                    paymentTransactionService.doNotification(generateNotification(transactionQueryResponse, paymentTransaction));
                 }
                 return transactionQueryResponse;
             } else {

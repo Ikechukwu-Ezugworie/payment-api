@@ -21,6 +21,8 @@ import utils.PaymentUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * CREATED BY GIBAH
@@ -127,20 +129,6 @@ public class PaymentTransactionService {
 //        }
 //    }
 
-    @Transactional
-    public void processPendingNotifications() {
-        List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(10);
-        System.out.println("<==== processing notifications : " + notificationQueues.size());
-        for (NotificationQueue notificationQueue : notificationQueues) {
-            doNotification(notificationQueue);
-        }
-    }
-
-    private void notificationSent(NotificationQueue notificationQueue) {
-        notificationQueue.setNotificationSent(true);
-        paymentTransactionDao.updateObject(notificationQueue);
-    }
-
     public PaymentTransaction getPaymentTransactionByTransactionId(String transactionId) {
         return paymentTransactionDao.getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);
     }
@@ -157,29 +145,6 @@ public class PaymentTransactionService {
                 break;
         }
         return null;
-    }
-
-    @Transactional
-    public void doNotification(NotificationQueue notificationQueue) {
-        try {
-            RequestBody body = RequestBody.create(JSON, notificationQueue.getMessageInJson());
-            System.out.println("<==== processing notification : " + notificationQueue.getMessageInJson());
-            Request request = new Request.Builder().url(notificationQueue.getNotificationUrl()).post(body).build();
-
-            try (Response response = client.newCall(request).execute()) {
-                if (response.code() == 200) {
-                    notificationSent(notificationQueue);
-                    return;
-                }
-                System.out.println("<== noitification response code " + request.url() + " : " + response.code());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (notificationQueue.getId() == null) {
-            paymentTransactionDao.saveObject(notificationQueue);
-        }
     }
 
     @Transactional
