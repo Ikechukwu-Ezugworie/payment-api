@@ -416,7 +416,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Compound.[install model]">
+  <component name="RunManager" selected="Maven.[ninja:run]">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
