@@ -107,6 +107,7 @@ public class PayDirectController {
         rawDump.setPaymentProvider(PaymentProviderConstant.INTERSWITCH);
         rawDump.setPaymentChannel(PaymentChannelConstant.PAYDIRECT);
         rawDump.setRequestIp(ipAddress);
+
         paymentTransactionService.dump(rawDump);
 
         try {
