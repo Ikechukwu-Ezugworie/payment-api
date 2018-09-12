@@ -30,10 +30,12 @@ public class InterswitchFilter implements Filter {
         if (ninjaProperties.isDev()) {
             logger.info("<== Dev mode detected. Allowing all IPs");
             return filterChain.next(context);
-        } else if (ninjaProperties.isTest()) {
+        }
+
+        requestIp = context.getHeader("x-forwarded-for");
+
+        if (StringUtils.isBlank(requestIp)) {
             requestIp = context.getRemoteAddr();
-        } else {
-            requestIp = context.getHeader("x-forwarded-for");
         }
 
         if (StringUtils.isBlank(requestIp)) {

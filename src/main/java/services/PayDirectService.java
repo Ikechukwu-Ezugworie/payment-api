@@ -171,7 +171,7 @@ public class PayDirectService {
         logger.info("<=== payments size = " + request.getPayments().getPayment().size());
         for (Payment payment : request.getPayments().getPayment()) {
 //            if is duplicate notification
-            if (paymentTransactionDao.isDuplicateNotification(payment) && paymentTransactionDao.isProcessed(payment)) {
+            if (paymentTransactionDao.isDuplicateNotificationAndAccepted(payment)) {
                 logger.info("<=== duplicate notification");
                 PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                 responsePojo.setPaymentLogId(payment.getPaymentLogId());
@@ -266,41 +266,6 @@ public class PayDirectService {
                 break;
             }
 
-//            check if the transaction has the right provider
-            if (!paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.INTERSWITCH)) {
-                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
-                responsePojo.setPaymentLogId(payment.getPaymentLogId());
-                responsePojo.setStatus(NOTIFICATION_REJECTED);
-                responsePojo.setStatusMessage("Invalid provider");
-
-                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
-
-                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
-                        responsePojo.getStatusMessage());
-                break;
-            }
-
-//            Date dateOfPayment = null;
-//            try {
-//                SimpleDateFormat sdf = new SimpleDateFormat(Constants.INTERSWITCH_DATE_FORMAT);
-//                dateOfPayment = sdf.parse(payment.getPaymentDate());
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            if (dateOfPayment == null || dateOfPayment.after(new Date())) {
-//                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
-//                responsePojo.setPaymentLogId(payment.getPaymentLogId());
-//                responsePojo.setStatus(NOTIFICATION_REJECTED);
-//                responsePojo.setStatusMessage("Invalid payment date");
-//
-//                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
-//
-//                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
-//                        responsePojo.getStatusMessage());
-//                break;
-//            }
-
             saveCurrentPaymentTransactionState(paymentTransaction);
 
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
@@ -361,7 +326,7 @@ public class PayDirectService {
         paymentResponseLog.setPaymentLogId(String.valueOf(paymentPojo.getPaymentLogId()));
         paymentResponseLog.setResponseDump(PaymentUtil.toJSON(request));
         paymentResponseLog.setDateCreated(Timestamp.from(Instant.now()));
-        paymentResponseLog.setPaymentTransaction(paymentTransactionDao.getPaymentTransactionByProviderPaymentReference(paymentPojo.getPaymentReference()));
+        paymentResponseLog.setPaymentTransaction(paymentTransactionDao.getPaymentTransactionByPaymentProviderReference(paymentPojo.getPaymentReference()));
         paymentResponseLog.setValidated(wasValidated);
         paymentResponseLog.setProcessed(wasProcessed);
         paymentResponseLog.setStatus(status);

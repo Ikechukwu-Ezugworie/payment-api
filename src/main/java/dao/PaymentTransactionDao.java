@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
@@ -136,6 +137,18 @@ public class PaymentTransactionDao extends BaseDao {
         return (getCount(q)) > 0;
     }
 
+    public boolean isDuplicateNotificationAndAccepted(Payment request) {
+        Query q = entityManagerProvider.get().createQuery("select count(x) from PaymentResponseLog x where x.paymentLogId=:pLogId" +
+                " and x.amountInKobo=:amount and x.recieptNumber=:rNo and x.paymentReference=:pRef and x.status=:status");
+        q.setParameter("pLogId", String.valueOf(request.getPaymentLogId()))
+                .setParameter("amount", PaymentUtil.getAmountInKobo(request.getAmount()))
+                .setParameter("rNo", request.getReceiptNo())
+                .setParameter("status", "ACCEPTED")
+                .setParameter("pRef", request.getPaymentReference());
+
+        return (getCount(q)) > 0;
+    }
+
 //    public Merchant getMerchantByMerchantId(String merchantReference, PaymentProviderConstant paymentProvider) {
 //        Query q = entityManagerProvider.get().createQuery("select m from Merchant m, MerchantProviderDetails mp where mp.paymentProviderDetails.merchantId=:mid" +
 //                " and mp.paymentProviderDetails.name=:name and m.id=mp.merchant.id");
@@ -205,10 +218,23 @@ public class PaymentTransactionDao extends BaseDao {
     }
 
     public PaymentTransaction getPaymentTransactionForReversal(Payment payment) {
-        return getPaymentTransactionByProviderPaymentReference(payment.getOriginalPaymentReference());
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PaymentTransaction> clientCriteriaQuery = criteriaBuilder.createQuery(PaymentTransaction.class);
+        Root<PaymentTransaction> clientRoot = clientCriteriaQuery.from(PaymentTransaction.class);
+        Predicate predicate = criteriaBuilder.and(
+                criteriaBuilder.equal(clientRoot.get("providerTransactionReference"), payment.getOriginalPaymentReference()),
+                criteriaBuilder.equal(clientRoot.get("paymentTransactionStatus"), PaymentTransactionStatus.SUCCESSFUL)
+        );
+        clientCriteriaQuery.where(predicate);
+
+        List<PaymentTransaction> paymentTransactions = resultsList(entityManager.createQuery(clientCriteriaQuery));
+        return paymentTransactions.size() == 0 ? null : paymentTransactions.get(0);
     }
 
-    public PaymentTransaction getPaymentTransactionByProviderPaymentReference(String providerReference) {
+    public PaymentTransaction getPaymentTransactionByPaymentProviderReference(String providerReference) {
+
         return getUniqueRecordByProperty(PaymentTransaction.class, "providerTransactionReference", providerReference);
     }
 

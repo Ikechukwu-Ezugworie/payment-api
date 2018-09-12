@@ -13,6 +13,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import extractors.ContentExtract;
+import extractors.IPAddress;
 import filters.InterswitchFilter;
 import ninja.Context;
 import ninja.FilterWith;
@@ -99,15 +100,15 @@ public class PayDirectController {
         this.xmlMapper.registerModule(simpleModule);
     }
 
-    public Result doPayDirectRequest(@ContentExtract String payload, Context context) {
+    public Result doPayDirectRequest(@ContentExtract String payload, Context context, @IPAddress String ipAddress) {
         RawDump rawDump = new RawDump();
         rawDump.setRequest(payload);
         rawDump.setDateCreated(Timestamp.from(Instant.now()));
         rawDump.setPaymentProvider(PaymentProviderConstant.INTERSWITCH);
         rawDump.setPaymentChannel(PaymentChannelConstant.PAYDIRECT);
+        rawDump.setRequestIp(ipAddress);
         paymentTransactionService.dump(rawDump);
 
-        logger.info("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         try {
             byte[] byteArray = payload.getBytes("UTF-8");
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
