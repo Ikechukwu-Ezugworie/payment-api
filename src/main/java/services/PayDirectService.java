@@ -110,7 +110,7 @@ public class PayDirectService {
 
                     EndSystemCustomerValidationResponse tr = r.getData();
 
-                    if (!tr.getPaymentStatus().equalsIgnoreCase("PAID")) {
+                    if (!tr.getPaymentStatus().equals(EndSystemCustomerValidationResponse.PaymentStatus.PAID)) {
                         Customer customer = new Customer();
                         customer.setFirstName(tr.getPayer().getFirstName());
                         customer.setAmount(PaymentUtil.getAmountInNaira(tr.getAmountInKobo()));
