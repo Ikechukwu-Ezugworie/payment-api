@@ -99,7 +99,12 @@ public class PayDirectService {
             Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
             Response response = client.newCall(request).execute();
 
-            String s = response.body().string();
+            String s = null;
+            try {
+                s = response.body().string();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
 
             logger.info("<== customer validation to url {} responded with code {} and body {}", merchant.getLookupUrl(), response.code(), s);
 
