@@ -2,7 +2,6 @@
 package pojo.payDirect.paymentNotification.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.sun.istack.internal.Nullable;
 
 public class OtherCustomerInfo {
 
@@ -18,7 +17,6 @@ public class OtherCustomerInfo {
     private String phoneNumber;
     private String rawValue;
 
-    @Nullable
     public String getEmailAddress() {
         return emailAddress;
     }
@@ -27,7 +25,7 @@ public class OtherCustomerInfo {
         this.emailAddress = emailAddress;
     }
 
-    @Nullable
+
     public String getTaxOfficeId() {
         return taxOfficeId;
     }
@@ -36,7 +34,7 @@ public class OtherCustomerInfo {
         this.taxOfficeId = taxOfficeId;
     }
 
-    @Nullable
+
     public String getNationalId() {
         return nationalId;
     }
@@ -45,7 +43,7 @@ public class OtherCustomerInfo {
         this.nationalId = nationalId;
     }
 
-    @Nullable
+
     public String getNotificationMethod() {
         return notificationMethod;
     }
@@ -54,7 +52,7 @@ public class OtherCustomerInfo {
         this.notificationMethod = notificationMethod;
     }
 
-    @Nullable
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -63,7 +61,7 @@ public class OtherCustomerInfo {
         this.phoneNumber = phoneNumber;
     }
 
-    @Nullable
+
     public String getRawValue() {
         return rawValue;
     }
