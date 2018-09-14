@@ -98,11 +98,12 @@ public class PayDirectService {
             RequestBody body = RequestBody.create(JSON, PaymentUtil.toJSON(validationRequest));
             Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
             Response response = client.newCall(request).execute();
-            logger.info("<== customer validation to url {} responded with code {}", merchant.getLookupUrl(), response.code());
+
+            String s = response.body().string();
+
+            logger.info("<== customer validation to url {} responded with code {} and body {}", merchant.getLookupUrl(), response.code(), s);
 
             if (response.isSuccessful()) {
-                String s = response.body().string();
-                System.out.println("<== " + s);
                 Type type = new TypeToken<ApiResponse<EndSystemCustomerValidationResponse>>() {
                 }.getType();
                 if (response.code() == 200) {
