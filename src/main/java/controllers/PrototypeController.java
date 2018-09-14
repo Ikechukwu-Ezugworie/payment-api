@@ -202,7 +202,7 @@ public class PrototypeController {
         payloadBuilder.append("<PaymentNotificationRequest><ServiceUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</ServiceUrl>")
                 .append("<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>")
                 .append("<FtpUsername/><FtpPassword/><Payments><Payment><IsRepeated>False</IsRepeated><ProductGroupCode>HTTPGENERICv31</ProductGroupCode>")
-                .append("<PaymentLogId>1331").append(transactionId).append(new Date().getTime()).append("</PaymentLogId><CustReference>");
+                .append("<PaymentLogId>1331").append(transactionId).append(new Date()).append("</PaymentLogId><CustReference>");
         if (context.getParameter("noCR").equalsIgnoreCase("true")) {
             payloadBuilder.append("--NA--");
         } else {
@@ -211,7 +211,7 @@ public class PrototypeController {
         payloadBuilder.append("</CustReference>")
                 .append("<AlternateCustReference>").append(context.getParameter("cCat")).append("</AlternateCustReference>")
                 .append("<Amount>").append(amount).append("</Amount><PaymentStatus>0</PaymentStatus><PaymentMethod>Cash</PaymentMethod>")
-                .append("<PaymentReference>FBN|BRH|ABSA|17-03-2016|").append(new Date().getTime()).append("</PaymentReference>")
+                .append("<PaymentReference>FBN|BRH|ABSA|").append(new Date()).append("</PaymentReference>")
                 .append("<TerminalId/><ChannelName>Bank Branc</ChannelName><Location>ABAJI</Location><IsReversal>False</IsReversal>")
                 .append("<PaymentDate>").append(sdf.format(new Date())).append("</PaymentDate>")
                 .append("<SettlementDate>03/18/2016 00:00:01</SettlementDate><InstitutionId>ABSA</InstitutionId><InstitutionName>Abia State Autoreg</InstitutionName>")
