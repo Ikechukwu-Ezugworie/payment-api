@@ -50,6 +50,7 @@ public class StartupActions {
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         objectMapper.setDateFormat(dateFormat);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
     }
 
     @Start(order = 10)
@@ -59,6 +60,7 @@ public class StartupActions {
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         xmlMapper.setDateFormat(dateFormat);
         xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        xmlMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
     }
 
     @Start(order = 100)

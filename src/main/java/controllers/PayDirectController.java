@@ -6,7 +6,9 @@ import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -63,37 +65,36 @@ public class PayDirectController {
         StdDeserializer<OtherCustomerInfo> stdDeserializer = new StdDeserializer<OtherCustomerInfo>(OtherCustomerInfo.class) {
             @Override
             public OtherCustomerInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-                JsonToken jsonToken = jsonParser.getCurrentToken();
+                logger.info("<=== parsing other customer info");
 
-                if (jsonToken.equals(JsonToken.VALUE_STRING)) {
-                    OtherCustomerInfo otherCustomerInfo = new OtherCustomerInfo();
-                    otherCustomerInfo.setRawValue(jsonParser.getValueAsString());
-                    return otherCustomerInfo;
+                JsonToken jsonToken = jsonParser.getCurrentToken();
+                ObjectCodec oc = jsonParser.getCodec();
+                JsonNode node = oc.readTree(jsonParser);
+
+                OtherCustomerInfo otherCustomerInfo = new OtherCustomerInfo();
+
+                try {
+                    if (jsonToken.equals(JsonToken.VALUE_STRING)) {
+                        otherCustomerInfo.setRawValue(jsonParser.getValueAsString());
+                        return otherCustomerInfo;
+                    }
+                    String emailAddress = node.get("EmailAddress") == null ? null : node.get("EmailAddress").asText();
+                    String taxOfficeId = node.get("TaxOfficeID") == null ? null : node.get("TaxOfficeID").asText();
+                    String nationalId = node.get("NationalID") == null ? null : node.get("NationalID").asText();
+                    String notificationMethod = node.get("NotificationMethod") == null ? null : node.get("NotificationMethod").asText();
+                    String phoneNumber = node.get("PhoneNumber") == null ? null : node.get("PhoneNumber").asText();
+
+                    otherCustomerInfo.setEmailAddress(emailAddress);
+                    otherCustomerInfo.setTaxOfficeId(taxOfficeId);
+                    otherCustomerInfo.setNationalId(nationalId);
+                    otherCustomerInfo.setNotificationMethod(notificationMethod);
+                    otherCustomerInfo.setPhoneNumber(phoneNumber);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-//                else if(jsonToken.equals(JsonToken.VALUE_EMBEDDED_OBJECT)){
-//                    JsonToken currentToken = null;
-//                    String name = null;
-//                    while ((currentToken = jsonParser.nextValue()) != null) {
-//                        switch (currentToken) {
-//                            case START_OBJECT:
-//                                break;
-//                            case VALUE_STRING:
-//                                switch (jsonParser.getCurrentName()) {
-//                                    case "value":
-//                                        name = jsonParser.getText();
-//                                        break;
-//                                }
-//                                break;
-//                            case END_OBJECT:
-//                                if(name != null)
-//                                    return TipoPersonaFG.valueOf(name);
-//                                else
-//                                    return null;
-//                        }
-//                    }
-//                    return TipoPersonaFG.valueOf(name);
-//                }
-                return null;
+
+                return otherCustomerInfo;
             }
         };
         simpleModule.addDeserializer(OtherCustomerInfo.class, stdDeserializer);
