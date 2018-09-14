@@ -98,7 +98,7 @@ public class PayDirectService {
             RequestBody body = RequestBody.create(JSON, PaymentUtil.toJSON(validationRequest));
             Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
             Response response = client.newCall(request).execute();
-            System.out.println("<== rescode" + response.code());
+            logger.info("<== customer validation to url {} responded with code {}", merchant.getLookupUrl(), response.code());
 
             if (response.isSuccessful()) {
                 String s = response.body().string();
