@@ -78,7 +78,7 @@ public class PayDirectService {
 //        Merchant merchant = paymentTransactionDao.getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", validationRequest.getMerchantReference());
         Merchant merchant = paymentTransactionDao.getMerchant(validationRequest.getMerchantReference());
 
-        if (merchant == null) {
+        if (merchant == null || !validationRequest.getMerchantReference().equalsIgnoreCase(merchant.getPaydirectMerchantReference())) {
             Customer customer = new Customer();
             customer.setFirstName("");
             customer.setCustReference(validationRequest.getCustReference());
