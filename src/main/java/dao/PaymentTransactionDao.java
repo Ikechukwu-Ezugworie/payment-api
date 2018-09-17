@@ -225,7 +225,7 @@ public class PaymentTransactionDao extends BaseDao {
         Root<PaymentTransaction> clientRoot = clientCriteriaQuery.from(PaymentTransaction.class);
         Predicate predicate = criteriaBuilder.and(
                 criteriaBuilder.equal(clientRoot.get("providerTransactionReference"), payment.getOriginalPaymentReference()),
-                criteriaBuilder.equal(clientRoot.get("paymentTransactionStatus"), PaymentTransactionStatus.SUCCESSFUL)
+                criteriaBuilder.equal(clientRoot.get("paymentTransactionStatus"), PaymentTransactionStatus.SUCCESSFUL.getValue())
         );
         clientCriteriaQuery.where(predicate);
 

@@ -32,6 +32,7 @@ import utils.PaymentUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -251,6 +252,37 @@ public class PayDirectService {
 
                 break;
             }
+
+            if (payment.getAmount().compareTo(new BigDecimal(0)) < 1) {
+                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
+                responsePojo.setPaymentLogId(payment.getPaymentLogId());
+                responsePojo.setStatus(NOTIFICATION_REJECTED);
+                responsePojo.setStatusMessage("Invalid amount");
+
+                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
+
+                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                        responsePojo.getStatusMessage());
+                break;
+            }
+
+//            CustomerInformationRequest customerInformationRequest = new CustomerInformationRequest();
+//            customerInformationRequest.setCustReference(payment.getCustReference());
+//            customerInformationRequest.setAmount(payment.getAmount());
+//
+//            CustomerInformationResponse customerInformationResponse = processCustomerValidationRequest(customerInformationRequest, context);
+//            if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == CUSTOMER_INVALID) {
+//                PaymentResponsePojo responsePojo = new PaymentResponsePojo();
+//                responsePojo.setPaymentLogId(payment.getPaymentLogId());
+//                responsePojo.setStatus(NOTIFICATION_REJECTED);
+//                responsePojo.setStatusMessage("Invalid customer");
+//
+//                paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
+//
+//                savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
+//                        responsePojo.getStatusMessage());
+//                break;
+//            }
 
             PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
             if (rawDump != null) {
