@@ -1,4 +1,4 @@
-package pojo.payDirect;
+package pojo.payDirect.customerValidation.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
@@ -81,5 +81,18 @@ public class CustomerInformationRequest {
     public CustomerInformationRequest setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomerInformationRequest{" +
+                "serviceUsername='" + serviceUsername + '\'' +
+                ", servicePassword='" + servicePassword + '\'' +
+                ", merchantReference='" + merchantReference + '\'' +
+                ", custReference='" + custReference + '\'' +
+                ", paymentItemCode='" + paymentItemCode + '\'' +
+                ", thirdPartyCode='" + thirdPartyCode + '\'' +
+                ", amount=" + amount +
+                '}';
     }
 }

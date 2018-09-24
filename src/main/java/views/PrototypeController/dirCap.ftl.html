@@ -1,0 +1,217 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+<@layout.myLayout "Interswitch">
+
+<div class="container fill mt-5 mb-5">
+    <div class="row mb-5">
+        <form class="row" action="/interswitch" method="post">
+            <div class="alert alert-info col-12"> Enter your details to continue</div>
+            <div class="form-group col-12">
+                <label class="mr-2">Customer category: </label>
+                <select name="cCat" id="cCat" class="form-control" required>
+                    <option value="">- SELECT A CATEGORY -</option>
+                    <option value="1">INDIVIDUAL</option>
+                    <option value="2">COMPANY</option>
+                    <option value="4">GOVERNMENT</option>
+                </select>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Name: </label>
+                <input name="name" class="form-control" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Phone number: </label>
+                <input name="phoneNumber" class="form-control" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Address: </label>
+                <input name="address" class="form-control">
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Email: </label>
+                <input name="email" type="email" class="form-control">
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Amount (&#8358;): </label>
+                <input name="amount" class="form-control" pattern="[0-9]+" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Description of payment: </label>
+                <input name="desc" class="form-control" required>
+            </div>
+            <div class="form-group col-12 mt-5">
+                <hr>
+                <h5>OTHER CUSTOMER INFORMATION</h5>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Economic Activities ID: </label>
+                <select name="eaid" id="eaid" class="form-control" required>
+                    <option value="">- SELECT AN OPTION -</option>
+                </select>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Tax office ID: </label>
+                <select name="taxOfficeId" id="taxOfficeId" class="form-control" required>
+                    <option value="">- SELECT AN OPTION -</option>
+                </select>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">National ID: </label>
+                <input name="nid" class="form-control" required>
+            </div>
+            <div class="form-group col-12">
+                <label class="mr-2">Notification method: </label>
+                <input name="notMethod" class="form-control" required>
+            </div>
+            <input name="payType" value="dc" type="hidden" class="form-control" required>
+            <div class="form-group col-12">
+                <button class="btn btn-success float-right">Make payment</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<script>
+    var eAcs;
+    $(document).ready(function () {
+        $('#cCat').change(function () {
+            var selected = $(this).find("option:selected").attr('value');
+            if (eAcs !== null) {
+                $("#eaid option").remove();
+                $.each(eAcs, function (index, item) {
+                    if (item.TaxPayerTypeID == selected) {
+                        $("#eaid").append( // Append an object to the inside of the select box
+                                $("<option></option>") // Yes you can do this.
+                                        .text(item.EconomicActivitiesName)
+                                        .val(item.EconomicActivitiesID)
+                        );
+                    }
+                });
+            }
+            // $.getJSON("/ajax/portal-accounts?type=" + encodeURIComponent(selected), null, function (data) {
+            //     $("#portalAccount option").remove();
+            //     $("#portalAccount").append( // Append an object to the inside of the select box
+            //             $("<option></option>") // Yes you can do this.
+            //                     .text("- SELECT A PORTAL ACCOUNT -")
+            //                     .val("")
+            //     );
+            //     $.each(data, function (index, item) {
+            //         $("#portalAccount").append( // Append an object to the inside of the select box
+            //                 $("<option></option>") // Yes you can do this.
+            //                         .text(item.displayName)
+            //                         .val(item.id)
+            //         );
+            //     });
+            // });
+        });
+
+        $.getJSON("https://api.eirsautomation.xyz/ReferenceData/EconomicActivities/List?TaxPayerTypeID=", null, function (data) {
+            // $("#cCat option").remove();
+            eAcs = data.Result;
+            // $.each(data.Result, function (index, item) {
+            //     $("#cCat").append( // Append an object to the inside of the select box
+            //             var cca;
+            //             for(var i=0; i<eAcs.length;i++){
+            //                 if(cca===null){
+            //                     cca=eAcs[i]
+            //                 }else {
+            //
+            //                 }
+            //
+            //             }
+            //             $("<option></option>") // Yes you can do this.
+            //                     .text(item)
+            //                     .val(item)
+            //     );
+            // });
+        });
+
+        $.getJSON("https://api.eirsautomation.xyz/ReferenceData/TaxOffice/List", null, function (data) {
+            console.log(data);
+            $("taxOfficeId option").remove();
+            if (data != null) {
+                $.each(data.Result, function (index, item) {
+                    $("#taxOfficeId").append( // Append an object to the inside of the select box
+                            $("<option></option>") // Yes you can do this.
+                                    .text(item.TaxOfficeName)
+                                    .val(item.TaxOfficeID)
+                    );
+                });
+            }
+        });
+    })
+    ;
+
+    function fetchEActivities() {
+
+    }
+</script>
+<#--<form action="" method="get">-->
+<#--<div class="form-group">-->
+<#--<label for="exampleInputEmail1">Transaction reference<span style="color: darkred">*</span></label>-->
+<#--<input type="text" value="${(data.customers.customers[0].custReference)!""}" class="form-control"-->
+<#--id="exampleInputEmail1" aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="transactionId" required>-->
+<#--<input type="hidden" value="validation" class="form-control" id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="type" required>-->
+<#--</div>-->
+<#--<button type="submit" class="btn btn-success btn-lg float-right">CONTINUE</button>-->
+<#--</form>-->
+<#--<div style="margin-top: 10%">-->
+<#--<#if data??>-->
+<#--<table class="table table-striped">-->
+<#--<tbody>-->
+<#--<#list data.customers.customers  as customer>-->
+<#--<tr>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>First Name</th>-->
+<#--<td>${(customer.firstName)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Last Name</th>-->
+<#--<td>${(customer.lastName)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Email</th>-->
+<#--<td>${(customer.email)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Phone</th>-->
+<#--<td>${(customer.phone)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Amount</th>-->
+<#--<td>${(customer.amount)!""}</td>-->
+<#--</tr>-->
+<#--</#list>-->
+<#--</tbody>-->
+<#--</table>-->
+<#--<#list data.customers.customers  as customer>-->
+<#--<br>-->
+<#--<form action="" method="post">-->
+<#--<input type="hidden" value="${(customer.custReference)!""}" class="form-control"-->
+<#--id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="transactionId" required>-->
+<#--<input type="hidden" value="${(customer.paymentItems.items[0].productCode)!""}"-->
+<#--class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="itemCode" required>-->
+<#--<input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="type" required>-->
+<#--<div class="form-group form-inline">-->
+<#--<label for="exampleInputAmount">Enter amount<span class="text-danger">*</span></label>-->
+<#--<input type="text" value="${(customer.amount)!""}" class="form-control" id="exampleInputAmount"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="amount" required>-->
+<#--<button type="submit" class="btn btn-success btn-lg float-right">-->
+<#--Pay-->
+<#--</button>-->
+<#--</div>-->
+<#--</form>-->
+<#--</#list >-->
+<#--</#if>-->
+
+<#--</div>-->
+</@layout.myLayout>

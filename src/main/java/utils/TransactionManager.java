@@ -5,15 +5,12 @@
  */
 package utils;
 
-import com.bw.workorder.HibernateUtils;
+import com.bw.payment.HibernateUtils;
 import com.google.inject.Singleton;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * @author Olaleye Afolabi <oafolabi@byteworks.com.ng>
@@ -23,7 +20,7 @@ public class TransactionManager {
     final static Logger logger = LoggerFactory.getLogger(TransactionManager.class);
 
 
-    public void doIntransaction(TransactionalOperation operation) {
+    public void doInTransaction(TransactionalOperation operation) {
         Session session = null;
         Transaction tx = null;
         try {

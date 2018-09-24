@@ -1,78 +1,109 @@
-package dto;
+package pojo;
 
-import com.bw.payment.entity.Merchant;
+import org.hibernate.validator.constraints.NotBlank;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantRequestPojo {
     private Long id;
-    private String identifier;
+    private String code;
+    @NotBlank(message = "validation.not.blank")
     private String name;
-    private Timestamp dateCreated;
-    private Timestamp lastModified;
+    private String dateCreated;
+    private String lastModified;
+    private String apiKey;
+    private String paydirectMerchantReference;
+    private String lookupUrl;
+    private String notificationUrl;
+    //    @NotNull
+//    @Valid
     private List<PaymentProviderDetailsPojo> paymentProviders;
 
     public Long getId() {
         return id;
     }
 
-    public MerchantRequestPojo setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
-        return this;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public String getCode() {
+        return code;
     }
 
-    public MerchantRequestPojo setIdentifier(String identifier) {
-        this.identifier = identifier;
-        return this;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {
         return name;
     }
 
-    public MerchantRequestPojo setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
-    public Timestamp getDateCreated() {
+    public String getDateCreated() {
         return dateCreated;
     }
 
-    public MerchantRequestPojo setDateCreated(Timestamp dateCreated) {
+    public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
-        return this;
     }
 
-    public Timestamp getLastModified() {
+    public String getLastModified() {
         return lastModified;
     }
 
-    public MerchantRequestPojo setLastModified(Timestamp lastModified) {
+    public void setLastModified(String lastModified) {
         this.lastModified = lastModified;
-        return this;
     }
 
     public List<PaymentProviderDetailsPojo> getPaymentProviders() {
         return paymentProviders;
     }
 
-    public MerchantRequestPojo setPaymentProviders(List<PaymentProviderDetailsPojo> paymentProviders) {
+    public void setPaymentProviders(List<PaymentProviderDetailsPojo> paymentProviders) {
         this.paymentProviders = paymentProviders;
-        return this;
     }
 
-    public MerchantRequestPojo addPaymentProvider(PaymentProviderDetailsPojo paymentProvider) {
+    public void addPaymentProvider(PaymentProviderDetailsPojo paymentProvider) {
         if (this.paymentProviders == null) {
             this.paymentProviders = new ArrayList<>();
         }
         this.paymentProviders.add(paymentProvider);
-        return this;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public String getPaydirectMerchantReference() {
+        return paydirectMerchantReference;
+    }
+
+    public void setPaydirectMerchantReference(String paydirectMerchantReference) {
+        this.paydirectMerchantReference = paydirectMerchantReference;
+    }
+
+    public String getLookupUrl() {
+        return lookupUrl;
+    }
+
+    public void setLookupUrl(String lookupUrl) {
+        this.lookupUrl = lookupUrl;
+    }
+
+    public String getNotificationUrl() {
+        return notificationUrl;
+    }
+
+    public void setNotificationUrl(String notificationUrl) {
+        this.notificationUrl = notificationUrl;
     }
 }

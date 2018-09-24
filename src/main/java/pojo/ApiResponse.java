@@ -1,17 +1,35 @@
-package pojos;
+package pojo;
 
 public class ApiResponse<T> {
+    private String status;
     private String message;
-    private String code;
+    private int code;
     private T data;
 
     public ApiResponse() {
     }
 
-    public ApiResponse(String message, String code, T data) {
+    public ApiResponse(String status, String message, int code, T data) {
+        this.status = status;
         this.message = message;
         this.code = code;
         this.data = data;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getMessage() {
@@ -22,19 +40,12 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
 }

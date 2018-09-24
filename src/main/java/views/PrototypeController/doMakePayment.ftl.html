@@ -1,0 +1,39 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+<@layout.myLayout "Interswitch">
+
+
+    <#if data??>
+    <table class="table">
+        <tbody>
+            <#list data.customers.customers  as customer>
+            <tr>
+            </tr>
+            <tr>
+                <th>First Name</th>
+                <td>${(customer.firstName)!""}</td>
+            </tr>
+            <tr>
+                <th>Last Name</th>
+                <td>${(customer.lastName)!""}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>${(customer.email)!""}</td>
+            </tr>
+            <tr>
+                <th>Phone</th>
+                <td>${(customer.phone)!""}</td>
+            </tr>
+            <tr>
+                <th>Amount</th>
+                <td>${(customer.amount)!""}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>${(customer.statusMessage)!""}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+    </#if>
+</@layout.myLayout>

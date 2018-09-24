@@ -1,0 +1,288 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+<@layout.myLayout "Interswitch">
+
+<div class="container fill mt-5 mb-5">
+
+    <div class="row">
+
+        <#if (flash.success)??>
+            <div class="alert alert-success col-12">
+            ${flash.success}
+            </div>
+            <div class="col-md-12 mt-3">
+                <table class="table">
+                    <tbody>
+                    <tr class="text-center">
+                        <h4>Payment details</h4>
+                    </tr>
+                    <tr>
+                        <th>Reference:</th>
+                        <td>${(tid)!""}</td>
+                    </tr>
+                    <tr>
+                        <th>Amount:</th>
+                        <td><b style="color: darkgreen">&#8358;${(amount)}</b></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </#if>
+        <#if (flash.error)??>
+            <div class="alert alert-danger col-12">
+            ${flash.error}
+            </div>
+        </#if>
+        <hr class="col-12 mt-5">
+        <div class="col-md-6 mt-5">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <a class="btn btn-lg btn-success" id="sb" href="/interswitch/assessment"> Settle bills </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mt-5">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <a class="btn btn-lg btn-success" id="poa" href="/interswitch/poa"> Pay on Account</a>
+                </div>
+            </div>
+        </div>
+
+    <#--<#if !(poa??) && !(dc??)>-->
+        <form class="col-md-12 mt-5 d-none" id="assForm" action="" method="get">
+            <div class="col-12">
+                <label>Assessment reference or service bill</label>
+                <input type="text" class="form-control" id="ref"
+                       placeholder="Enter assessment reference or service bill" name="transactionId" required>
+                <input type="hidden" class="form-control" name="type" value="ar" required>
+            </div>
+            <div class="col-12 mt-3 text-right">
+                <button class="btn btn-lg btn-success">Proceed</button>
+            </div>
+        </form>
+    <#--</#if>-->
+        <form class="col-md-12 mt-5 d-none" id="rinForm" action="" method="get">
+            <div class="col-12">
+                <label>RIN or phone number</label>
+                <input type="text" class="form-control" id="ref"
+                       placeholder="Enter RIN or phone number" name="transactionId" required>
+                <input type="hidden" class="form-control" name="type" value="rin" required>
+            </div>
+            <div class="col-12 mt-3 text-right">
+                <button class="btn btn-lg btn-success">Proceed</button>
+            </div>
+        </form>
+
+        <div class="col-md-12 mt-5" style="margin-top: 10%">
+            <#if data??>
+                <table class="table table-striped">
+                    <tbody>
+                        <#list data.customers.customers  as customer>
+                        <tr>
+                        </tr>
+                        <tr>
+                            <th>First Name</th>
+                            <td>${(customer.firstName)!""}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Name</th>
+                            <td>${(customer.lastName)!""}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>${(customer.email)!""}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone</th>
+                            <td>${(customer.phone)!""}</td>
+                        </tr>
+                        <tr>
+                            <th>Amount</th>
+                            <td>${(customer.amount)!""}</td>
+                        </tr>
+                        </#list>
+                    </tbody>
+                </table>
+                <#list data.customers.customers  as customer>
+                    <br>
+                    <form action="" method="post">
+                        <input type="hidden" value="${(customer.custReference)!""}" class="form-control"
+                               id="exampleInputEmail1"
+                               aria-describedby="emailHelp"
+                               placeholder="Enter transaction reference" name="transactionId" required>
+                        <input type="hidden" value="${(customer.paymentItems.items[0].productCode)!""}"
+                               class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                               placeholder="Enter transaction reference" name="itemCode" required>
+                        <input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"
+                               aria-describedby="emailHelp"
+                               placeholder="Enter transaction reference" name="type" required>
+                        <div class="form-group">
+                            <label for="exampleInputAmount">Enter amount to pay<span
+                                    class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="exampleInputAmount"
+                                   aria-describedby="emailHelp" pattern="[0-9]+"
+                                   placeholder="Enter amount" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInput">Mock Invalid Customer Reference<span
+                                    class="text-danger">*</span></label>
+                            <select class="form-control" id="exampleInput" name="noCR" required>
+                                <option value="false">NO</option>
+                                <option value="true">YES</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg float-right">
+                            Pay
+                        </button>
+                    </form>
+                </#list >
+            </#if>
+            <#if directCapture??>
+                <hr>
+                <form class="row" action="" method="post">
+                    <div class="alert alert-info col-12"> Enter your details to continue</div>
+                    <div class="form-group col-12">
+                        <label class="mr-2">Name: </label>
+                        <input name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group col-12">
+                        <label class="mr-2">Phone number: </label>
+                        <input name="phoneNumber" class="form-control" required>
+                    </div>
+                    <div class="form-group col-12">
+                        <label class="mr-2">Address: </label>
+                        <input name="address" class="form-control">
+                    </div>
+                    <div class="form-group col-12">
+                        <label class="mr-2">Email: </label>
+                        <input name="email" class="form-control">
+                    </div>
+                    <div class="form-group col-12">
+                        <label class="mr-2">Amount (&#8358;): </label>
+                        <input name="amount" class="form-control" pattern="[0-9]+" required>
+                    </div>
+                    <div class="form-group col-12">
+                        <label class="mr-2">Description of payment: </label>
+                        <input name="desc" class="form-control" required>
+                    </div>
+                    <input name="payType" value="dc" type="hidden" class="form-control" required>
+                    <div class="form-group col-12">
+                        <button class="btn btn-lg btn-success float-right">Make payment</button>
+                    </div>
+                </form>
+            </#if>
+
+        </div>
+    </div>
+
+<#--<form action="" method="get">-->
+<#--<div class="form-group">-->
+<#--<label for="exampleInputEmail1">Transaction reference<span style="color: darkred">*</span></label>-->
+<#--<input type="text" value="${(data.customers.customers[0].custReference)!""}" class="form-control"-->
+<#--id="exampleInputEmail1" aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="transactionId" required>-->
+<#--<input type="hidden" value="validation" class="form-control" id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="type" required>-->
+<#--</div>-->
+<#--<button type="submit" class="btn btn-success btn-lg float-right">CONTINUE</button>-->
+<#--</form>-->
+<#--<div style="margin-top: 10%">-->
+<#--<#if data??>-->
+<#--<table class="table table-striped">-->
+<#--<tbody>-->
+<#--<#list data.customers.customers  as customer>-->
+<#--<tr>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>First Name</th>-->
+<#--<td>${(customer.firstName)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Last Name</th>-->
+<#--<td>${(customer.lastName)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Email</th>-->
+<#--<td>${(customer.email)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Phone</th>-->
+<#--<td>${(customer.phone)!""}</td>-->
+<#--</tr>-->
+<#--<tr>-->
+<#--<th>Amount</th>-->
+<#--<td>${(customer.amount)!""}</td>-->
+<#--</tr>-->
+<#--</#list>-->
+<#--</tbody>-->
+<#--</table>-->
+<#--<#list data.customers.customers  as customer>-->
+<#--<br>-->
+<#--<form action="" method="post">-->
+<#--<input type="hidden" value="${(customer.custReference)!""}" class="form-control"-->
+<#--id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="transactionId" required>-->
+<#--<input type="hidden" value="${(customer.paymentItems.items[0].productCode)!""}"-->
+<#--class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="itemCode" required>-->
+<#--<input type="hidden" value="notification" class="form-control" id="exampleInputEmail1"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="type" required>-->
+<#--<div class="form-group form-inline">-->
+<#--<label for="exampleInputAmount">Enter amount<span class="text-danger">*</span></label>-->
+<#--<input type="text" value="${(customer.amount)!""}" class="form-control" id="exampleInputAmount"-->
+<#--aria-describedby="emailHelp"-->
+<#--placeholder="Enter transaction reference" name="amount" required>-->
+<#--<button type="submit" class="btn btn-success btn-lg float-right">-->
+<#--Pay-->
+<#--</button>-->
+<#--</div>-->
+<#--</form>-->
+<#--</#list >-->
+<#--</#if>-->
+
+<#--</div>-->
+</div>
+<#--<script>-->
+<#--var poa = '${(poa)!""}'-->
+<#--$(document).ready(function () {-->
+<#--$("#sb").click(function () {-->
+<#--hidePoa();-->
+<#--showAss();-->
+<#--});-->
+
+<#--$("#poa").click(function () {-->
+<#--showPoa();-->
+<#--hideAss();-->
+<#--});-->
+
+<#--if (poa === "true") {-->
+<#--showPoa();-->
+<#--}-->
+<#--});-->
+
+<#--function hideAss() {-->
+<#--if (!$("#assForm").hasClass('d-none')) {-->
+<#--$("#assForm").addClass('d-none')-->
+<#--}-->
+<#--}-->
+
+<#--function showAss() {-->
+<#--$("#assForm").removeClass('d-none');-->
+<#--console.log("show ass ref")-->
+<#--}-->
+
+<#--function hidePoa() {-->
+<#--if (!$("#rinForm").hasClass('d-none')) {-->
+<#--$("#rinForm").addClass('d-none')-->
+<#--}-->
+<#--}-->
+
+<#--function showPoa() {-->
+<#--$("#rinForm").removeClass('d-none');-->
+<#--}-->
+<#--</script>-->
+</@layout.myLayout>

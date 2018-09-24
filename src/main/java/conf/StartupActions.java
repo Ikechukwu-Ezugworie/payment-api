@@ -6,13 +6,16 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
-import com.sun.xml.internal.txw2.annotation.XmlElement;
+import com.google.inject.Provider;
 import ninja.lifecycle.Start;
 import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import services.SetupService;
+import utils.Constants;
 
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -20,38 +23,34 @@ import java.util.TimeZone;
 public class StartupActions {
 
     final static Logger logger = LoggerFactory.getLogger(StartupActions.class);
-//    static SessionFactory sessionFactory = null;
     private NinjaProperties ninjaProperties;
-    @Inject
     private ObjectMapper objectMapper;
-    @Inject
     private XmlMapper xmlMapper;
+    private Provider<EntityManager> entityManagerProvider;
+    private SetupService setupService;
 
     @Inject
-    public StartupActions(NinjaProperties ninjaProperties) {
+    public StartupActions(
+            Provider<EntityManager> entityManagerProvider,
+            NinjaProperties ninjaProperties,
+            ObjectMapper objectMapper,
+            XmlMapper xmlMapper,
+            SetupService setupService) {
+        this.entityManagerProvider = entityManagerProvider;
         this.ninjaProperties = ninjaProperties;
+        this.objectMapper = objectMapper;
+        this.xmlMapper = xmlMapper;
+        this.setupService = setupService;
     }
-
-//    public static SessionFactory getSessionFactory() {
-//        return sessionFactory;
-//    }
 
     @Start(order = 10)
     public void configureJsonMapper() {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.ISO_DATE_TIME_FORMAT);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         objectMapper.setDateFormat(dateFormat);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//        try {
-//            logger.info("About to open hibernate session");
-//            sessionFactory = HibernateUtils.getSessionFactory();
-//            logger.info("Done with hibernate session");
-//
-//        } catch (NamingException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
     }
 
     @Start(order = 10)
@@ -61,11 +60,12 @@ public class StartupActions {
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         xmlMapper.setDateFormat(dateFormat);
         xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        xmlMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
     }
 
     @Start(order = 100)
     public void setupProject() {
-
+        setupService.setUp();
     }
 
 }
