@@ -202,10 +202,9 @@ public class PayDirectService {
             try {
                 PayerPojo payerPojo = new PayerPojo();
 
-                String fName = PaymentUtil.getFirstNameFromFullName(payment.getCustomerName());
                 String lName = PaymentUtil.getLastNameFromFullName(payment.getCustomerName());
-                payerPojo.setFirstName(fName);
-                payerPojo.setLastName(lName);
+                payerPojo.setFirstName(payment.getCustomerName());
+                payerPojo.setLastName("");
                 payerPojo.setEmail("");
                 payerPojo.setAddress(payment.getCustomerAddress());
                 payerPojo.setPhoneNumber(payment.getCustomerPhoneNumber());
