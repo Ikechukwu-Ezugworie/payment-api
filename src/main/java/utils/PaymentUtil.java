@@ -826,7 +826,7 @@ public class PaymentUtil {
         if (StringUtils.isNotBlank(customerName)) {
             if (customerName.trim().contains(" ")) {
                 String names[] = customerName.trim().split(" ");
-                return names[names.];
+                return names[1];
             }
         }
         return "";
