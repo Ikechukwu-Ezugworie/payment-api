@@ -2,11 +2,10 @@ package utils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import ninja.lifecycle.Dispose;
 import ninja.scheduler.Schedule;
 import services.NotificationService;
-import services.PaymentTransactionService;
 
-import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -28,9 +27,9 @@ public class CronSchedule {
         System.out.println("::: ENDING NOTIFICATION JOB :::");
     }
 
-    @PreDestroy
+    @Dispose(order = 100)
     public void cleanUp() {
-        System.out.println(" [] =======> DESTROYING<=======");
+        System.out.println(" [] =======> DESTROYING <=======");
         executorService.shutdownNow();
     }
 }

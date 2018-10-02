@@ -53,6 +53,31 @@ public class Routes implements ApplicationRoutes {
             urlPrefix = urlPrefix.substring(0, urlPrefix.length() - 1);
         }
 
+
+        ///////////////////////////////////////////////////////////////////////
+        // Interswitch
+        ///////////////////////////////////////////////////////////////////////
+        router.POST().route(String.format("%s/api/v1/payments/interswitch/paydirect", urlPrefix)).with(PayDirectController::doPayDirectRequest);
+
+        ///////////////////////////////////////////////////////////////////////
+        // Notifications controller
+        ///////////////////////////////////////////////////////////////////////
+        router.GET().route(String.format("%s/api/v1/notify", urlPrefix)).with(NotificationController::sendNotifications);
+        router.GET().route(String.format("%s/api/v1/backlog", urlPrefix)).with(NotificationController::processPaymentBacklog);
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // Assets (pictures / javascript)
+        ///////////////////////////////////////////////////////////////////////
+        router.GET().route(String.format("%s/assets/webjars/{fileName: .*}", urlPrefix)).with(AssetsController::serveWebJars);
+        router.GET().route(String.format("%s/assets/{fileName: .*}", urlPrefix)).with(AssetsController::serveStatic);
+
+        ///////////////////////////////////////////////////////////////////////
+        // Index / Catchall shows index page
+        ///////////////////////////////////////////////////////////////////////
+        router.GET().route(String.format("%s/.*", urlPrefix)).with(ApplicationController::index);
+
+
         // TEST ROUTES
         if (!ninjaProperties.isProd()) {
             router.GET().route(String.format("%s/", urlPrefix)).with(ApplicationController::index);
@@ -83,29 +108,6 @@ public class Routes implements ApplicationRoutes {
 
             router.POST().route(String.format("%s/api/v1/transactions/ticket/new", urlPrefix)).with(PaymentTransactionController::createTicketForNewTransaction);
         }
-
-
-        ///////////////////////////////////////////////////////////////////////
-        // Interswitch
-        ///////////////////////////////////////////////////////////////////////
-        router.POST().route(String.format("%s/api/v1/payments/interswitch/paydirect", urlPrefix)).with(PayDirectController::doPayDirectRequest);
-
-        ///////////////////////////////////////////////////////////////////////
-        // Notifications controller
-        ///////////////////////////////////////////////////////////////////////
-        router.GET().route(String.format("%s/api/v1/notify", urlPrefix)).with(NotificationController::sendNotifications);
-
-
-        ///////////////////////////////////////////////////////////////////////
-        // Assets (pictures / javascript)
-        ///////////////////////////////////////////////////////////////////////
-        router.GET().route(String.format("%s/assets/webjars/{fileName: .*}", urlPrefix)).with(AssetsController::serveWebJars);
-        router.GET().route(String.format("%s/assets/{fileName: .*}", urlPrefix)).with(AssetsController::serveStatic);
-
-        ///////////////////////////////////////////////////////////////////////
-        // Index / Catchall shows index page
-        ///////////////////////////////////////////////////////////////////////
-        router.GET().route(String.format("%s/.*", urlPrefix)).with(ApplicationController::index);
     }
 
 }

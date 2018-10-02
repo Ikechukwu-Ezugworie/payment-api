@@ -11,6 +11,7 @@ import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import ninja.Context;
+import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -59,16 +60,19 @@ public class PayDirectService {
     private NotificationIdSequence notificationIdSequence;
     private MerchantDao merchantDao;
     private PaymentTransactionService paymentTransactionService;
+    private ReverseRouter reverseRouter;
 
     @Inject
     public PayDirectService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
-                            NotificationIdSequence notificationIdSequence, MerchantDao merchantDao, PaymentTransactionService paymentTransactionService) {
+                            NotificationIdSequence notificationIdSequence, MerchantDao merchantDao,
+                            PaymentTransactionService paymentTransactionService, ReverseRouter reverseRouter) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.ninjaProperties = ninjaProperties;
         this.notificationIdSequence = notificationIdSequence;
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
         this.merchantDao = merchantDao;
         this.paymentTransactionService = paymentTransactionService;
+        this.reverseRouter = reverseRouter;
     }
 
     public CustomerInformationResponse processCustomerValidationRequest(CustomerInformationRequest validationRequest, Context context) {
