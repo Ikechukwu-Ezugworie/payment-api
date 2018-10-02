@@ -251,19 +251,22 @@ public class PaymentTransactionDao extends BaseDao {
     }
 
     public Merchant getMerchant(String merchantReference) {
+        Boolean validateMerchRef = Boolean.valueOf(getSettingsValue("VALIDATE_MERCHANT_REF", "true", true));
+        if (validateMerchRef) {
+            if (StringUtils.isBlank(merchantReference)) {
+                System.out.println("<== MERCHANT REF IS EMPTY xx");
+                return null;
+            }
+            System.out.println("<== RETURNING MERCHANT BY MERCHANT REF " + merchantReference + " xx");
+            return getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", merchantReference);
+
+        }
         List<Merchant> merchants = getAllRecords(Merchant.class);
         if (merchants.size() < 1) {
             System.out.println("<== NO MERCHANT HAS BEEN REGISTERED xx");
             return null;
         }
-        if (merchants.size() > 1 && StringUtils.isBlank(merchantReference)) {
-            System.out.println("<== RETURNING FIRST OF MANY MERCHANTS xx");
-            return merchants.get(0);
-        }
-        if (merchants.size() > 1 && !StringUtils.isBlank(merchantReference)) {
-            System.out.println("<== RETURNING MERCHANT BY MERCHANT REF " + merchantReference + " xx");
-            return getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", merchantReference);
-        }
+        System.out.println("<== RETURNING FIRST OF MANY MERCHANTS xx");
         return merchants.get(0);
     }
 }

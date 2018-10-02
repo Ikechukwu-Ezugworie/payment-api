@@ -78,7 +78,7 @@ public class PayDirectService {
 //        Merchant merchant = paymentTransactionDao.getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", validationRequest.getMerchantReference());
         Merchant merchant = paymentTransactionDao.getMerchant(validationRequest.getMerchantReference());
 
-        if (merchant == null || !validationRequest.getMerchantReference().equalsIgnoreCase(merchant.getPaydirectMerchantReference())) {
+        if (merchant == null) {
             Customer customer = new Customer();
             customer.setFirstName("");
             customer.setCustReference(validationRequest.getCustReference());
@@ -94,7 +94,7 @@ public class PayDirectService {
         }
 
         try {
-            System.out.println("<== req body" + PaymentUtil.toJSON(validationRequest));
+            System.out.println("<== VALIDATION REQUEST:: :: " + PaymentUtil.toJSON(validationRequest));
 
             RequestBody body = RequestBody.create(JSON, PaymentUtil.toJSON(validationRequest));
             Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
