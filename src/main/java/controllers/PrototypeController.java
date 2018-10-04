@@ -109,7 +109,7 @@ public class PrototypeController {
     public Result assRef(@Param("amount") String amount, @Param("transactionId") String transactionId,
                          @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
         if (StringUtils.isBlank(transactionId)) {
-            return Results.html().template("/views/PrototypeController/assRef.ftl.html").render("tid", transactionId);
+            return Results.html().template("/views/PrototypeController/test.ftl.html").render("tid", transactionId);
         }
 
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
@@ -168,7 +168,7 @@ public class PrototypeController {
     public Result cusData(@Param("amount") String amount, @Param("transactionId") String transactionId,
                           @Param("itemCode") String itemCode, @Param("type") String type, Context context) {
         if (StringUtils.isBlank(transactionId)) {
-            return Results.html().template("/views/PrototypeController/assRef.ftl.html");
+            return Results.html().template("/views/PrototypeController/test.ftl.html");
         }
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
                 "<MerchantReference>" + MERCHANT_REF + "</MerchantReference><CustReference>" + transactionId + "</CustReference><PaymentItemCode>" +

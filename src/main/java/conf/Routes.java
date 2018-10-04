@@ -72,14 +72,17 @@ public class Routes implements ApplicationRoutes {
         router.GET().route(String.format("%s/assets/webjars/{fileName: .*}", urlPrefix)).with(AssetsController::serveWebJars);
         router.GET().route(String.format("%s/assets/{fileName: .*}", urlPrefix)).with(AssetsController::serveStatic);
 
-        ///////////////////////////////////////////////////////////////////////
-        // Index / Catchall shows index page
-        ///////////////////////////////////////////////////////////////////////
-        router.GET().route(String.format("%s/.*", urlPrefix)).with(ApplicationController::index);
-
 
         // TEST ROUTES
         if (!ninjaProperties.isProd()) {
+
+            ///////////////////////////////////////
+            //////  TEST CONTROLLER
+            ///////////////////////////////////////
+            router.GET().route(String.format("%s/paydirect/test", urlPrefix)).with(TestController::test);
+            router.POST().route(String.format("%s/api/paydirect/validate", urlPrefix)).with(TestController::doTest);
+
+
             router.GET().route(String.format("%s/", urlPrefix)).with(ApplicationController::index);
             router.GET().route(String.format("%s/interswitch", urlPrefix)).with(PrototypeController::interswitchPay);
             router.GET().route(String.format("%s/interswitch/assessment", urlPrefix)).with(PrototypeController::assRef);
@@ -108,6 +111,11 @@ public class Routes implements ApplicationRoutes {
 
             router.POST().route(String.format("%s/api/v1/transactions/ticket/new", urlPrefix)).with(PaymentTransactionController::createTicketForNewTransaction);
         }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Index / Catchall shows index page
+        ///////////////////////////////////////////////////////////////////////
+        router.GET().route(String.format("%s/.*", urlPrefix)).with(ApplicationController::index);
     }
 
 }
