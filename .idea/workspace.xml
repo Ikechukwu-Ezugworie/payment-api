@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="added backlog processing">
-      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/controllers/TestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html" afterDir="false" />
+    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="added customer validation test">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/conf/Routes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/conf/Routes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/PrototypeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/PrototypeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/views/layout/header.ftl.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/views/layout/header.ftl.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -63,17 +58,17 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="conf" value="5" />
-          <entry key="html" value="873" />
-          <entry key="java" value="1495" />
-          <entry key="txt" value="95" />
+          <entry key="html" value="1244" />
+          <entry key="java" value="1501" />
+          <entry key="txt" value="125" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="FTL" value="873" />
+          <entry key="FTL" value="1244" />
           <entry key="HOCON" value="5" />
-          <entry key="JAVA" value="1495" />
-          <entry key="PLAIN_TEXT" value="95" />
+          <entry key="JAVA" value="1501" />
+          <entry key="PLAIN_TEXT" value="125" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -97,8 +92,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="101">
-              <caret line="71" column="50" selection-start-line="71" selection-end-line="72" />
+            <state relative-caret-position="120">
+              <caret line="45" column="42" lean-forward="true" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -106,8 +101,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/TestController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="294">
-              <caret line="63" column="132" selection-start-line="63" selection-start-column="132" selection-end-line="63" selection-end-column="132" />
+            <state relative-caret-position="252">
+              <caret line="58" column="60" lean-forward="true" selection-start-line="58" selection-start-column="60" selection-end-line="58" selection-end-column="60" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#233#234#0" expanded="true" />
@@ -120,8 +115,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/views/PrototypeController/assRef.ftl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
-              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+            <state relative-caret-position="258">
+              <caret line="34" column="55" lean-forward="true" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -160,7 +155,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="256">
-              <caret line="131" column="87" selection-start-line="131" selection-start-column="32" selection-end-line="131" selection-end-column="87" />
+              <caret line="131" column="116" selection-start-line="131" selection-start-column="116" selection-end-line="131" selection-end-column="116" />
             </state>
           </provider>
         </entry>
@@ -168,15 +163,19 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="107" column="46" selection-start-line="107" selection-start-column="46" selection-end-line="107" selection-end-column="46" />
+            <state relative-caret-position="373">
+              <caret line="65" column="20" lean-forward="true" selection-start-line="65" selection-start-column="20" selection-end-line="65" selection-end-column="20" />
               <folding>
                 <element signature="e#928#952#0#HTML" expanded="true" />
                 <element signature="e#1314#1333#0#HTML" expanded="true" />
-                <element signature="e#1161#1180#0#HTML" expanded="true" />
-                <element signature="e#1219#1238#0#HTML" expanded="true" />
-                <element signature="e#1347#1366#0#HTML" expanded="true" />
-                <element signature="e#1470#1489#0#HTML" expanded="true" />
+                <element signature="e#1888#1895#1#HTML" expanded="true" />
+                <element signature="e#2128#2147#0#HTML" expanded="true" />
+                <element signature="e#2194#2213#0#HTML" expanded="true" />
+                <element signature="e#2355#2374#0#HTML" expanded="true" />
+                <element signature="e#2506#2525#0#HTML" expanded="true" />
+                <element signature="e#2655#2674#0#HTML" expanded="true" />
+                <element signature="e#2810#2829#0#HTML" expanded="true" />
+                <element signature="e#2952#2971#0#HTML" expanded="true" />
                 <element signature="e#2262#2286#0#HTML" expanded="true" />
               </folding>
             </state>
@@ -560,7 +559,7 @@
     <property name="SearchEverywhereHistoryKey" value="rout&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;conf&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;cron&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/utils/CronSchedule.java&#10;inter&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;paym&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;other&#9;PSI&#9;JAVA://pojo.payDirect.paymentNotification.request.OtherCustomerInfo&#10;payd&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;pro&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;proto&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;paydire&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;base&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/BaseDao.java&#10;route&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;paymen&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;inte&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;payC&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;payment&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/pojo/payDirect/paymentNotification/request/Payments.java&#10;pr&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;transa&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/services/sequence/TransactionIdSequence.java&#10;start&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;applica&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;bwda&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/resources/BWDataConfig.xml" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538654924627" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538658685178" />
     <property name="database.console.LAST_STATE" value="false" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -996,7 +995,7 @@
       <workItem from="1537954181410" duration="2726000" />
       <workItem from="1538053024283" duration="1935000" />
       <workItem from="1538320133948" duration="971000" />
-      <workItem from="1538469317994" duration="16668000" />
+      <workItem from="1538469317994" duration="19854000" />
     </task>
     <task id="LOCAL-00001" summary="implemented custom fields">
       <created>1528979649077</created>
@@ -1222,11 +1221,18 @@
       <option name="project" value="LOCAL" />
       <updated>1538482623009</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="added customer validation test">
+      <created>1538655138798</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1538655138798</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="268837000" />
+    <option name="totallyTimeSpent" value="272023000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1316,7 +1322,8 @@
     <MESSAGE value="fixed payer name issue" />
     <MESSAGE value="merchant ref validation optional" />
     <MESSAGE value="added backlog processing" />
-    <option name="LAST_COMMIT_MESSAGE" value="added backlog processing" />
+    <MESSAGE value="added customer validation test" />
+    <option name="LAST_COMMIT_MESSAGE" value="added customer validation test" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1627,22 +1634,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="107" column="46" selection-start-line="107" selection-start-column="46" selection-end-line="107" selection-end-column="46" />
-          <folding>
-            <element signature="e#928#952#0#HTML" expanded="true" />
-            <element signature="e#1314#1333#0#HTML" expanded="true" />
-            <element signature="e#1161#1180#0#HTML" expanded="true" />
-            <element signature="e#1219#1238#0#HTML" expanded="true" />
-            <element signature="e#1347#1366#0#HTML" expanded="true" />
-            <element signature="e#1470#1489#0#HTML" expanded="true" />
-            <element signature="e#2262#2286#0#HTML" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PrototypeController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -1674,31 +1665,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/views/PrototypeController/assRef.ftl.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="101">
-          <caret line="71" column="50" selection-start-line="71" selection-end-line="72" />
+        <state relative-caret-position="258">
+          <caret line="34" column="55" lean-forward="true" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="55" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="256">
-          <caret line="131" column="87" selection-start-line="131" selection-start-column="32" selection-end-line="131" selection-end-column="87" />
+          <caret line="131" column="116" selection-start-line="131" selection-start-column="116" selection-end-line="131" selection-end-column="116" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/PrototypeController/assRef.ftl.html">
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+        <state relative-caret-position="120">
+          <caret line="45" column="42" lean-forward="true" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="373">
+          <caret line="65" column="20" lean-forward="true" selection-start-line="65" selection-start-column="20" selection-end-line="65" selection-end-column="20" />
+          <folding>
+            <element signature="e#928#952#0#HTML" expanded="true" />
+            <element signature="e#1314#1333#0#HTML" expanded="true" />
+            <element signature="e#1888#1895#1#HTML" expanded="true" />
+            <element signature="e#2128#2147#0#HTML" expanded="true" />
+            <element signature="e#2194#2213#0#HTML" expanded="true" />
+            <element signature="e#2355#2374#0#HTML" expanded="true" />
+            <element signature="e#2506#2525#0#HTML" expanded="true" />
+            <element signature="e#2655#2674#0#HTML" expanded="true" />
+            <element signature="e#2810#2829#0#HTML" expanded="true" />
+            <element signature="e#2952#2971#0#HTML" expanded="true" />
+            <element signature="e#2262#2286#0#HTML" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controllers/TestController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="63" column="132" selection-start-line="63" selection-start-column="132" selection-end-line="63" selection-end-column="132" />
+        <state relative-caret-position="252">
+          <caret line="58" column="60" lean-forward="true" selection-start-line="58" selection-start-column="60" selection-end-line="58" selection-end-column="60" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#233#234#0" expanded="true" />
