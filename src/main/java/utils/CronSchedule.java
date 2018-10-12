@@ -2,18 +2,14 @@ package utils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import ninja.lifecycle.Dispose;
 import ninja.scheduler.Schedule;
 import services.NotificationService;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class CronSchedule {
     private NotificationService notificationService;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Inject
     public CronSchedule(NotificationService notificationService) {
@@ -22,14 +18,6 @@ public class CronSchedule {
 
     @Schedule(delay = 5, initialDelay = 1, timeUnit = TimeUnit.MINUTES)
     public void runNotificationJob() {
-        System.out.println("::: RUNNING NOTIFICATION JOB :::");
-        executorService.submit(() -> notificationService.sendPaymentNotification(100));
-        System.out.println("::: ENDING NOTIFICATION JOB :::");
-    }
-
-    @Dispose(order = 100)
-    public void cleanUp() {
-        System.out.println(" [] =======> DESTROYING <=======");
-        executorService.shutdownNow();
+        notificationService.sendPaymentNotification(100);
     }
 }
