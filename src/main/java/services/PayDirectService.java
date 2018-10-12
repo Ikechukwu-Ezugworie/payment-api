@@ -14,6 +14,7 @@ import ninja.Context;
 import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.*;
@@ -207,6 +208,10 @@ public class PayDirectService {
                 PayerPojo payerPojo = new PayerPojo();
 
                 String lName = PaymentUtil.getLastNameFromFullName(payment.getCustomerName());
+                if (StringUtils.isBlank(payment.getCustomerName())) {
+                    logger.info("<=== customer name is null");
+                }
+                logger.info("<==== customer name : " + payment.getCustomerName());
                 payerPojo.setFirstName(payment.getCustomerName());
                 payerPojo.setLastName("");
                 payerPojo.setEmail("");

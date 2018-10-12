@@ -1,10 +1,7 @@
 package dao;
 
 import com.bw.payment.entity.*;
-import com.bw.payment.enumeration.GenericStatusConstant;
-import com.bw.payment.enumeration.PaymentChannelConstant;
-import com.bw.payment.enumeration.PaymentProviderConstant;
-import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.bw.payment.enumeration.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -231,6 +228,22 @@ public class PaymentTransactionDao extends BaseDao {
 
         List<PaymentTransaction> paymentTransactions = resultsList(entityManager.createQuery(clientCriteriaQuery));
         return paymentTransactions.size() == 0 ? null : paymentTransactions.get(0);
+    }
+
+    public PaymentTransaction getPaymentResponseLogByLogIdAndStatus(String logId, PaymentResponseStatusConstant status) {
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PaymentTransaction> clientCriteriaQuery = criteriaBuilder.createQuery(PaymentTransaction.class);
+        Root<PaymentResponseLog> clientRoot = clientCriteriaQuery.from(PaymentResponseLog.class);
+        Predicate predicate = criteriaBuilder.and(
+                criteriaBuilder.equal(clientRoot.get("paymentLogId"), logId),
+                criteriaBuilder.equal(clientRoot.get("status"), status.getValue())
+        );
+        clientCriteriaQuery.select(clientRoot.get("paymentTransaction")).where(predicate);
+
+        return uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
+
     }
 
     public PaymentTransaction getPaymentTransactionByPaymentProviderReference(String providerReference) {

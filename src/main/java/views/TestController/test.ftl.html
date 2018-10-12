@@ -75,7 +75,7 @@
         </div>
     </div>
     <hr>
-    <form class="row m-5" id="assForm" action="" method="post">
+    <form class="row m-5" id="payForm" action="" method="post">
         <div class="form-group col-md-6">
             <label>Customer Reference</label>
             <input type="text" class="form-control" id="customerReference" value=""
@@ -88,7 +88,7 @@
         </div>
         <div class="form-group col-md-6">
             <label>Phone number</label>
-            <input type="text" class="form-control" id="payPhoneNumber" value=""
+            <input type="number" class="form-control" id="payPhoneNumber" value=""
                    placeholder="Enter phone number" name="payPhoneNumber">
         </div>
         <div class="form-group col-md-6">
@@ -97,7 +97,7 @@
                    placeholder="Enter payment Item Code" name="itemCode" required>
         </div>
         <div class="form-group col-md-6">
-            <label>Reversal</label>
+            <label for="reversal">Reversal</label>
             <select class="form-control" id="reversal" name="reversal">
                 <option value="false">NO</option>
                 <option value="true">YES</option>
@@ -134,27 +134,11 @@
             <table class="table table-striped table-bordered" style="width: 100%">
                 <tr>
                     <th style="width: 30%;">Transaction ID</th>
-                    <td id="tansactionId">N/A</td>
+                    <td id="transactionId">N/A</td>
                 </tr>
                 <tr>
                     <th style="width: 30%;">Payment Provider Reference</th>
                     <td id="ppr">N/A</td>
-                </tr>
-                <tr>
-                    <th style="width: 30%;">First name</th>
-                    <td id="payerFirstName">N/A</td>
-                </tr>
-                <tr>
-                    <th style="width: 30%;">Last name</th>
-                    <td id="payerLastName">N/A</td>
-                </tr>
-                <tr>
-                    <th style="width: 30%;">Phone number</th>
-                    <td id="payerPhoneNumber">N/A</td>
-                </tr>
-                <tr>
-                    <th style="width: 30%;">Email</th>
-                    <td id="payerEmail">N/A</td>
                 </tr>
                 <tr>
                     <th style="width: 30%;">Amount (&#8358;)</th>
@@ -224,56 +208,61 @@
                 }
             });
         });
-
-        $("#pay").click(function () {
-            $("#paying").show();
-            $("#errorPay").hide();
-            var custRef = $("#customerReference").val();
-            var itemCode = $("#itemCode").val();
-            var amount = $("#amountToPay").val();
-            var phoneNumber = $("#payPhoneNumber").val();
-            var reversal = $("#reversal").val();
-            var data = {
-                custRef: custRef,
-                itemCode: itemCode,
-                amount: amount,
-                phoneNumber: phoneNumber,
-                reversal: reversal
-            };
-            $.ajax({
-                url: "/api/paydirect/pay,
-                type: "POST",
-                dataType: "json",
-                data: JSON.stringify(data),
-                contentType: "application/json",
-                success: function (data) {
-                    console.log(data);
-                    var c = data.customers.customers[0];
-                    console.log(c);
-                    $("#paying").hide();
-                    if (c.status !== 0) {
-                        $("#payErrorMessage").text(c.statusMessage);
-                        $("#errorPay").show();
-                        return;
-                    }
-                    $("#customerRef").text(c.custReference);
-                    $("#firstName").text(c.firstName);
-                    $("#lastName").text(c.lastName);
-                    $("#phoneNumber").text(c.phoneNumber);
-                    $("#email").text(c.email);
-                    $("#amount").text(c.amount);
-                },
-                error: function (xhr, status) {
-                    alert("Sorry, there was a problem!");
-                    $("#validating").hide();
-                }
-                ,
-                complete: function (xhr, status) {
-                    //$('#showresults').slideDown('slow')
-                }
-            })
-            ;
-        })
+        $("#payForm").submit(function () {
+            // alert("submitted");
+            pay();
+            return false;
+        });
     });
+
+    function pay() {
+        $("#paying").show();
+        $("#errorPay").hide();
+        var custRef = $("#customerReference").val();
+        var itemCode = $("#itemCode").val();
+        var amount = $("#amountToPay").val();
+        var phoneNumber = $("#payPhoneNumber").val();
+        var reversal = $("#reversal").val();
+        var name = $("#name").val();
+        var data = {
+            custRef: custRef,
+            itemCode: itemCode,
+            amount: amount,
+            phoneNumber: phoneNumber,
+            reversal: reversal,
+            name: name
+        };
+        $.ajax({
+            url: "/api/paydirect/pay",
+            type: "POST",
+            dataType: "json",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            success: function (data) {
+                console.log(data);
+                var details = data.details;
+                var status = data.status;
+                $("#paying").hide();
+                if (status.status !== 0) {
+                    $("#payErrorMessage").text(status.statusMessage);
+                    $("#errorPay").show();
+                    return;
+                }
+                console.log('<== ' + details.transactionId);
+                $("#transactionId").text(details.transactionId);
+                $("#ppr").text(details.providerTransactionReference);
+                $("#amountPaid").text(details.amountPaidInKobo / 100);
+            },
+            error: function (xhr, status) {
+                $("#paying").hide();
+                var error = xhr.responseJSON ? xhr.responseJSON.errorMessage : "An unknown error occurred";
+                alert(error)
+            }
+            ,
+            complete: function (xhr, status) {
+                //$('#showresults').slideDown('slow')
+            }
+        })
+    }
 </script>
 </@layout.myLayout>

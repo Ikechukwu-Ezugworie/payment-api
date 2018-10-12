@@ -2,13 +2,18 @@ package conf;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ninja.lifecycle.Start;
 import ninja.utils.NinjaProperties;
+import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import services.SetupService;
@@ -16,7 +21,9 @@ import utils.Constants;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.TimeZone;
 
 @Singleton
@@ -51,6 +58,16 @@ public class StartupActions {
         objectMapper.setDateFormat(dateFormat);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(new StdSerializer<HibernateProxy>(HibernateProxy.class) {
+
+            @Override
+            public void serialize(HibernateProxy value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+                gen.writeObject(Collections.singletonMap("id", value.getHibernateLazyInitializer().getIdentifier()));
+            }
+        });
+        objectMapper.registerModule(simpleModule);
     }
 
     @Start(order = 10)

@@ -1,6 +1,7 @@
 package pojo.payDirect.customerValidation.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
 
@@ -83,16 +84,17 @@ public class CustomerInformationRequest {
         return this;
     }
 
+
     @Override
     public String toString() {
-        return "CustomerInformationRequest{" +
-                "serviceUsername='" + serviceUsername + '\'' +
-                ", servicePassword='" + servicePassword + '\'' +
-                ", merchantReference='" + merchantReference + '\'' +
-                ", custReference='" + custReference + '\'' +
-                ", paymentItemCode='" + paymentItemCode + '\'' +
-                ", thirdPartyCode='" + thirdPartyCode + '\'' +
-                ", amount=" + amount +
-                '}';
+        return new ToStringBuilder(this)
+                .append("serviceUsername", serviceUsername)
+                .append("servicePassword", servicePassword)
+                .append("merchantReference", merchantReference)
+                .append("custReference", custReference)
+                .append("paymentItemCode", paymentItemCode)
+                .append("thirdPartyCode", thirdPartyCode)
+                .append("amount", amount)
+                .toString();
     }
 }
