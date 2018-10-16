@@ -99,7 +99,7 @@ public class PayDirectService {
         }
 
         try {
-            System.out.println("<== VALIDATION REQUEST:: :: " + PaymentUtil.toJSON(validationRequest));
+            System.out.println("<== VALIDATING REQUEST:: :: " + PaymentUtil.toJSON(validationRequest));
 
             RequestBody body = RequestBody.create(JSON, PaymentUtil.toJSON(validationRequest));
             Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
