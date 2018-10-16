@@ -10,6 +10,7 @@ import ninja.utils.NinjaProperties;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.Constants;
 import utils.PaymentUtil;
 
 import java.util.List;
@@ -37,7 +38,8 @@ public class BacklogService {
         List<RawDump> rawDumps = paymentTransactionDao.getByProperty(RawDump.class, "description", "PAYMENT NOTIFICATION");
         logger.info("<== PROCESSING BACKLOG :: :: {} payments", rawDumps.size());
         for (RawDump rawDump : rawDumps) {
-            String url = "http://" + context.getHostname() + reverseRouter.with(PayDirectController::doPayDirectRequest);
+            String url = paymentTransactionDao.getSettingsValue(Constants.END_SYSTEM_BASE_URL, "http://localhost:8080", true) +
+                    reverseRouter.with(PayDirectController::doPayDirectRequest);
             logger.info("<== POSTING PAYMENT ID :: {} :: to :: {} :: ", rawDump.getId(), url);
 
             MediaType XML = MediaType.parse("application/xml; charset=utf-8");
