@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -98,6 +99,15 @@ public class PayDirectController {
             }
         };
         simpleModule.addDeserializer(OtherCustomerInfo.class, stdDeserializer);
+        SimpleModule simpleStringModule = new SimpleModule();
+        simpleStringModule.addDeserializer(String.class, new JsonDeserializer<String>() {
+            @Override
+            public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+                System.out.println("<=== " + p.getValueAsString());
+                return p.getValueAsString();
+            }
+        });
+        this.xmlMapper.registerModule(simpleStringModule);
         this.xmlMapper.registerModule(simpleModule);
     }
 
@@ -116,7 +126,6 @@ public class PayDirectController {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 XMLEventReader eventReader = factory.createXMLEventReader(inputStream);
-
                 while (eventReader.hasNext()) {
                     XMLEvent event = eventReader.nextEvent();
 

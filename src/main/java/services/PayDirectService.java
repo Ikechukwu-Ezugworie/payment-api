@@ -11,8 +11,10 @@ import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import ninja.Context;
+import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.*;
@@ -59,16 +61,19 @@ public class PayDirectService {
     private NotificationIdSequence notificationIdSequence;
     private MerchantDao merchantDao;
     private PaymentTransactionService paymentTransactionService;
+    private ReverseRouter reverseRouter;
 
     @Inject
     public PayDirectService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
-                            NotificationIdSequence notificationIdSequence, MerchantDao merchantDao, PaymentTransactionService paymentTransactionService) {
+                            NotificationIdSequence notificationIdSequence, MerchantDao merchantDao,
+                            PaymentTransactionService paymentTransactionService, ReverseRouter reverseRouter) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.ninjaProperties = ninjaProperties;
         this.notificationIdSequence = notificationIdSequence;
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
         this.merchantDao = merchantDao;
         this.paymentTransactionService = paymentTransactionService;
+        this.reverseRouter = reverseRouter;
     }
 
     public CustomerInformationResponse processCustomerValidationRequest(CustomerInformationRequest validationRequest, Context context) {
@@ -78,7 +83,7 @@ public class PayDirectService {
 //        Merchant merchant = paymentTransactionDao.getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", validationRequest.getMerchantReference());
         Merchant merchant = paymentTransactionDao.getMerchant(validationRequest.getMerchantReference());
 
-        if (merchant == null || !validationRequest.getMerchantReference().equalsIgnoreCase(merchant.getPaydirectMerchantReference())) {
+        if (merchant == null) {
             Customer customer = new Customer();
             customer.setFirstName("");
             customer.setCustReference(validationRequest.getCustReference());
@@ -94,7 +99,7 @@ public class PayDirectService {
         }
 
         try {
-            System.out.println("<== req body" + PaymentUtil.toJSON(validationRequest));
+            System.out.println("<== VALIDATING REQUEST:: :: " + PaymentUtil.toJSON(validationRequest));
 
             RequestBody body = RequestBody.create(JSON, PaymentUtil.toJSON(validationRequest));
             Request request = new Request.Builder().url(merchant.getLookupUrl()).post(body).build();
@@ -202,10 +207,13 @@ public class PayDirectService {
             try {
                 PayerPojo payerPojo = new PayerPojo();
 
-                String fName = PaymentUtil.getFirstNameFromFullName(payment.getCustomerName());
                 String lName = PaymentUtil.getLastNameFromFullName(payment.getCustomerName());
-                payerPojo.setFirstName(fName);
-                payerPojo.setLastName(lName);
+                if (StringUtils.isBlank(payment.getCustomerName())) {
+                    logger.info("<=== customer name is null");
+                }
+                logger.info("<==== customer name : " + payment.getCustomerName());
+                payerPojo.setFirstName(payment.getCustomerName());
+                payerPojo.setLastName("");
                 payerPojo.setEmail("");
                 payerPojo.setAddress(payment.getCustomerAddress());
                 payerPojo.setPhoneNumber(payment.getCustomerPhoneNumber());

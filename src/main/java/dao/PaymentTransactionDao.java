@@ -1,10 +1,7 @@
 package dao;
 
 import com.bw.payment.entity.*;
-import com.bw.payment.enumeration.GenericStatusConstant;
-import com.bw.payment.enumeration.PaymentChannelConstant;
-import com.bw.payment.enumeration.PaymentProviderConstant;
-import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.bw.payment.enumeration.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -233,6 +230,22 @@ public class PaymentTransactionDao extends BaseDao {
         return paymentTransactions.size() == 0 ? null : paymentTransactions.get(0);
     }
 
+    public PaymentTransaction getPaymentResponseLogByLogIdAndStatus(String logId, PaymentResponseStatusConstant status) {
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PaymentTransaction> clientCriteriaQuery = criteriaBuilder.createQuery(PaymentTransaction.class);
+        Root<PaymentResponseLog> clientRoot = clientCriteriaQuery.from(PaymentResponseLog.class);
+        Predicate predicate = criteriaBuilder.and(
+                criteriaBuilder.equal(clientRoot.get("paymentLogId"), logId),
+                criteriaBuilder.equal(clientRoot.get("status"), status.getValue())
+        );
+        clientCriteriaQuery.select(clientRoot.get("paymentTransaction")).where(predicate);
+
+        return uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
+
+    }
+
     public PaymentTransaction getPaymentTransactionByPaymentProviderReference(String providerReference) {
 
         return getUniqueRecordByProperty(PaymentTransaction.class, "providerTransactionReference", providerReference);
@@ -251,19 +264,22 @@ public class PaymentTransactionDao extends BaseDao {
     }
 
     public Merchant getMerchant(String merchantReference) {
+        Boolean validateMerchRef = Boolean.valueOf(getSettingsValue("VALIDATE_MERCHANT_REF", "false", true));
+        if (validateMerchRef) {
+            if (StringUtils.isBlank(merchantReference)) {
+                System.out.println("<== MERCHANT REF IS EMPTY xx");
+                return null;
+            }
+            System.out.println("<== RETURNING MERCHANT BY MERCHANT REF " + merchantReference + " xx");
+            return getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", merchantReference);
+
+        }
         List<Merchant> merchants = getAllRecords(Merchant.class);
         if (merchants.size() < 1) {
             System.out.println("<== NO MERCHANT HAS BEEN REGISTERED xx");
             return null;
         }
-        if (merchants.size() > 1 && StringUtils.isBlank(merchantReference)) {
-            System.out.println("<== RETURNING FIRST OF MANY MERCHANTS xx");
-            return merchants.get(0);
-        }
-        if (merchants.size() > 1 && !StringUtils.isBlank(merchantReference)) {
-            System.out.println("<== RETURNING MERCHANT BY MERCHANT REF " + merchantReference + " xx");
-            return getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", merchantReference);
-        }
+        System.out.println("<== RETURNING FIRST OF MANY MERCHANTS xx");
         return merchants.get(0);
     }
 }

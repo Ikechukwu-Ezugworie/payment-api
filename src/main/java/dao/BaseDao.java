@@ -35,6 +35,18 @@ public class BaseDao {
         return uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
     }
 
+    public <T> List<T> getByProperty(Class<T> tClass, String propertyName, Object propertyValue) {
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> clientCriteriaQuery = criteriaBuilder.createQuery(tClass);
+        Root<T> clientRoot = clientCriteriaQuery.from(tClass);
+        Predicate predicate = criteriaBuilder.equal(clientRoot.get(propertyName), propertyValue);
+        clientCriteriaQuery.where(predicate);
+
+        return entityManager.createQuery(clientCriteriaQuery).getResultList();
+    }
+
     <T> T uniqueResultOrNull(TypedQuery<T> tTypedQuery) {
         try {
             List<T> tList = tTypedQuery.getResultList();

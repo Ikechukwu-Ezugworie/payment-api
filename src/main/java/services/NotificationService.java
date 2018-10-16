@@ -2,26 +2,26 @@ package services;
 
 import com.bw.payment.entity.NotificationQueue;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-import dao.MerchantDao;
 import dao.PaymentTransactionDao;
-import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
-import services.sequence.PayerIdSequence;
-import services.sequence.TransactionIdSequence;
 import utils.PaymentUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /*
  * Created by Gibah Joseph on Sep, 2018
  */
+@Singleton
 public class NotificationService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private PaymentTransactionDao paymentTransactionDao;
-
+    private static ExecutorService notificationService = Executors.newSingleThreadExecutor();
     private OkHttpClient client;
 
     @Inject
@@ -64,7 +64,7 @@ public class NotificationService {
 
     public void sendPaymentNotification(Integer batchSize) {
         Integer finalBatchSize = batchSize == null ? 50 : batchSize;
-        processPendingNotifications(finalBatchSize);
+        notificationService.execute(() -> processPendingNotifications(finalBatchSize));
     }
 
     private void notificationSent(NotificationQueue notificationQueue) {

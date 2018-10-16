@@ -41,8 +41,6 @@ import ninja.Results;
 public class ApplicationController {
 
     public Result index() {
-
-        return Results.json();
-
+        return Results.json().render("I AM OKAY!!");
     }
 }
