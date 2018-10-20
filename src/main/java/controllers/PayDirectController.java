@@ -51,7 +51,7 @@ import java.time.Instant;
 public class PayDirectController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private PaymentTransactionService paymentTransactionService;
-    private PayDirectService payDirectService;
+    private final PayDirectService payDirectService;
 
     private XmlMapper xmlMapper;
 
@@ -150,11 +150,13 @@ public class PayDirectController {
                                 eventReader.close();
                                 PaymentNotificationRequest request = xmlMapper.readValue(payload, PaymentNotificationRequest.class);
                                 logger.info("<=== PAYMENT NOTIFICATION: " + request.toString());
-                                PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, rawDump, context);
-                                rawDump.setResponse(paymentNotificationResponsePojo == null ? null : PaymentUtil.toJSON(paymentNotificationResponsePojo));
-                                rawDump.setDescription("PAYMENT NOTIFICATION");
-                                paymentTransactionService.dump(rawDump);
-                                return Results.ok().xml().render(paymentNotificationResponsePojo);
+                                synchronized (payDirectService) {
+                                    PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, rawDump, context);
+                                    rawDump.setResponse(paymentNotificationResponsePojo == null ? null : PaymentUtil.toJSON(paymentNotificationResponsePojo));
+                                    rawDump.setDescription("PAYMENT NOTIFICATION");
+                                    paymentTransactionService.dump(rawDump);
+                                    return Results.ok().xml().render(paymentNotificationResponsePojo);
+                                }
                             }
                             break;
                     }

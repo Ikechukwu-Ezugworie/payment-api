@@ -7,11 +7,11 @@ import com.bw.payment.enumeration.PaymentResponseStatusConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import ninja.Context;
-import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +43,7 @@ import static utils.PaymentUtil.getAmountInKobo;
 /**
  * CREATED BY GIBAH
  */
+@Singleton
 public class PayDirectService {
     public static final int CUSTOMER_VALID = 0;
     public static final int CUSTOMER_INVALID = 1;
@@ -61,19 +62,17 @@ public class PayDirectService {
     private NotificationIdSequence notificationIdSequence;
     private MerchantDao merchantDao;
     private PaymentTransactionService paymentTransactionService;
-    private ReverseRouter reverseRouter;
 
     @Inject
     public PayDirectService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
                             NotificationIdSequence notificationIdSequence, MerchantDao merchantDao,
-                            PaymentTransactionService paymentTransactionService, ReverseRouter reverseRouter) {
+                            PaymentTransactionService paymentTransactionService) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.ninjaProperties = ninjaProperties;
         this.notificationIdSequence = notificationIdSequence;
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
         this.merchantDao = merchantDao;
         this.paymentTransactionService = paymentTransactionService;
-        this.reverseRouter = reverseRouter;
     }
 
     public CustomerInformationResponse processCustomerValidationRequest(CustomerInformationRequest validationRequest, Context context) {
@@ -171,7 +170,7 @@ public class PayDirectService {
     }
 
     @Transactional
-    public PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, RawDump rawDump, Context context) {
+    public synchronized PaymentNotificationResponse processPaymentNotification(PaymentNotificationRequest request, RawDump rawDump, Context context) {
         PaymentNotificationResponse paymentNotificationResponsePojo = new PaymentNotificationResponse();
         Payments payments = new Payments();
         paymentNotificationResponsePojo.setPayments(payments);

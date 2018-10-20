@@ -26,6 +26,7 @@ import utils.Constants;
 import utils.PaymentUtil;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -139,9 +140,19 @@ public class TestController {
         if (validation.hasViolations()) {
             return Results.badRequest().json().render("errorMessage", validation.getViolations().iterator().next().getDefaultMessage());
         }
+        Integer numberOfCalls = paymentData.getDuplicateCalls();
+        if (numberOfCalls == null || numberOfCalls < 1) {
+            numberOfCalls = 1;
+        }
 
+        logger.info("<=== testing with number of calls {}", numberOfCalls);
 
         String paymentNotificationRequest = generatePayload(paymentData, context);
+
+        if (numberOfCalls > 1) {
+            makeMultipleRequests(paymentNotificationRequest, numberOfCalls, context);
+            return Results.badRequest().json().render("error", "Multiple requests");
+        }
 
         String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
 
@@ -162,6 +173,30 @@ public class TestController {
             e.printStackTrace();
         }
         return Results.internalServerError().json();
+    }
+
+    private void makeMultipleRequests(String paymentNotificationRequest, Integer numberOfCalls, Context context) {
+
+        for (int i = 0; i < numberOfCalls; i++) {
+            logger.info("<=== making payment notification call {}", i);
+            String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
+
+            MediaType XML = MediaType.parse("application/xml; charset=utf-8");
+            RequestBody body = RequestBody.create(XML, paymentNotificationRequest);
+            Request request = new Request.Builder().url(url).post(body).build();
+            int finalI = i;
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    logger.info("<== multi call {} returned with {}", finalI, response.body().string());
+                }
+            });
+        }
     }
 
     private String generatePayload(PaymentData paymentData, Context context) {
@@ -232,6 +267,7 @@ public class TestController {
         private Boolean reversal;
         @NotBlank(message = "Name cannot be blank")
         private String name;
+        private Integer duplicateCalls = 1;
 
         public String getCustRef() {
             return custRef;
@@ -284,6 +320,15 @@ public class TestController {
 
         public PaymentData setName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Integer getDuplicateCalls() {
+            return duplicateCalls;
+        }
+
+        public PaymentData setDuplicateCalls(Integer duplicateCalls) {
+            this.duplicateCalls = duplicateCalls;
             return this;
         }
     }
