@@ -2,13 +2,6 @@ package controllers;
 
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentResponseStatusConstant;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -23,11 +16,9 @@ import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import pojo.payDirect.paymentNotification.response.PaymentResponsePojo;
@@ -75,7 +66,7 @@ public class TestController {
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
                 "<MerchantReference>" + merchRef + "</MerchantReference><CustReference>" + custRef + "</CustReference><PaymentItemCode>" +
                 "" + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
-        String url = "http://" + context.getHostname() + reverseRouter.with(PayDirectController::doPayDirectRequest);
+        String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
 
         MediaType XML = MediaType.parse("application/xml; charset=utf-8");
         RequestBody body = RequestBody.create(XML, payload);
@@ -91,83 +82,6 @@ public class TestController {
             e.printStackTrace();
         }
         return Results.internalServerError().json();
-    }
-
-    public static void main(String[] args) {
-
-        class DummyData {
-            private String custRef;
-            private String itemCode;
-
-            public String getCustRef() {
-                return custRef;
-            }
-
-            public DummyData setCustRef(String custRef) {
-                this.custRef = custRef;
-                return this;
-            }
-
-            public String getItemCode() {
-                return itemCode;
-            }
-
-            public DummyData setItemCode(String itemCode) {
-                this.itemCode = itemCode;
-                return this;
-            }
-
-            @Override
-            public String toString() {
-                return new ToStringBuilder(this)
-                        .append("custRef", custRef)
-                        .append("itemCode", itemCode)
-                        .toString();
-            }
-        }
-        String payload = "<CustomerInformationRequest><ServiceUsername/><ServicePassword> </ServicePassword>" +
-                "<MerchantReference>65478</MerchantReference><CustReference>6547586</CustReference><PaymentItemCode>" +
-                "" + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode><Amount></Amount></CustomerInformationRequest>";
-        XmlMapper xmlMapper = new XmlMapper();
-        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        xmlMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, false);
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addDeserializer(String.class, new JsonDeserializer<String>() {
-            @Override
-            public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-                System.out.println("<=== " + p.getValueAsString());
-                return null;
-            }
-        });
-        xmlMapper.registerModule(simpleModule);
-//        xmlMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, false);
-        try {
-            CustomerInformationRequest customerInformationRequest = xmlMapper.readValue(payload, CustomerInformationRequest.class);
-//            customerInformationRequest.getServiceUsername().toLowerCase();
-            System.out.println(customerInformationRequest.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-//        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-//        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        xmlMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, false);
-//        try {
-//            CustomerInformationRequest customerInformationRequest = xmlMapper.readValue(payload, CustomerInformationRequest.class);
-//            System.out.println(customerInformationRequest.toString());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        xmlMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-//        try {
-//            CustomerInformationRequest customerInformationRequest = xmlMapper.readValue(payload, CustomerInformationRequest.class);
-//            System.out.println(customerInformationRequest.toString());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
     }
 
 //    private String generatePayloa(String customerReference, String name, String phoneNumber, String amount, String itemCode, boolean reversal, Context context) {
@@ -226,11 +140,21 @@ public class TestController {
         if (validation.hasViolations()) {
             return Results.badRequest().json().render("errorMessage", validation.getViolations().iterator().next().getDefaultMessage());
         }
+        Integer numberOfCalls = paymentData.getDuplicateCalls();
+        if (numberOfCalls == null || numberOfCalls < 1) {
+            numberOfCalls = 1;
+        }
 
+        logger.info("<=== testing with number of calls {}", numberOfCalls);
 
         String paymentNotificationRequest = generatePayload(paymentData, context);
 
-        String url = "http://" + context.getHostname() + reverseRouter.with(PayDirectController::doPayDirectRequest);
+        if (numberOfCalls > 1) {
+            makeMultipleRequests(paymentNotificationRequest, numberOfCalls, context);
+            return Results.badRequest().json().render("error", "Multiple requests");
+        }
+
+        String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
 
         MediaType XML = MediaType.parse("application/xml; charset=utf-8");
         RequestBody body = RequestBody.create(XML, paymentNotificationRequest);
@@ -249,6 +173,30 @@ public class TestController {
             e.printStackTrace();
         }
         return Results.internalServerError().json();
+    }
+
+    private void makeMultipleRequests(String paymentNotificationRequest, Integer numberOfCalls, Context context) {
+
+        for (int i = 0; i < numberOfCalls; i++) {
+            logger.info("<=== making payment notification call {}", i);
+            String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
+
+            MediaType XML = MediaType.parse("application/xml; charset=utf-8");
+            RequestBody body = RequestBody.create(XML, paymentNotificationRequest);
+            Request request = new Request.Builder().url(url).post(body).build();
+            int finalI = i;
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    logger.info("<== multi call {} returned with {}", finalI, response.body().string());
+                }
+            });
+        }
     }
 
     private String generatePayload(PaymentData paymentData, Context context) {
@@ -319,6 +267,7 @@ public class TestController {
         private Boolean reversal;
         @NotBlank(message = "Name cannot be blank")
         private String name;
+        private Integer duplicateCalls = 1;
 
         public String getCustRef() {
             return custRef;
@@ -371,6 +320,15 @@ public class TestController {
 
         public PaymentData setName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Integer getDuplicateCalls() {
+            return duplicateCalls;
+        }
+
+        public PaymentData setDuplicateCalls(Integer duplicateCalls) {
+            this.duplicateCalls = duplicateCalls;
             return this;
         }
     }
