@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed multi threading issue">
+    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="updated readme">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/conf/application.conf" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/conf/application.conf" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -80,26 +80,27 @@
     <session id="1858085706">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="12" />
+          <entry key="project.closed" value="14" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.12" value="1" />
+          <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.17" value="1" />
           <entry key="project.open.time.3" value="2" />
           <entry key="project.open.time.4" value="1" />
           <entry key="project.open.time.43" value="1" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.open.time.6" value="2" />
+          <entry key="project.open.time.6" value="3" />
           <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="13" />
+          <entry key="project.opened" value="15" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="class" value="1" />
-          <entry key="conf" value="1" />
+          <entry key="conf" value="2" />
           <entry key="html" value="13" />
-          <entry key="java" value="59" />
+          <entry key="java" value="64" />
           <entry key="md" value="1" />
           <entry key="merchant" value="1" />
           <entry key="notification_queue" value="3" />
@@ -114,29 +115,29 @@
           <entry key="CLASS" value="1" />
           <entry key="Database Element" value="7" />
           <entry key="FTL" value="13" />
-          <entry key="HOCON" value="1" />
-          <entry key="JAVA" value="59" />
+          <entry key="HOCON" value="2" />
+          <entry key="JAVA" value="64" />
           <entry key="Markdown" value="1" />
           <entry key="XML" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="conf" value="5" />
+          <entry key="conf" value="91" />
           <entry key="html" value="2448" />
           <entry key="java" value="4085" />
-          <entry key="md" value="327" />
+          <entry key="md" value="400" />
           <entry key="sql" value="24" />
-          <entry key="txt" value="213" />
+          <entry key="txt" value="236" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="FTL" value="2448" />
-          <entry key="HOCON" value="5" />
+          <entry key="HOCON" value="91" />
           <entry key="JAVA" value="4085" />
-          <entry key="Markdown" value="327" />
-          <entry key="PLAIN_TEXT" value="213" />
+          <entry key="Markdown" value="400" />
+          <entry key="PLAIN_TEXT" value="236" />
           <entry key="SQL" value="24" />
         </counts>
       </usages-collector>
@@ -152,20 +153,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-254">
-              <caret line="59" column="56" selection-start-line="59" selection-start-column="56" selection-end-line="59" selection-end-column="56" />
+            <state relative-caret-position="1980">
+              <caret line="170" selection-start-line="170" selection-end-line="170" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="105">
-                <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
-              </first_editor>
-              <second_editor />
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/services/NotificationService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="16" column="2" selection-start-line="16" selection-start-column="2" selection-end-line="16" selection-end-column="2" />
             </state>
           </provider>
         </entry>
@@ -186,32 +193,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/TestController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="402">
-              <caret line="171" column="31" lean-forward="true" selection-start-line="171" selection-start-column="31" selection-end-line="171" selection-end-column="31" />
+            <state relative-caret-position="2115">
+              <caret line="171" column="31" selection-start-line="171" selection-start-column="31" selection-end-line="171" selection-end-column="31" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3660">
-              <caret line="244" column="16" selection-start-line="244" selection-start-column="16" selection-end-line="244" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="das://4608fbf3-8f1f-4b39-ac80-2758eb151608/database/bw_payment/schema/public/table/notification_queue">
-          <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-            <state>
-              <filtering enabled="true">
-                <filter text="message_in_json ilike '%null%'" />
-                <filter text="notification_sent=false" />
-              </filtering>
             </state>
           </provider>
         </entry>
@@ -219,23 +205,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/NotificationController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="99" column="47" selection-start-line="99" selection-start-column="47" selection-end-line="99" selection-end-column="47" />
-              <folding>
-                <element signature="e#0#3935#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="165">
+              <caret line="90" column="11" selection-start-line="90" selection-start-column="11" selection-end-line="90" selection-end-column="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/conf/application.conf">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="126">
+              <caret line="23" column="50" lean-forward="true" selection-start-line="23" selection-start-column="50" selection-end-line="23" selection-end-column="50" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/services/BacklogService.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="40" column="68" selection-start-line="40" selection-start-column="68" selection-end-line="40" selection-end-column="68" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="510">
+              <caret line="56" column="59" selection-start-line="56" selection-start-column="44" selection-end-line="56" selection-end-column="59" />
             </state>
           </provider>
         </entry>
@@ -252,8 +241,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1590">
-              <caret line="147" column="89" selection-start-line="147" selection-start-column="89" selection-end-line="147" selection-end-column="89" />
+            <state relative-caret-position="1635">
+              <caret line="153" column="122" selection-start-line="153" selection-start-column="122" selection-end-line="153" selection-end-column="122" />
             </state>
           </provider>
         </entry>
@@ -343,7 +332,6 @@
         <option value="$PROJECT_DIR$/src/main/java/pojo/payDirect/paymentNotification/request/OtherCustomerInfo.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/PaymentUtil.java" />
         <option value="$PROJECT_DIR$/src/main/java/dao/BaseDao.java" />
-        <option value="$PROJECT_DIR$/src/main/java/conf/application.conf" />
         <option value="$PROJECT_DIR$/src/main/java/views/PrototypeController/test.ftl.html" />
         <option value="$PROJECT_DIR$/src/main/java/views/layout/header.ftl.html" />
         <option value="$PROJECT_DIR$/src/main/java/views/layout/defaultLayout.ftl.html" />
@@ -352,7 +340,6 @@
         <option value="$PROJECT_DIR$/src/main/java/conf/Routes.java" />
         <option value="$PROJECT_DIR$/src/main/java/views/ApplicationController/index.ftl.html" />
         <option value="$PROJECT_DIR$/src/main/java/services/NotificationService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/controllers/NotificationController.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/CronSchedule.java" />
         <option value="$PROJECT_DIR$/src/main/java/controllers/ApplicationController.java" />
         <option value="$PROJECT_DIR$/src/main/java/dao/PaymentTransactionDao.java" />
@@ -363,6 +350,8 @@
         <option value="$PROJECT_DIR$/src/main/java/services/PayDirectService.java" />
         <option value="$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/main/java/controllers/NotificationController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/conf/application.conf" />
       </list>
     </option>
   </component>
@@ -394,9 +383,10 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="838" />
-    <option name="height" value="1050" />
+  <component name="ProjectFrameBounds">
+    <option name="y" value="23" />
+    <option name="width" value="1680" />
+    <option name="height" value="951" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -404,6 +394,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -470,6 +461,14 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="conf" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bw-payment-api" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="controllers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -511,17 +510,16 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="SearchEverywhereHistoryKey" value="tes&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/TestController.java&#10;rout&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;cro&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/utils/CronSchedule.java&#10;test&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/views/TestController/test.ftl.html&#10;sta&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;pa&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;payd&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;paymnot&#9;PSI&#9;JAVA://pojo.payDirect.paymentNotification.request.PaymentNotificationRequest&#10;star&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;paymTr&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;rou&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;conf&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;cron&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/utils/CronSchedule.java&#10;inter&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;paym&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;other&#9;PSI&#9;JAVA://pojo.payDirect.paymentNotification.request.OtherCustomerInfo&#10;pro&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;proto&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;paydire&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;base&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/BaseDao.java&#10;route&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;paymen&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;inte&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;payC&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;payment&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/pojo/payDirect/paymentNotification/request/Payments.java&#10;pr&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;transa&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/services/sequence/TransactionIdSequence.java&#10;start&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;applica&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;bwda&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/resources/BWDataConfig.xml" />
+    <property name="SearchEverywhereHistoryKey" value="app&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;payd&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;cron&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/utils/CronSchedule.java&#10;tes&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/TestController.java&#10;rout&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;cro&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/utils/CronSchedule.java&#10;test&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/views/TestController/test.ftl.html&#10;sta&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;pa&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;paymnot&#9;PSI&#9;JAVA://pojo.payDirect.paymentNotification.request.PaymentNotificationRequest&#10;star&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;paymTr&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;rou&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;conf&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;inter&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;paym&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;other&#9;PSI&#9;JAVA://pojo.payDirect.paymentNotification.request.OtherCustomerInfo&#10;pro&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;proto&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;paydire&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;base&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/BaseDao.java&#10;route&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;paymen&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;inte&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;payC&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;payment&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/pojo/payDirect/paymentNotification/request/Payments.java&#10;pr&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;transa&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/services/sequence/TransactionIdSequence.java&#10;start&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;applica&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;bwda&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/resources/BWDataConfig.xml" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540191875704" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540580673477" />
     <property name="database.console.LAST_STATE" value="false" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -846,7 +844,24 @@
     <configuration name="[ninja:run]" type="MavenRunConfiguration" factoryName="Maven">
       <MavenSettings>
         <option name="myGeneralSettings" />
-        <option name="myRunnerSettings" />
+        <option name="myRunnerSettings">
+          <MavenRunnerSettings>
+            <option name="delegateBuildToMaven" value="false" />
+            <option name="environmentProperties">
+              <map />
+            </option>
+            <option name="jreName" value="#USE_PROJECT_JDK" />
+            <option name="mavenProperties">
+              <map>
+                <entry key="%dev.bw.payment.db.username" value="test" />
+              </map>
+            </option>
+            <option name="passParentEnv" value="true" />
+            <option name="runMavenInBackground" value="true" />
+            <option name="skipTests" value="false" />
+            <option name="vmOptions" value="" />
+          </MavenRunnerSettings>
+        </option>
         <option name="myRunnerParameters">
           <MavenRunnerParameters>
             <option name="profiles">
@@ -985,7 +1000,9 @@
       <workItem from="1539332228206" duration="7921000" />
       <workItem from="1539628740554" duration="4565000" />
       <workItem from="1539989989260" duration="4459000" />
-      <workItem from="1540191111303" duration="749000" />
+      <workItem from="1540191111303" duration="2181000" />
+      <workItem from="1540209263332" duration="2295000" />
+      <workItem from="1540569859276" duration="3743000" />
     </task>
     <task id="LOCAL-00001" summary="implemented custom fields">
       <created>1528979649077</created>
@@ -1281,11 +1298,18 @@
       <option name="project" value="LOCAL" />
       <updated>1540018374670</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="updated readme">
+      <created>1540192026437</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1540192026438</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="310816000" />
+    <option name="totallyTimeSpent" value="318286000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1297,10 +1321,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
+    <frame x="0" y="23" width="1680" height="951" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18681319" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18681319" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
@@ -1311,12 +1335,12 @@
       <window_info id="Persistence" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.4234694" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.4225844" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3286052" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.39081633" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.38998836" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Java Enterprise" order="9" weight="0.32943925" />
       <window_info anchor="bottom" id="Database Changes" order="10" />
@@ -1353,7 +1377,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="removed jsonparser issue" />
     <MESSAGE value="original ip fix" />
     <MESSAGE value="removed dangerous routes" />
     <MESSAGE value="fixed ip ish" />
@@ -1378,20 +1401,13 @@
     <MESSAGE value="fixed backlog service" />
     <MESSAGE value="fixed test scheme" />
     <MESSAGE value="fixed multi threading issue" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed multi threading issue" />
+    <MESSAGE value="updated readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated readme" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/PrototypeController/test.ftl.html" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/layout/header.ftl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="85" selection-start-line="1" selection-start-column="85" selection-end-line="1" selection-end-column="85" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PaymentTransactionController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -1608,20 +1624,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/utils/CronSchedule.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="20" column="43" selection-start-line="20" selection-start-column="43" selection-end-line="20" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/NotificationService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="33" column="17" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/ninjaframework/ninja-core/6.2.2/ninja-core-6.2.2-sources.jar!/ninja/ReverseRouter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
@@ -1650,13 +1652,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="56" column="116" selection-start-line="56" selection-start-column="116" selection-end-line="56" selection-end-column="116" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.10.0/okhttp-3.10.0-sources.jar!/okhttp3/Call.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="825">
@@ -1681,47 +1676,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/NotificationController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="99" column="47" selection-start-line="99" selection-start-column="47" selection-end-line="99" selection-end-column="47" />
-          <folding>
-            <element signature="e#0#3935#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/BacklogService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
           <caret line="40" column="68" selection-start-line="40" selection-start-column="68" selection-end-line="40" selection-end-column="68" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/utils/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="74" selection-start-line="20" selection-start-column="74" selection-end-line="20" selection-end-column="74" />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="135">
+            <caret line="9" selection-start-line="9" selection-end-line="9" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/utils/CronSchedule.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1590">
-          <caret line="147" column="89" selection-start-line="147" selection-start-column="89" selection-end-line="147" selection-end-column="89" />
+        <state relative-caret-position="105">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/TestController.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="402">
-          <caret line="171" column="31" lean-forward="true" selection-start-line="171" selection-start-column="31" selection-end-line="171" selection-end-column="31" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="1980">
+          <caret line="170" selection-start-line="170" selection-end-line="170" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/NotificationService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="16" column="2" selection-start-line="16" selection-start-column="2" selection-end-line="16" selection-end-column="2" />
         </state>
       </provider>
     </entry>
@@ -1736,20 +1732,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/TestController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-254">
-          <caret line="59" column="56" selection-start-line="59" selection-start-column="56" selection-end-line="59" selection-end-column="56" />
+        <state relative-caret-position="2115">
+          <caret line="171" column="31" selection-start-line="171" selection-start-column="31" selection-end-line="171" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="105">
-            <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
-          </first_editor>
-          <second_editor />
+    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="56" column="59" selection-start-line="56" selection-start-column="44" selection-end-line="56" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/utils/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="74" selection-start-line="20" selection-start-column="74" selection-end-line="20" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1635">
+          <caret line="153" column="122" selection-start-line="153" selection-start-column="122" selection-end-line="153" selection-end-column="122" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/NotificationController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="90" column="11" selection-start-line="90" selection-start-column="11" selection-end-line="90" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/conf/application.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="23" column="50" lean-forward="true" selection-start-line="23" selection-start-column="50" selection-end-line="23" selection-end-column="50" />
         </state>
       </provider>
     </entry>
