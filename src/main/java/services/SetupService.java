@@ -4,24 +4,44 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import dao.BaseDao;
 import dao.MerchantDao;
+import ninja.utils.NinjaProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pojo.MerchantRequestPojo;
 import utils.Constants;
+
+import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * CREATED BY GIBAH
  */
 public class SetupService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private BaseDao baseDao;
     private MerchantDao merchantDao;
+    private NinjaProperties ninjaProperties;
 
     @Inject
-    public SetupService(BaseDao baseDao, MerchantDao merchantDao) {
+    public SetupService(BaseDao baseDao, MerchantDao merchantDao, NinjaProperties ninjaProperties) {
         this.baseDao = baseDao;
         this.merchantDao = merchantDao;
+        this.ninjaProperties = ninjaProperties;
     }
 
 
     public void setUp() {
+        if (!ninjaProperties.isProd()) {
+            logger.info("<=== Displaying all system properties");
+            Properties p = System.getProperties();
+            Enumeration keys = p.keys();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                String value = (String) p.get(key);
+                logger.info(key + ": " + value);
+            }
+            logger.info("<=== finished Displaying all system properties");
+        }
         createInterswitchWhitelist();
         createDefaultMerchant();
     }
