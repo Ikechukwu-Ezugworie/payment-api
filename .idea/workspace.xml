@@ -4,6 +4,7 @@
     <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="updated readme">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/conf/application.conf" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/conf/application.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -100,14 +101,14 @@
           <entry key="class" value="1" />
           <entry key="conf" value="2" />
           <entry key="html" value="13" />
-          <entry key="java" value="64" />
-          <entry key="md" value="1" />
+          <entry key="java" value="69" />
+          <entry key="md" value="2" />
           <entry key="merchant" value="1" />
           <entry key="notification_queue" value="3" />
           <entry key="payer" value="1" />
           <entry key="payment_response_log" value="1" />
           <entry key="payment_transaction" value="1" />
-          <entry key="xml" value="6" />
+          <entry key="xml" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -116,14 +117,14 @@
           <entry key="Database Element" value="7" />
           <entry key="FTL" value="13" />
           <entry key="HOCON" value="2" />
-          <entry key="JAVA" value="64" />
-          <entry key="Markdown" value="1" />
-          <entry key="XML" value="6" />
+          <entry key="JAVA" value="69" />
+          <entry key="Markdown" value="2" />
+          <entry key="XML" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="conf" value="91" />
+          <entry key="conf" value="123" />
           <entry key="html" value="2448" />
           <entry key="java" value="4085" />
           <entry key="md" value="400" />
@@ -134,7 +135,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="FTL" value="2448" />
-          <entry key="HOCON" value="91" />
+          <entry key="HOCON" value="123" />
           <entry key="JAVA" value="4085" />
           <entry key="Markdown" value="400" />
           <entry key="PLAIN_TEXT" value="236" />
@@ -151,52 +152,49 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1980">
-              <caret line="170" selection-start-line="170" selection-end-line="170" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
+            <state relative-caret-position="195">
+              <caret line="30" column="17" lean-forward="true" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/services/NotificationService.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/conf/StartupActions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="16" column="2" selection-start-line="16" selection-start-column="2" selection-end-line="16" selection-end-column="2" />
+            <state relative-caret-position="443">
+              <caret line="84" column="24" lean-forward="true" selection-start-line="84" selection-start-column="24" selection-end-line="84" selection-end-column="24" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/controllers/ApplicationController.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/services/SetupService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="420">
+              <caret line="33" column="42" selection-start-line="33" selection-start-column="42" selection-end-line="33" selection-end-column="42" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/conf/Filters.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/utils/CronSchedule.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
-              <caret line="37" selection-start-line="37" selection-end-line="37" />
+              <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
               <folding>
-                <element signature="e#1425#1426#0" expanded="true" />
-                <element signature="e#1484#1485#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/controllers/TestController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2115">
-              <caret line="171" column="31" selection-start-line="171" selection-start-column="31" selection-end-line="171" selection-end-column="31" />
-              <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#539#540#0" expanded="true" />
+                <element signature="e#603#604#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -214,35 +212,29 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/conf/application.conf">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="23" column="50" lean-forward="true" selection-start-line="23" selection-start-column="50" selection-end-line="23" selection-end-column="50" />
+            <state relative-caret-position="319">
+              <caret line="29" column="68" lean-forward="true" selection-start-line="29" selection-start-column="68" selection-end-line="29" selection-end-column="68" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="56" column="59" selection-start-line="56" selection-start-column="44" selection-end-line="56" selection-end-column="59" />
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="135">
+                <caret line="9" selection-start-line="9" selection-end-line="9" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/utils/Constants.java">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" column="74" selection-start-line="20" selection-start-column="74" selection-end-line="20" selection-end-column="74" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1635">
-              <caret line="153" column="122" selection-start-line="153" selection-start-column="122" selection-end-line="153" selection-end-column="122" />
+            <state relative-caret-position="285">
+              <caret line="19" column="17" lean-forward="true" selection-start-line="19" selection-start-column="17" selection-end-line="19" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -505,6 +497,13 @@
               <item name="views" type="462c0819:PsiDirectoryNode" />
               <item name="TestController" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bw-payment-api" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="webapp" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -519,7 +518,7 @@
     <property name="SearchEverywhereHistoryKey" value="app&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;payd&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;cron&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/utils/CronSchedule.java&#10;tes&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/TestController.java&#10;rout&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;cro&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/utils/CronSchedule.java&#10;test&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/views/TestController/test.ftl.html&#10;sta&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;pa&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;paymnot&#9;PSI&#9;JAVA://pojo.payDirect.paymentNotification.request.PaymentNotificationRequest&#10;star&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;paymTr&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;rou&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;conf&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;inter&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;paym&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;other&#9;PSI&#9;JAVA://pojo.payDirect.paymentNotification.request.OtherCustomerInfo&#10;pro&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;proto&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;paydire&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;base&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/BaseDao.java&#10;route&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/Routes.java&#10;paymen&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/dao/PaymentTransactionDao.java&#10;inte&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/filters/InterswitchFilter.java&#10;payC&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PayDirectController.java&#10;payment&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/pojo/payDirect/paymentNotification/request/Payments.java&#10;pr&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/controllers/PrototypeController.java&#10;transa&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/services/sequence/TransactionIdSequence.java&#10;start&#9;FILE&#9;file:///jcodes/dev/projects/bw-payment-api/src/main/java/conf/StartupActions.java&#10;applica&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/java/conf/application.conf&#10;bwda&#9;FILE&#9;file://C:/jcodes/dev/projects/bw-payment-api/src/main/resources/BWDataConfig.xml" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540580673477" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540625886925" />
     <property name="database.console.LAST_STATE" value="false" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -853,7 +852,7 @@
             <option name="jreName" value="#USE_PROJECT_JDK" />
             <option name="mavenProperties">
               <map>
-                <entry key="%dev.bw.payment.db.username" value="test" />
+                <entry key="%dev.bw.payment.db.username" value="'test'" />
               </map>
             </option>
             <option name="passParentEnv" value="true" />
@@ -1002,7 +1001,7 @@
       <workItem from="1539989989260" duration="4459000" />
       <workItem from="1540191111303" duration="2181000" />
       <workItem from="1540209263332" duration="2295000" />
-      <workItem from="1540569859276" duration="3743000" />
+      <workItem from="1540569859276" duration="8092000" />
     </task>
     <task id="LOCAL-00001" summary="implemented custom fields">
       <created>1528979649077</created>
@@ -1309,7 +1308,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="318286000" />
+    <option name="totallyTimeSpent" value="322635000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1408,27 +1407,6 @@
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PaymentTransactionController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="42" column="75" lean-forward="true" selection-start-line="41" selection-start-column="43" selection-end-line="42" selection-end-column="75" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PrototypeController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="251" column="5" lean-forward="true" selection-start-line="198" selection-start-column="4" selection-end-line="251" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/PrototypeController/assRef.ftl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-671">
-          <caret line="34" column="55" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/views/PrototypeController/interswitchPay.ftl.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1457,13 +1435,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="50" column="45" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
         </state>
       </provider>
     </entry>
@@ -1582,13 +1553,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/conf/StartupActions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="604">
-          <caret line="80" column="93" selection-start-line="80" selection-start-column="93" selection-end-line="80" selection-end-column="93" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/sequence/NotificationIdSequence.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -1683,34 +1647,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="135">
-            <caret line="9" selection-start-line="9" selection-end-line="9" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/utils/CronSchedule.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1980">
           <caret line="170" selection-start-line="170" selection-end-line="170" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -1770,10 +1710,73 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="135">
+            <caret line="9" selection-start-line="9" selection-end-line="9" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="17" lean-forward="true" selection-start-line="19" selection-start-column="17" selection-end-line="19" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/utils/CronSchedule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+          <folding>
+            <element signature="e#539#540#0" expanded="true" />
+            <element signature="e#603#604#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="30" column="17" lean-forward="true" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/conf/StartupActions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="443">
+          <caret line="84" column="24" lean-forward="true" selection-start-line="84" selection-start-column="24" selection-end-line="84" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/SetupService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="33" column="42" selection-start-line="33" selection-start-column="42" selection-end-line="33" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Filters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="17" column="3" lean-forward="true" selection-start-line="17" selection-start-column="3" selection-end-line="17" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/conf/application.conf">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="23" column="50" lean-forward="true" selection-start-line="23" selection-start-column="50" selection-end-line="23" selection-end-column="50" />
+        <state relative-caret-position="319">
+          <caret line="29" column="68" lean-forward="true" selection-start-line="29" selection-start-column="68" selection-end-line="29" selection-end-column="68" />
         </state>
       </provider>
     </entry>
