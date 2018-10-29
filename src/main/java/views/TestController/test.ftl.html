@@ -185,7 +185,7 @@
             var custRef = $("#custRef").val();
             var merchRef = $("#merchRef").val();
             $.ajax({
-                url: "/api/paydirect/validate?custRef=" + custRef + "&merchRef=" + merchRef,
+                url: window.contextPath + "/api/paydirect/validate?custRef=" + custRef + "&merchRef=" + merchRef,
                 type: "POST",
                 dataType: "json",
                 contentType: "application/x-www-form-urlencoded",
@@ -243,7 +243,7 @@
             duplicateCalls: dup
         };
         $.ajax({
-            url: "/api/paydirect/pay",
+            url: window.contextPath + "/api/paydirect/pay",
             type: "POST",
             dataType: "json",
             data: JSON.stringify(data),

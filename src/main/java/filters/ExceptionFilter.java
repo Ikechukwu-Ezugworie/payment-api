@@ -15,6 +15,7 @@ public class ExceptionFilter implements Filter {
 
     @Override
     public Result filter(FilterChain filterChain, Context context) {
+        context.getSession().put("contextPath", context.getContextPath());
         try {
             return filterChain.next(context);
         } catch (Exception e) {
