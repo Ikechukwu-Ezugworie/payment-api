@@ -74,6 +74,8 @@ public class TestController {
         try (Response response = client.newCall(request).execute()) {
             if (response.code() == 200) {
                 String s = response.body().string();
+                logger.info("<=== cusotmer validation res from {} ::: {}", url, s);
+
                 CustomerInformationResponse customerInformationResponse = xmlMapper.readValue(s, CustomerInformationResponse.class);
                 return Results.json().render(customerInformationResponse);
             }
