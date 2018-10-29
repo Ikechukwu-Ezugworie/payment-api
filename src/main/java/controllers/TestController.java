@@ -66,7 +66,7 @@ public class TestController {
         String payload = "<CustomerInformationRequest><ServiceUsername></ServiceUsername><ServicePassword></ServicePassword>" +
                 "<MerchantReference>" + merchRef + "</MerchantReference><CustReference>" + custRef + "</CustReference><PaymentItemCode>" +
                 "" + "</PaymentItemCode><ThirdPartyCode></ThirdPartyCode></CustomerInformationRequest>";
-        String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
+        String url = String.format("%s%s", paymentTransactionDao.getSettingsValue(Constants.END_SYSTEM_BASE_URL, "http://localhost:8080", true), reverseRouter.with(PayDirectController::doPayDirectRequest));
 
         MediaType XML = MediaType.parse("application/xml; charset=utf-8");
         RequestBody body = RequestBody.create(XML, payload);
@@ -156,7 +156,8 @@ public class TestController {
             return Results.badRequest().json().render("error", "Multiple requests");
         }
 
-        String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
+        String url = String.format("%s%s", paymentTransactionDao.getSettingsValue(Constants.END_SYSTEM_BASE_URL, "http://localhost:8080", true),
+                reverseRouter.with(PayDirectController::doPayDirectRequest));
 
         MediaType XML = MediaType.parse("application/xml; charset=utf-8");
         RequestBody body = RequestBody.create(XML, paymentNotificationRequest);
