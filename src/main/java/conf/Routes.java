@@ -49,12 +49,7 @@ public class Routes implements ApplicationRoutes {
         // Interswitch
         ///////////////////////////////////////////////////////////////////////
         router.POST().route(String.format("%s/api/v1/payments/interswitch/paydirect", urlPrefix)).with(PayDirectController::doPayDirectRequest);
-
-        ///////////////////////////////////////////////////////////////////////
-        // Notifications controller
-        ///////////////////////////////////////////////////////////////////////
-        router.GET().route(String.format("%s/api/v1/notify", urlPrefix)).with(NotificationController::sendNotifications);
-        router.GET().route(String.format("%s/api/v1/backlog", urlPrefix)).with(NotificationController::processPaymentBacklog);
+        router.GET().route(String.format("%s/api/v1/payments/interswitch/paydirect/monitor", urlPrefix)).with(PayDirectController::monitor);
 
 
         ///////////////////////////////////////////////////////////////////////
@@ -66,6 +61,12 @@ public class Routes implements ApplicationRoutes {
 
         // TEST ROUTES
         if (!ninjaProperties.isProd()) {
+
+            ///////////////////////////////////////////////////////////////////////
+            // Notifications controller
+            ///////////////////////////////////////////////////////////////////////
+            router.GET().route(String.format("%s/api/v1/notify", urlPrefix)).with(NotificationController::sendNotifications);
+            router.GET().route(String.format("%s/api/v1/backlog", urlPrefix)).with(NotificationController::processPaymentBacklog);
 
             ///////////////////////////////////////
             //////  TEST CONTROLLER

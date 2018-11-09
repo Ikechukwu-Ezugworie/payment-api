@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import dao.RawDumpDao;
 import extractors.ContentExtract;
 import extractors.IPAddress;
 import filters.InterswitchFilter;
@@ -22,8 +23,10 @@ import ninja.Context;
 import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pojo.CustomerValidationStatistics;
 import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
 import pojo.payDirect.paymentNotification.request.OtherCustomerInfo;
@@ -31,6 +34,7 @@ import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import services.PayDirectService;
 import services.PaymentTransactionService;
+import services.TestService;
 import utils.PaymentUtil;
 
 import javax.xml.stream.XMLEventReader;
@@ -52,14 +56,18 @@ public class PayDirectController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private PaymentTransactionService paymentTransactionService;
     private final PayDirectService payDirectService;
-
+    private RawDumpDao rawDumpDao;
     private XmlMapper xmlMapper;
+    private TestService testService;
 
     @Inject
-    public PayDirectController(PaymentTransactionService paymentTransactionService, PayDirectService payDirectService, XmlMapper xmlMapper) {
+    public PayDirectController(PaymentTransactionService paymentTransactionService, PayDirectService payDirectService,
+                               RawDumpDao rawDumpDao, XmlMapper xmlMapper, TestService testService) {
         this.paymentTransactionService = paymentTransactionService;
         this.payDirectService = payDirectService;
+        this.rawDumpDao = rawDumpDao;
         this.xmlMapper = xmlMapper;
+        this.testService = testService;
 
         SimpleModule simpleModule = new SimpleModule();
 
@@ -108,7 +116,6 @@ public class PayDirectController {
             }
         });
         this.xmlMapper.registerModule(simpleStringModule);
-        this.xmlMapper.registerModule(simpleModule);
     }
 
     public Result doPayDirectRequest(@ContentExtract String payload, Context context, @IPAddress String ipAddress) {
@@ -139,7 +146,7 @@ public class PayDirectController {
                                 CustomerInformationRequest request = xmlMapper.readValue(payload, CustomerInformationRequest.class);
                                 System.out.println("<=== VALIDATION: " + request.toString());
                                 CustomerInformationResponse customerInformationResponse = payDirectService.processCustomerValidationRequest(request, context);
-                                rawDump.setResponse(customerInformationResponse == null ? null : PaymentUtil.toJSON(customerInformationResponse));
+                                rawDump.setResponse(customerInformationResponse == null ? "Could not contact end system (503)" : PaymentUtil.toJSON(customerInformationResponse));
                                 rawDump.setDescription("CUSTOMER VALIDATION");
                                 paymentTransactionService.dump(rawDump);
                                 if (customerInformationResponse == null) {
@@ -152,7 +159,7 @@ public class PayDirectController {
                                 logger.info("<=== PAYMENT NOTIFICATION: " + request.toString());
                                 synchronized (payDirectService) {
                                     PaymentNotificationResponse paymentNotificationResponsePojo = payDirectService.processPaymentNotification(request, rawDump, context);
-                                    rawDump.setResponse(paymentNotificationResponsePojo == null ? null : PaymentUtil.toJSON(paymentNotificationResponsePojo));
+                                    rawDump.setResponse(paymentNotificationResponsePojo == null ? "Could not contact end system (503)" : PaymentUtil.toJSON(paymentNotificationResponsePojo));
                                     rawDump.setDescription("PAYMENT NOTIFICATION");
                                     paymentTransactionService.dump(rawDump);
                                     return Results.ok().xml().render(paymentNotificationResponsePojo);
@@ -169,5 +176,24 @@ public class PayDirectController {
             paymentTransactionService.dump(rawDump);
         }
         return Results.badRequest().xml();
+    }
+
+    public Result monitor(Context context) {
+        RawDump rawDump = rawDumpDao.findLastByDescription("CUSTOMER VALIDATION");
+        String payload;
+        if (rawDump != null) {
+            payload = rawDump.getRequest();
+        } else {
+            payload = testService.getCustomerValidationTestPayload();
+        }
+        try (Response response = testService.doCustomerValidation(payload)) {
+            if (response.code() == 200) {
+                return Results.json().render(CustomerValidationStatistics.from(rawDump));
+            }
+            return Results.status(response.code()).json();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Results.internalServerError().json().render("message", e.getMessage());
+        }
     }
 }

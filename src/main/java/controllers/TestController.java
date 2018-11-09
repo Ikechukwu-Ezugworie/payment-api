@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
 import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
 import pojo.payDirect.paymentNotification.response.PaymentResponsePojo;
+import services.TestService;
 import utils.Constants;
 import utils.PaymentUtil;
 
@@ -41,6 +42,7 @@ public class TestController {
     private PaymentTransactionDao paymentTransactionDao;
     private ReverseRouter reverseRouter;
     private XmlMapper xmlMapper;
+    private TestService testService;
 
     @Inject
     public TestController(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
@@ -156,13 +158,7 @@ public class TestController {
             return Results.badRequest().json().render("error", "Multiple requests");
         }
 
-        String url = String.format("%s%s", paymentTransactionDao.getSettingsValue(Constants.END_SYSTEM_BASE_URL, "http://localhost:8080", true),
-                reverseRouter.with(PayDirectController::doPayDirectRequest));
-
-        MediaType XML = MediaType.parse("application/xml; charset=utf-8");
-        RequestBody body = RequestBody.create(XML, paymentNotificationRequest);
-        Request request = new Request.Builder().url(url).post(body).build();
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = testService.doCustomerValidation(paymentNotificationRequest)) {
             if (response.code() == 200) {
                 String s = response.body().string();
                 PaymentNotificationResponse paymentNotificationResponse = xmlMapper.readValue(s, PaymentNotificationResponse.class);
