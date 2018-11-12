@@ -46,11 +46,12 @@ public class TestController {
 
     @Inject
     public TestController(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
-                          ReverseRouter reverseRouter, XmlMapper xmlMapper) {
+                          ReverseRouter reverseRouter, XmlMapper xmlMapper, TestService testService) {
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
         this.paymentTransactionDao = paymentTransactionDao;
         this.reverseRouter = reverseRouter;
         this.xmlMapper = xmlMapper;
+        this.testService = testService;
     }
 
     public Result test(Context context) {
