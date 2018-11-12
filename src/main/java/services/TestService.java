@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import controllers.PayDirectController;
 import dao.PaymentTransactionDao;
 import ninja.ReverseRouter;
+import ninja.utils.NinjaProperties;
 import okhttp3.*;
 import utils.Constants;
+import utils.PaymentUtil;
 
 import java.io.IOException;
 
@@ -17,8 +19,11 @@ public class TestService {
     private PaymentTransactionDao paymentTransactionDao;
     @Inject
     private ReverseRouter reverseRouter;
-    @Inject
     private OkHttpClient client;
+
+    public TestService(OkHttpClient client, NinjaProperties ninjaProperties) {
+        this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
+    }
 
     public Response doCustomerValidation(String request) throws IOException {
         String url = String.format("%s%s", paymentTransactionDao.getSettingsValue(Constants.END_SYSTEM_BASE_URL, "http://localhost:8080", true),
