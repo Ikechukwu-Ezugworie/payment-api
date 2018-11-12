@@ -21,6 +21,7 @@ public class TestService {
     private ReverseRouter reverseRouter;
     private OkHttpClient client;
 
+    @Inject
     public TestService(OkHttpClient client, NinjaProperties ninjaProperties) {
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
     }
