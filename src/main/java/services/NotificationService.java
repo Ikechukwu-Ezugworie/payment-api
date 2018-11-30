@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import dao.PaymentTransactionDao;
+import ninja.lifecycle.Dispose;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
 import utils.PaymentUtil;
@@ -70,5 +71,11 @@ public class NotificationService {
     private void notificationSent(NotificationQueue notificationQueue) {
         notificationQueue.setNotificationSent(true);
         paymentTransactionDao.updateObject(notificationQueue);
+    }
+
+    @Dispose
+    private void cleanUp() {
+        System.out.println("<=== cleaning up notification queue");
+        notificationService.shutdown();
     }
 }

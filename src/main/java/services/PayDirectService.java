@@ -62,17 +62,19 @@ public class PayDirectService {
     private NotificationIdSequence notificationIdSequence;
     private MerchantDao merchantDao;
     private PaymentTransactionService paymentTransactionService;
+    private NotificationService notificationService;
 
     @Inject
     public PayDirectService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
                             NotificationIdSequence notificationIdSequence, MerchantDao merchantDao,
-                            PaymentTransactionService paymentTransactionService) {
+                            PaymentTransactionService paymentTransactionService, NotificationService notificationService) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.ninjaProperties = ninjaProperties;
         this.notificationIdSequence = notificationIdSequence;
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
         this.merchantDao = merchantDao;
         this.paymentTransactionService = paymentTransactionService;
+        this.notificationService = notificationService;
     }
 
     public CustomerInformationResponse processCustomerValidationRequest(CustomerInformationRequest validationRequest, Context context) {
@@ -378,7 +380,7 @@ public class PayDirectService {
         paymentResponseLog.setReason(reasonForOutcome);
 
         paymentTransactionDao.saveObject(paymentResponseLog);
-
+        notificationService.sendPaymentNotification(20);
     }
 
     private void queueNotification(Payment paymentPojo, PaymentTransaction paymentTransaction) {
