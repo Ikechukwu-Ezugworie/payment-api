@@ -49,7 +49,7 @@ public class Routes implements ApplicationRoutes {
         // Interswitch
         ///////////////////////////////////////////////////////////////////////
         router.POST().route(String.format("%s/api/v1/payments/interswitch/paydirect", urlPrefix)).with(PayDirectController::doPayDirectRequest);
-        router.GET().route(String.format("%s/api/v1/payments/interswitch/paydirect/monitor", urlPrefix)).with(PayDirectController::monitor);
+        router.GET().route(String.format("%s/payments/interswitch/paydirect/monitor", urlPrefix)).with(PayDirectController::monitor);
 
 
         ///////////////////////////////////////////////////////////////////////

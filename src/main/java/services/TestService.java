@@ -26,12 +26,12 @@ public class TestService {
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
     }
 
-    public Response doCustomerValidation(String request) throws IOException {
+    public Response doCustomerValidation(String xmlRequest) throws IOException {
         String url = String.format("%s%s", paymentTransactionDao.getSettingsValue(Constants.END_SYSTEM_BASE_URL, "http://localhost:8080", true),
                 reverseRouter.with(PayDirectController::doPayDirectRequest));
 
         MediaType XML = MediaType.parse("application/xml; charset=utf-8");
-        RequestBody body = RequestBody.create(XML, request);
+        RequestBody body = RequestBody.create(XML, xmlRequest);
         Request r = new Request.Builder().url(url).post(body).build();
         return client.newCall(r).execute();
     }
