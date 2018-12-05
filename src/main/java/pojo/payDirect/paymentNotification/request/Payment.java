@@ -2,6 +2,7 @@
 package pojo.payDirect.paymentNotification.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
 
@@ -49,8 +50,9 @@ public class Payment {
     private String feeName;
     @JacksonXmlProperty(localName = "CustomerName")
     private String customerName;
-    @JacksonXmlProperty(localName = "OtherCustomerInfo")
-    private OtherCustomerInfo otherCustomerInfo;
+//    @JacksonXmlProperty(localName = "OtherCustomerInfo")
+//    private OtherCustomerInfo otherCustomerInfo;
+
     @JacksonXmlProperty(localName = "ReceiptNo")
     private String receiptNo;
     @JacksonXmlProperty(localName = "CollectionsAccount")
@@ -85,7 +87,6 @@ public class Payment {
     private String customerCategory;
     @JacksonXmlProperty(localName = "EconomicActivitiesID")
     private String economicActivitiesId;
-
 
 
     public Boolean getRepeated() {
@@ -248,13 +249,13 @@ public class Payment {
         this.customerName = customerName;
     }
 
-    public OtherCustomerInfo getOtherCustomerInfo() {
-        return otherCustomerInfo;
-    }
-
-    public void setOtherCustomerInfo(OtherCustomerInfo otherCustomerInfo) {
-        this.otherCustomerInfo = otherCustomerInfo;
-    }
+//    public OtherCustomerInfo getOtherCustomerInfo() {
+//        return otherCustomerInfo;
+//    }
+//
+//    public void setOtherCustomerInfo(OtherCustomerInfo otherCustomerInfo) {
+//        this.otherCustomerInfo = otherCustomerInfo;
+//    }
 
     public String getCustomerCategory() {
         return customerCategory;
@@ -392,45 +393,47 @@ public class Payment {
         this.originalPaymentLogId = originalPaymentLogId;
     }
 
+
     @Override
     public String toString() {
-        return "PaymentPojo{" +
-                "isRepeated=" + isRepeated +
-                ", productGroupCode='" + productGroupCode + '\'' +
-                ", paymentLogId=" + paymentLogId +
-                ", custReference='" + custReference + '\'' +
-                ", alternateCustReference='" + alternateCustReference + '\'' +
-                ", amount=" + amount +
-                ", paymentStatus=" + paymentStatus +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", paymentReference='" + paymentReference + '\'' +
-                ", terminalId='" + terminalId + '\'' +
-                ", channelName='" + channelName + '\'' +
-                ", location='" + location + '\'' +
-                ", isReversal=" + isReversal +
-                ", paymentDate='" + paymentDate + '\'' +
-                ", settlementDate='" + settlementDate + '\'' +
-                ", institutionId='" + institutionId + '\'' +
-                ", institutionName='" + institutionName + '\'' +
-                ", branchName='" + branchName + '\'' +
-                ", bankName='" + bankName + '\'' +
-                ", feeName='" + feeName + '\'' +
-                ", customerName='" + customerName + '\'' +
-                ", otherCustomerInfo='" + otherCustomerInfo + '\'' +
-                ", receiptNo='" + receiptNo + '\'' +
-                ", collectionsAccount='" + collectionsAccount + '\'' +
-                ", thirdPartyCode='" + thirdPartyCode + '\'' +
-                ", bankCode='" + bankCode + '\'' +
-                ", customerAddress='" + customerAddress + '\'' +
-                ", customerPhoneNumber='" + customerPhoneNumber + '\'' +
-                ", depositorName='" + depositorName + '\'' +
-                ", depositSlipNumber='" + depositSlipNumber + '\'' +
-                ", paymentCurrency='" + paymentCurrency + '\'' +
-                ", originalPaymentLogId=" + originalPaymentLogId +
-                ", originalPaymentReference='" + originalPaymentReference + '\'' +
-                ", teller='" + teller + '\'' +
-                ", status=" + status +
-                ", paymentItems=" + paymentItems +
-                '}';
+        return new ToStringBuilder(this)
+                .append("isRepeated", isRepeated)
+                .append("productGroupCode", productGroupCode)
+                .append("paymentLogId", paymentLogId)
+                .append("custReference", custReference)
+                .append("alternateCustReference", alternateCustReference)
+                .append("amount", amount)
+                .append("paymentStatus", paymentStatus)
+                .append("paymentMethod", paymentMethod)
+                .append("paymentReference", paymentReference)
+                .append("terminalId", terminalId)
+                .append("channelName", channelName)
+                .append("location", location)
+                .append("isReversal", isReversal)
+                .append("paymentDate", paymentDate)
+                .append("settlementDate", settlementDate)
+                .append("institutionId", institutionId)
+                .append("institutionName", institutionName)
+                .append("branchName", branchName)
+                .append("bankName", bankName)
+                .append("feeName", feeName)
+                .append("customerName", customerName)
+                .append("receiptNo", receiptNo)
+                .append("collectionsAccount", collectionsAccount)
+                .append("thirdPartyCode", thirdPartyCode)
+                .append("bankCode", bankCode)
+                .append("customerAddress", customerAddress)
+                .append("customerPhoneNumber", customerPhoneNumber)
+                .append("depositorName", depositorName)
+                .append("depositSlipNumber", depositSlipNumber)
+                .append("paymentCurrency", paymentCurrency)
+                .append("originalPaymentLogId", originalPaymentLogId)
+                .append("originalPaymentReference", originalPaymentReference)
+                .append("teller", teller)
+                .append("status", status)
+                .append("paymentItems", paymentItems)
+                .append("customerCategory", customerCategory)
+                .append("economicActivitiesId", economicActivitiesId)
+                .toString();
     }
 }
