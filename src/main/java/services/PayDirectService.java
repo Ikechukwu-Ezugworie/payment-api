@@ -205,11 +205,11 @@ public class PayDirectService {
                 customerInformationRequest.setCustReference(payment.getCustReference());
 
                 CustomerInformationResponse customerInformationResponse = processCustomerValidationRequest(customerInformationRequest, context);
-                if (customerInformationResponse == null) {
+                if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == CUSTOMER_INVALID) {
                     PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                     responsePojo.setPaymentLogId(payment.getPaymentLogId());
                     responsePojo.setStatus(NOTIFICATION_REJECTED);
-                    responsePojo.setStatusMessage("Transaction to be reversed does not exist");
+                    responsePojo.setStatusMessage("Customer reference is invalid");
 
                     paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
 
