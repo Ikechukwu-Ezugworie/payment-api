@@ -154,7 +154,7 @@ public class PayDirectService {
             } else if (response.code() == 404) {
                 Customer customer = new Customer();
                 customer.setFirstName("");
-                customer.setCustReference(validationRequest.getCustReference());
+                customer.setCustReference(validationRequest.getCustReference() == null ? "" : validationRequest.getCustReference());
                 customer.setStatus(CUSTOMER_INVALID);
                 customer.setStatusMessage("Invalid transaction");
                 customer.setCustomerReferenceAlternate("");
