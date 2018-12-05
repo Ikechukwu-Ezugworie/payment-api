@@ -15,6 +15,7 @@ import ninja.Context;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
+import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.*;
@@ -244,7 +245,7 @@ public class PayDirectService {
 
                 trReversal.setPaymentTransactionStatus(PaymentTransactionStatus.CANCELED);
 
-                queueNotification(payment, trReversal);
+                queueNotification(payment, trReversal, rawDump == null ? null : rawDump.getRequest());
 
                 paymentTransactionDao.updateObject(trReversal);
 
@@ -299,7 +300,7 @@ public class PayDirectService {
                 paymentTransactionService.dump(rawDump);
             }
 
-//            check if transaction exists
+//           check if transaction exists
             if (paymentTransaction == null) {
                 PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                 responsePojo.setPaymentLogId(payment.getPaymentLogId());
@@ -321,7 +322,7 @@ public class PayDirectService {
             paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(payment.getAmount()));
             paymentTransactionDao.updateObject(paymentTransaction);
 
-            queueNotification(payment, paymentTransaction);
+            queueNotification(payment, paymentTransaction, rawDump == null ? null : rawDump.getRequest());
 
             PaymentResponsePojo responsePojo = new PaymentResponsePojo();
             responsePojo.setPaymentLogId(payment.getPaymentLogId());
@@ -383,9 +384,9 @@ public class PayDirectService {
         notificationService.sendPaymentNotification(20);
     }
 
-    private void queueNotification(Payment paymentPojo, PaymentTransaction paymentTransaction) {
+    private void queueNotification(Payment paymentPojo, PaymentTransaction paymentTransaction, String paymentNotificationJson) {
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
-        TransactionNotificationPojo<Payment> transactionNotificationPojo = new TransactionNotificationPojo<>();
+        TransactionNotificationPojo<String> transactionNotificationPojo = new TransactionNotificationPojo<>();
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
@@ -402,7 +403,7 @@ public class PayDirectService {
         transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
         transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
         transactionNotificationPojo.setMerchantTransactionReference(paymentTransaction.getMerchantTransactionReferenceId());
-        transactionNotificationPojo.setActualNotification(paymentPojo);
+        transactionNotificationPojo.setActualNotification(XML.toJSONObject(paymentNotificationJson).toString());
 
         PayerPojo payerPojo = paymentTransactionDao.getPayerAsPojo(paymentTransaction.getPayer().getId());
         transactionNotificationPojo.setPayer(payerPojo);
