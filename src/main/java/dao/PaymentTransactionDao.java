@@ -263,7 +263,7 @@ public class PaymentTransactionDao extends BaseDao {
         return resultsList(entityManager.createQuery(criteriaQuery).setMaxResults(batch));
     }
 
-    public Merchant getMerchant(String merchantReference) {
+    public Merchant validateMerchantRef(String merchantReference) {
         Boolean validateMerchRef = Boolean.valueOf(getSettingsValue("VALIDATE_MERCHANT_REF", "false", true));
         if (validateMerchRef) {
             if (StringUtils.isBlank(merchantReference)) {

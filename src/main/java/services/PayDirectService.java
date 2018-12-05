@@ -83,7 +83,7 @@ public class PayDirectService {
         customerInformationResponse.setMerchantReference(validationRequest.getMerchantReference());
 
 //        Merchant merchant = paymentTransactionDao.getUniqueRecordByProperty(Merchant.class, "paydirectMerchantReference", validationRequest.getMerchantReference());
-        Merchant merchant = paymentTransactionDao.getMerchant(validationRequest.getMerchantReference());
+        Merchant merchant = paymentTransactionDao.validateMerchantRef(validationRequest.getMerchantReference());
 
         if (merchant == null) {
             Customer customer = new Customer();
@@ -197,6 +197,26 @@ public class PayDirectService {
                 savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
                         responsePojo.getStatusMessage());
                 break;
+            }
+
+            if (validatePayment()) {
+                CustomerInformationRequest customerInformationRequest = new CustomerInformationRequest();
+                customerInformationRequest.setMerchantReference(getDefaultMerchantReference());
+                customerInformationRequest.setCustReference(payment.getCustReference());
+
+                CustomerInformationResponse customerInformationResponse = processCustomerValidationRequest(customerInformationRequest, context);
+                if (customerInformationResponse == null) {
+                    PaymentResponsePojo responsePojo = new PaymentResponsePojo();
+                    responsePojo.setPaymentLogId(payment.getPaymentLogId());
+                    responsePojo.setStatus(NOTIFICATION_REJECTED);
+                    responsePojo.setStatusMessage("Transaction to be reversed does not exist");
+
+                    paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
+
+                    savePaymentNotificationRequest(payment, request, false, true, PaymentResponseStatusConstant.REJECTED,
+                            responsePojo.getStatusMessage());
+                    break;
+                }
             }
 
             TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
@@ -346,6 +366,11 @@ public class PayDirectService {
             return paymentPojo.getAmount().longValue() > 0;
         }
         return false;
+    }
+
+    public boolean validatePayment() {
+        String s = paymentTransactionDao.getSettingsValue("VALIDATE_PAYMENT_CUSTOMER_REFERENCE", "false", true);
+        return Boolean.valueOf(s);
     }
 
     public MerchantPaymentValidationPojo validatePaymentWithMerchant(Object payload, String url) {
