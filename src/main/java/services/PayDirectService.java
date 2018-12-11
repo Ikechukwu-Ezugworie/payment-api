@@ -129,6 +129,7 @@ public class PayDirectService {
                         customer.setFirstName(tr.getPayer().getFirstName());
                         customer.setAmount(PaymentUtil.getAmountInNaira(tr.getAmountInKobo()));
                         customer.setCustReference(validationRequest.getCustReference());
+                        customer.setPaymentItems(tr.getPaymentItems());
                         customer.setStatus(0);
 
                         Customers customers = new Customers();
