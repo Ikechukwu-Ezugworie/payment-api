@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="added payment items">
+    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/PayDirectService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/PayDirectService.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -31,12 +30,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="423" column="81" lean-forward="true" selection-start-line="423" selection-start-column="81" selection-end-line="423" selection-end-column="81" />
-              <folding>
-                <element signature="e#24083#24084#0" expanded="true" />
-                <element signature="e#24160#24161#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="225">
+              <caret line="420" column="41" selection-start-line="420" selection-start-column="41" selection-end-line="420" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -57,7 +52,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="jar://$MAVEN_REPOSITORY$/org/json/json/20180813/json-20180813-sources.jar!/org/json/JSONObject.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-312">
+            <state relative-caret-position="855">
               <caret line="101" column="13" selection-start-line="101" selection-start-column="13" selection-end-line="101" selection-end-column="13" />
             </state>
           </provider>
@@ -93,7 +88,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="211">
+            <state relative-caret-position="420">
               <caret line="50" column="133" selection-start-line="50" selection-start-column="133" selection-end-line="50" selection-end-column="133" />
             </state>
           </provider>
@@ -102,7 +97,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="633">
+            <state relative-caret-position="1680">
               <caret line="160" column="133" selection-start-line="160" selection-start-column="133" selection-end-line="160" selection-end-column="133" />
             </state>
           </provider>
@@ -778,14 +773,8 @@
       <workItem from="1544025193872" duration="2313000" />
       <workItem from="1544096339810" duration="4000" />
       <workItem from="1544181869099" duration="531000" />
-      <workItem from="1544520619177" duration="3691000" />
-    </task>
-    <task id="LOCAL-00012" summary="fixed payment amount return 0">
-      <created>1532084986584</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1532084986585</updated>
+      <workItem from="1544520619177" duration="4556000" />
+      <workItem from="1544625214426" duration="568000" />
     </task>
     <task id="LOCAL-00013" summary="added option for all IPS">
       <created>1533113804067</created>
@@ -1123,11 +1112,18 @@
       <option name="project" value="LOCAL" />
       <updated>1544521602319</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="fixed json">
+      <created>1544544026881</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1544544026881</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="357099000" />
+    <option name="totallyTimeSpent" value="358532000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1194,7 +1190,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="added log" />
     <MESSAGE value="fixed prototype and model change" />
     <MESSAGE value="configured object mapper" />
     <MESSAGE value="fixed payment transaction reversal" />
@@ -1219,7 +1214,8 @@
     <MESSAGE value="converted xml to json" />
     <MESSAGE value="added support for payment customer ref validation" />
     <MESSAGE value="added payment items" />
-    <option name="LAST_COMMIT_MESSAGE" value="added payment items" />
+    <MESSAGE value="fixed json" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed json" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1525,17 +1521,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/NotificationService.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="41" selection-start-line="41" selection-end-line="41" />
+        <state relative-caret-position="225">
+          <caret line="420" column="41" selection-start-line="420" selection-start-column="41" selection-end-line="420" selection-end-column="41" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pojo/payDirect/paymentNotification/request/Payment.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/pojo/payDirect/customerValidation/EndSystemCustomerValidationResponse.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3960">
-          <caret line="407" column="61" selection-start-line="407" selection-start-column="61" selection-end-line="407" selection-end-column="61" />
+        <state relative-caret-position="45">
+          <caret line="3" column="9" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
+          <folding>
+            <element signature="e#908#909#0" expanded="true" />
+            <element signature="e#943#944#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/json/json/20180813/json-20180813-sources.jar!/org/json/JSONObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="101" column="13" selection-start-line="101" selection-start-column="13" selection-end-line="101" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -1560,46 +1567,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pojo/payDirect/customerValidation/EndSystemCustomerValidationResponse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="9" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
-          <folding>
-            <element signature="e#908#909#0" expanded="true" />
-            <element signature="e#943#944#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
+        <state relative-caret-position="420">
           <caret line="50" column="133" selection-start-line="50" selection-start-column="133" selection-end-line="50" selection-end-column="133" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PayDirectController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="633">
+        <state relative-caret-position="1680">
           <caret line="160" column="133" selection-start-line="160" selection-start-column="133" selection-end-line="160" selection-end-column="133" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/json/json/20180813/json-20180813-sources.jar!/org/json/JSONObject.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/NotificationService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-312">
-          <caret line="101" column="13" selection-start-line="101" selection-start-column="13" selection-end-line="101" selection-end-column="13" />
+        <state relative-caret-position="420">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/PayDirectService.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/pojo/payDirect/paymentNotification/request/Payment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="423" column="81" lean-forward="true" selection-start-line="423" selection-start-column="81" selection-end-line="423" selection-end-column="81" />
-          <folding>
-            <element signature="e#24083#24084#0" expanded="true" />
-            <element signature="e#24160#24161#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="3960">
+          <caret line="407" column="61" selection-start-line="407" selection-start-column="61" selection-end-line="407" selection-end-column="61" />
         </state>
       </provider>
     </entry>
