@@ -165,6 +165,19 @@ public class PayDirectService {
 
                 customerInformationResponse.setCustomers(customers);
                 return customerInformationResponse;
+            }else if (response.code() == 400){
+                Customer customer = new Customer();
+                customer.setFirstName("");
+                customer.setCustReference(validationRequest.getCustReference() == null ? "" : validationRequest.getCustReference());
+                customer.setStatus(CUSTOMER_INVALID);
+                customer.setStatusMessage("Invalid transaction");
+                customer.setCustomerReferenceAlternate("");
+
+                Customers customers = new Customers();
+                customers.addCustomer(customer);
+
+                customerInformationResponse.setCustomers(customers);
+                return customerInformationResponse;
             }
         } catch (IOException e) {
             e.printStackTrace();
