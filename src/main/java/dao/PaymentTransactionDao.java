@@ -264,7 +264,7 @@ public class PaymentTransactionDao extends BaseDao {
     }
 
     public Merchant validateMerchantRef(String merchantReference) {
-        Boolean validateMerchRef = Boolean.valueOf(getSettingsValue("VALIDATE_MERCHANT_REF", "false", true));
+        Boolean validateMerchRef = Boolean.valueOf(getSettingsValue("VALIDATE_MERCHANT_REF", "true", true));
         if (validateMerchRef) {
             if (StringUtils.isBlank(merchantReference)) {
                 System.out.println("<== MERCHANT REF IS EMPTY xx");
