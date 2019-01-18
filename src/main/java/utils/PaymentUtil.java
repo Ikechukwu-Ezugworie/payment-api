@@ -14,7 +14,10 @@ import org.apache.commons.lang3.time.DateUtils;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -758,8 +761,17 @@ public class PaymentUtil {
     }
 
     public static OkHttpClient getOkHttpClient(NinjaProperties ninjaProperties) {
+        return getOkHttpClient(ninjaProperties, 15);
+    }
+
+    public static OkHttpClient getOkHttpClient(NinjaProperties ninjaProperties, int timeout) {
         if (ninjaProperties.isProd()) {
-            return new OkHttpClient();
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .connectTimeout(timeout, TimeUnit.SECONDS)
+                    .writeTimeout(timeout, TimeUnit.SECONDS)
+                    .readTimeout(timeout, TimeUnit.SECONDS)
+                    .build();
+            return okHttpClient;
         }
         try {
             // Create a trust manager that does not validate certificate chains
@@ -788,23 +800,23 @@ public class PaymentUtil {
 
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            builder.hostnameVerifier((hostname, session) -> true);
 
             OkHttpClient okHttpClient = builder
-                    .connectTimeout(15, TimeUnit.SECONDS)
-                    .writeTimeout(15, TimeUnit.SECONDS)
-                    .readTimeout(15, TimeUnit.SECONDS)
+                    .connectTimeout(timeout, TimeUnit.SECONDS)
+                    .writeTimeout(timeout, TimeUnit.SECONDS)
+                    .readTimeout(timeout, TimeUnit.SECONDS)
                     .build();
             return okHttpClient;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new OkHttpClient();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(timeout, TimeUnit.SECONDS)
+                .writeTimeout(timeout, TimeUnit.SECONDS)
+                .readTimeout(timeout, TimeUnit.SECONDS)
+                .build();
+        return okHttpClient;
     }
 
     public static void main(String[] args) {

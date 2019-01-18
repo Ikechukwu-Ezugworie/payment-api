@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+import dao.BaseDao;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import ninja.Context;
@@ -67,11 +68,12 @@ public class PayDirectService {
     @Inject
     public PayDirectService(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
                             NotificationIdSequence notificationIdSequence, MerchantDao merchantDao,
-                            PaymentTransactionService paymentTransactionService, NotificationService notificationService) {
+                            PaymentTransactionService paymentTransactionService, NotificationService notificationService, BaseDao baseDao) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.ninjaProperties = ninjaProperties;
         this.notificationIdSequence = notificationIdSequence;
-        this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
+        String connectionTimeoutInSeconds = baseDao.getSettingsValue("CONNECTION_TIMEOUT_IN_SECONDS", "20", true);
+        this.client = PaymentUtil.getOkHttpClient(ninjaProperties, Integer.valueOf(connectionTimeoutInSeconds));
         this.merchantDao = merchantDao;
         this.paymentTransactionService = paymentTransactionService;
         this.notificationService = notificationService;
