@@ -1,32 +1,30 @@
 package controllers;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.bw.payment.entity.RawDump;
+import com.bw.payment.enumeration.PaymentChannelConstant;
+import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import extractors.ContentExtract;
-import ninja.Context;
+import extractors.IPAddress;
 import ninja.Result;
 import ninja.Results;
 import ninja.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pojo.payDirect.customerValidation.request.CustomerInformationRequest;
-import pojo.payDirect.customerValidation.response.CustomerInformationResponse;
-import pojo.payDirect.paymentNotification.request.PaymentNotificationRequest;
-import pojo.payDirect.paymentNotification.response.PaymentNotificationResponse;
+import pojo.remitta.RemittaNotification;
 import services.PayDirectService;
 import services.PaymentTransactionService;
+import services.RemittaService;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.List;
 
 /**
  * CREATED BY GIBAH
@@ -44,9 +42,25 @@ public class RemitaController {
     private PaymentTransactionService paymentTransactionService;
     @Inject
     private PayDirectService payDirectService;
-
     @Inject
-    private XmlMapper xmlMapper;
+    private RemittaService remittaService;
 
-//
+
+    public Result doRemittaNotification(@ContentExtract String payload, @IPAddress String ipAddress) {
+        RawDump rawDump = new RawDump();
+        rawDump.setRequest(payload);
+        rawDump.setDateCreated(Timestamp.from(Instant.now()));
+        rawDump.setPaymentProvider(PaymentProviderConstant.REMITA);
+        rawDump.setPaymentChannel(PaymentChannelConstant.BANK);
+        rawDump.setRequestIp(ipAddress);
+        paymentTransactionService.dump(rawDump);
+
+
+        List<RemittaNotification> remittaNotifications = new Gson().fromJson(payload, new TypeToken<List<RemittaNotification>>() {
+        }.getType());
+        remittaService.processPaymentNotification(remittaNotifications);
+
+        return Results.json();
+
+    }
 }

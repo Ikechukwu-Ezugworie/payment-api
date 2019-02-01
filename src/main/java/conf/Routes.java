@@ -19,10 +19,7 @@ package conf;
 
 
 import com.google.inject.Inject;
-import controllers.ApplicationController;
-import controllers.NotificationController;
-import controllers.PayDirectController;
-import controllers.TestController;
+import controllers.*;
 import ninja.AssetsController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
@@ -51,6 +48,10 @@ public class Routes implements ApplicationRoutes {
         router.POST().route(String.format("%s/api/v1/payments/interswitch/paydirect", urlPrefix)).with(PayDirectController::doPayDirectRequest);
         router.GET().route(String.format("%s/payments/interswitch/paydirect/monitor", urlPrefix)).with(PayDirectController::monitor);
 
+        //////////////////////////////////////////////////////////////////////
+        //  Remitta
+        //////////////////////////////////////////////////////////////////////
+        router.POST().route(String.format("%s/api/v1/payments/remitta", urlPrefix)).with(RemitaController::doRemittaNotification);
 
         ///////////////////////////////////////////////////////////////////////
         // Assets (pictures / javascript)
@@ -71,9 +72,9 @@ public class Routes implements ApplicationRoutes {
             ///////////////////////////////////////
             //////  TEST CONTROLLER
             ///////////////////////////////////////
-            router.GET().route(String.format("%s/paydirect/test", urlPrefix)).with(TestController::test);
-            router.POST().route(String.format("%s/api/paydirect/validate", urlPrefix)).with(TestController::doTest);
-            router.POST().route(String.format("%s/api/paydirect/pay", urlPrefix)).with(TestController::doPay);
+            router.GET().route(String.format("%s/paydirect/test", urlPrefix)).with(PaydirectTestController::test);
+            router.POST().route(String.format("%s/api/paydirect/validate", urlPrefix)).with(PaydirectTestController::doTest);
+            router.POST().route(String.format("%s/api/paydirect/pay", urlPrefix)).with(PaydirectTestController::doPay);
 
 
 //            router.GET().route(String.format("%s/", urlPrefix)).with(ApplicationController::index);

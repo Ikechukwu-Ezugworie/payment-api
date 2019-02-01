@@ -26,6 +26,7 @@ import java.util.Date;
  * CREATED BY GIBAH
  */
 @Singleton
+@Deprecated
 public class PrototypeController {
     private static String MERCHANT_REF = "6405";
     private XmlMapper xmlMapper;

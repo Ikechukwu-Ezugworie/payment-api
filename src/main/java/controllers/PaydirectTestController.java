@@ -35,7 +35,7 @@ import java.util.Date;
  * CREATED BY GIBAH
  */
 @Singleton
-public class TestController {
+public class PaydirectTestController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private OkHttpClient client;
@@ -45,8 +45,8 @@ public class TestController {
     private TestService testService;
 
     @Inject
-    public TestController(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
-                          ReverseRouter reverseRouter, XmlMapper xmlMapper, TestService testService) {
+    public PaydirectTestController(OkHttpClient client, PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties,
+                                   ReverseRouter reverseRouter, XmlMapper xmlMapper, TestService testService) {
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
         this.paymentTransactionDao = paymentTransactionDao;
         this.reverseRouter = reverseRouter;
@@ -202,7 +202,7 @@ public class TestController {
     private String generatePayload(PaymentData paymentData, Context context) {
         SimpleDateFormat sdf = new SimpleDateFormat(Constants.INTERSWITCH_DATE_FORMAT);
         String lid = "1331" + new Date().getTime() + "";
-        String.format("http://%s/%s", context.getHostname(), reverseRouter.with(TestController::doPay));
+        String.format("http://%s/%s", context.getHostname(), reverseRouter.with(PaydirectTestController::doPay));
         StringBuilder payloadBuilder = new StringBuilder();
         payloadBuilder.append("<PaymentNotificationRequest><ServiceUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</ServiceUrl>")
                 .append("<ServiceUsername/><ServicePassword/><FtpUrl>http://test.com/Payments/Interswitch/Notification_CPN.aspx</FtpUrl>")

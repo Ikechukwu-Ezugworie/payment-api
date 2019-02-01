@@ -8,6 +8,8 @@ import dao.PaymentTransactionDao;
 import ninja.lifecycle.Dispose;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.PaymentUtil;
 
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.util.concurrent.Executors;
  */
 @Singleton
 public class NotificationService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private PaymentTransactionDao paymentTransactionDao;
     private static ExecutorService notificationService = Executors.newSingleThreadExecutor();
@@ -34,32 +37,26 @@ public class NotificationService {
     @Transactional
     private void processPendingNotifications(Integer batchSize) {
         List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(batchSize);
-        System.out.println("<==== processing notifications : " + notificationQueues.size());
+        logger.info("<==== fetched payment notifications : " + notificationQueues.size());
         for (NotificationQueue notificationQueue : notificationQueues) {
             doNotification(notificationQueue);
         }
     }
 
-    @Transactional
     public void doNotification(NotificationQueue notificationQueue) {
         try {
             RequestBody body = RequestBody.create(JSON, notificationQueue.getMessageInJson());
-            System.out.println("<==== processing notification : " + notificationQueue.getMessageInJson());
+            logger.info("<==== processing payment notification : " + notificationQueue.getMessageInJson());
             Request request = new Request.Builder().url(notificationQueue.getNotificationUrl()).post(body).build();
 
             try (Response response = client.newCall(request).execute()) {
-                System.out.println("<== notification response code " + request.url() + " : " + response.code());
+                logger.info("<== payment notification response code [] " + request.url() + " : " + response.code());
                 if (response.code() == 200) {
                     notificationSent(notificationQueue);
-                    return;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        if (notificationQueue.getId() == null) {
-            paymentTransactionDao.saveObject(notificationQueue);
         }
     }
 
@@ -68,14 +65,22 @@ public class NotificationService {
         notificationService.execute(() -> processPendingNotifications(finalBatchSize));
     }
 
+    @Transactional
     private void notificationSent(NotificationQueue notificationQueue) {
         notificationQueue.setNotificationSent(true);
-        paymentTransactionDao.updateObject(notificationQueue);
+        if (notificationQueue.getId() == null) {
+            paymentTransactionDao.saveObject(notificationQueue);
+        } else {
+            paymentTransactionDao.updateObject(notificationQueue);
+        }
     }
 
     @Dispose
     private void cleanUp() {
-        System.out.println("<=== cleaning up notification queue");
-        notificationService.shutdown();
+        logger.info("<=== cleaning up notification queue");
+        if (notificationService != null) {
+            notificationService.shutdownNow();
+        }
+        notificationService = null;
     }
 }

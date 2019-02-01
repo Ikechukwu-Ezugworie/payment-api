@@ -31,7 +31,7 @@ public class SetupService {
 
 
     public void setUp() {
-        if (!ninjaProperties.isProd()) {
+        if (ninjaProperties.isDev()) {
             logger.info("<=== Displaying all system properties");
             Properties p = System.getProperties();
             Enumeration keys = p.keys();
