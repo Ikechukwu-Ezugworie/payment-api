@@ -520,7 +520,7 @@ public class PaymentUtil {
         return formattedDate;
     }
 
-    public static String generateHashValue(String message, String hashType) {
+    public static String getHash(String message, String hashType) {
         String msg = message;
         MessageDigest m = null;
         String hashText = null;

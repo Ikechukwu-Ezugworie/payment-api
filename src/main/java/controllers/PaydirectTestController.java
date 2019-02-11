@@ -180,7 +180,7 @@ public class PaydirectTestController {
         for (int i = 0; i < numberOfCalls; i++) {
             logger.info("<=== making payment notification call {}", i);
             String url = String.format("%s://%s%s", context.getScheme(), context.getHostname(), reverseRouter.with(PayDirectController::doPayDirectRequest));
-
+//Results.redirect()
             MediaType XML = MediaType.parse("application/xml; charset=utf-8");
             RequestBody body = RequestBody.create(XML, paymentNotificationRequest);
             Request request = new Request.Builder().url(url).post(body).build();

@@ -123,7 +123,7 @@ public class QuickTellerService {
 
     @Transactional
     public QTTransactionQueryResponse updateTransactionStatus(String reference) {
-        String hash = PaymentUtil.generateHashValue(reference + SECRET_KEY, "SHA-512");
+        String hash = PaymentUtil.getHash(reference + SECRET_KEY, "SHA-512");
         String url = QUICKTELLER_GET_TRANSACTION_BASEURL + reference + "?isRequestRef=true";
         try {
             Request request = new Request.Builder().url(url).get()

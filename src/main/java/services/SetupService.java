@@ -38,7 +38,7 @@ public class SetupService {
             while (keys.hasMoreElements()) {
                 String key = (String) keys.nextElement();
                 String value = (String) p.get(key);
-                logger.info(key + ": " + value);
+                logger.info(key + " : " + value);
             }
             logger.info("<=== finished Displaying all system properties");
         }

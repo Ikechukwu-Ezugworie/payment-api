@@ -25,4 +25,6 @@ public class Constants {
     public static final String PAYDIRECT_MERCHANT_REFERENCE = "PAYDIRECT_MERCHANT_REFERENCE";
     public static final String PAYMENT_TRANSACTION_IN_DUPLICATE_CHECK = "PAYMENT_TRANSACTION_IN_DUPLICATE_CHECK";
     public static final String END_SYSTEM_BASE_URL = "END_SYSTEM_BASE_URL";
+    public static final String WEB_PAY_REDIRECT_URL_SETTINGS_KEY = "WEB_PAY_REDIRECT_URL";
+    public static final String WEB_PAY_MAC_SETTINGS_KEY = "WEB_PAY_MAC";
 }
