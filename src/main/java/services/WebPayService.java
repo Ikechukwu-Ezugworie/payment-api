@@ -1,7 +1,9 @@
 package services;
 
+import com.bw.payment.entity.Item;
 import com.bw.payment.entity.Payer;
 import com.bw.payment.entity.PaymentTransaction;
+import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.inject.Inject;
 import dao.BaseDao;
 import dao.PaymentTransactionDao;
@@ -101,8 +103,10 @@ public class WebPayService {
         webPayTransactionRequestPojo.setAmount(paymentTransaction.getAmountInKobo());
         webPayTransactionRequestPojo.setCustomerId(paymentTransaction.getCustomerTransactionReference());
         webPayTransactionRequestPojo.setTransactionReference(paymentTransaction.getTransactionId());
-        webPayTransactionRequestPojo.setPaymentItemId(0);
-        webPayTransactionRequestPojo.setProductId(0);
+        for (Item paymentTransactionItem : paymentTransactionDao.getPaymentTransactionItems(paymentTransaction.getId(), GenericStatusConstant.ACTIVE)) {
+            webPayTransactionRequestPojo.setPaymentItemId(Integer.valueOf(paymentTransactionItem.getItemId()));
+        }
+        webPayTransactionRequestPojo.setProductId(Integer.valueOf(paymentTransaction.getServiceTypeId()));
         webPayTransactionRequestPojo.setSiteRedirectUrl(paymentTransactionDao.getSettingsValue(Constants.WEB_PAY_REDIRECT_URL_SETTINGS_KEY, "- MODIFY -", true));
 //        webPayTransactionRequestPojo.setCustomerIdDescription("");
         if (paymentTransaction.getPayer() != null) {
@@ -110,7 +114,8 @@ public class WebPayService {
             webPayTransactionRequestPojo.setCustomerName(PaymentUtil.getFormattedFullName(payer.getFirstName(), payer.getLastName()));
         }
 
-        webPayTransactionRequestPojo.computeHash("");
+        String mac = paymentTransactionDao.getSettingsValue(Constants.WEB_PAY_MAC_SETTINGS_KEY, "E187B1191265B18338B5DEBAF9F38FEC37B170FF582D4666DAB1F098304D5EE7F3BE15540461FE92F1D40332FDBBA34579034EE2AC78B1A1B8D9A321974025C4", true);
+        webPayTransactionRequestPojo.computeHash(mac);
 
 //        webPayTransactionRequestPojo.setCustomerNameDescription("");
 //        webPayTransactionRequestPojo.setSiteName("");

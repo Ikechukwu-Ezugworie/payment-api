@@ -8,11 +8,15 @@ import dao.PaymentTransactionDao;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
+import ninja.validation.JSR303Validation;
+import ninja.validation.Validation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
 import pojo.TransactionRequestPojo;
+import pojo.webPay.BwPaymentsWebPayRequest;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
 import pojo.webPay.WebPayTransactionResponsePojo;
@@ -38,32 +42,48 @@ public class WebPayController {
     private WebPayService webPayService;
 
 
-    public Result paymentPage(@Param("amountInKobo") Long amount, @Param("notificationUrl") String notificationUrl, @Param("productId") String productId,
-                              @Param("payerName") String payerName, @Param("payerEmail") String payerEmail, @Param("customerReference") String customerReference,
-                              @Param("paymentItemId") String paymentItemId) {
+    public Result doCreateTransaction(@JSR303Validation BwPaymentsWebPayRequest data, Validation validation) {
+        if (validation.hasViolations()) {
+            return Results.badRequest().json().render("message", validation.getViolations().get(0).getDefaultMessage());
+        }
         TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
-        transactionRequestPojo.setAmountInKobo(amount);
+        transactionRequestPojo.setAmountInKobo(data.getAmount());
         transactionRequestPojo.setNotifyOnStatusChange(true);
-        transactionRequestPojo.setNotificationUrl(notificationUrl);
+        transactionRequestPojo.setNotificationUrl(data.getNotificationUrl());
         transactionRequestPojo.setPaymentProvider("INTERSWITCH");
         transactionRequestPojo.setPaymentChannel("WEBPAY");
-        transactionRequestPojo.setServiceTypeId(productId);
-        transactionRequestPojo.setCustomerTransactionReference(customerReference);
+        transactionRequestPojo.setServiceTypeId(data.getProductId());
+        transactionRequestPojo.setCustomerTransactionReference(data.getCustomerReference());
         PayerPojo payer = new PayerPojo();
-        payer.setFirstName(payerName);
-        payer.setEmail(payerEmail);
+        payer.setFirstName(data.getPayerName());
+        payer.setEmail(data.getPayerEmail());
         transactionRequestPojo.setPayer(payer);
 
         ItemPojo item = new ItemPojo();
-        item.setItemId(paymentItemId);
+        item.setItemId(data.getPaymentItemId());
         item.setName("WEBPAY ITEM");
-        item.setPriceInKobo(amount);
-        item.setTotalInKobo(amount);
-        item.setSubTotalInKobo(amount);
+        item.setPriceInKobo(data.getAmount());
+        item.setTotalInKobo(data.getAmount());
+        item.setSubTotalInKobo(data.getAmount());
         transactionRequestPojo.setItems(Arrays.asList(item));
         transactionRequestPojo.setInstantTransaction(true);
 
         PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null);
+
+        return Results.ok().json().render("transactionId", paymentTransaction.getTransactionId());
+    }
+
+
+    public Result paymentPage(@Param("transactionId") String transactionId) {
+        if (StringUtils.isBlank(transactionId)) {
+            return Results.badRequest().json().render("message", "Invalid transactionId");
+        }
+
+        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
+
+        if (paymentTransaction == null || paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
+            return Results.notFound().json().render("message", "Transaction not found");
+        }
 
         WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction);
 

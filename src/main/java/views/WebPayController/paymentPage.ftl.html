@@ -1,51 +1,66 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
 <@layout.myLayout "Interswitch">
-    <div class="col-md-8 col-md-offset-2">
-        <div class="row  m-5">
-            <div class=" col-12">
-                <div id="paying" class="progress">
-                    <div class="progress-bar progress-bar-striped  bg-success progress-bar-animated" role="progressbar"
-                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 card mt-5">
+            <div class="row m-5">
+                <#--<div class=" col-12">-->
+                <#--<div id="paying" class="progress">-->
+                <#--<div class="progress-bar progress-bar-striped  bg-success progress-bar-animated" role="progressbar"-->
+                <#--aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">-->
 
-                    </div>
+                <#--</div>-->
+                <#--</div>-->
+                <#--</div>-->
+                <#--<div class=" col-12">-->
+                <#--<div id="errorPay" class="alert-danger alert" role="alert">-->
+                <#--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+                <#--<span aria-hidden="true">&times;</span>-->
+                <#--</button>-->
+                <#--<span id="payErrorMessage">An error has occurred</span>-->
+                <#--</div>-->
+                <#--</div>-->
+                <div class="col-12">
+                    <table class="table table-striped table-bordered" style="width: 100%">
+                        <tr>
+                            <th style="width: 30%;">Name</th>
+                            <td id="transactionId">${data.customerName}</td>
+                        </tr>
+                        <tr>
+                            <th style="width: 30%;">Email</th>
+                            <td id="ppr">${data.transactionReference}</td>
+                        </tr>
+                        <tr>
+                            <th style="width: 30%;">Amount (&#8358;)</th>
+                            <td id="amountPaid">${data.amount/100}</td>
+                        </tr>
+                        <#--<tr>-->
+                        <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
+                        <#--<td id="amountPaid">${data.amount/100}</td>-->
+                        <#--</tr>-->
+                        <#--<tr>-->
+                        <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
+                        <#--<td id="amountPaid">${data.amount/100}</td>-->
+                        <#--</tr>-->
+                        <#--<tr>-->
+                        <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
+                        <#--<td id="amountPaid">${data.amount/100}</td>-->
+                        <#--</tr>-->
+                    </table>
                 </div>
-            </div>
-            <div class=" col-12">
-                <div id="errorPay" class="alert-danger alert" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <span id="payErrorMessage">An error has occurred</span>
-                </div>
-            </div>
-            <div class=" col-12">
-                <table class="table table-striped table-bordered" style="width: 100%">
-                    <tr>
-                        <th style="width: 30%;">Payer name</th>
-                        <td id="transactionId">${data.customerName}</td>
-                    </tr>
-                    <tr>
-                        <th style="width: 30%;">Paymenty</th>
-                        <td id="ppr">${data.}</td>
-                    </tr>
-                    <tr>
-                        <th style="width: 30%;">Amount (&#8358;)</th>
-                        <td id="amountPaid">N/A</td>
-                    </tr>
-                </table>
+                <form name="webpay" action="https://sandbox.interswitchng.com/webpay/pay" method="post" class=" col-12">
+                    <input name="product_id" type="hidden" value="${data.productId}"/>
+                    <input name="pay_item_id" type="hidden" value="${data.paymentItemId}"/>
+                    <input name="amount" type="hidden" value="${data.amount}"/>
+                    <input name="currency" type="hidden" value="566"/>
+                    <input name="site_redirect_url" type="hidden" value="${data.siteRedirectUrl}"/>
+                    <input name="txn_ref" type="hidden" value="${data.transactionReference}"/>
+                    <input name="cust_id" type="hidden" value="${data.customerId}">
+                    <input name="hash" type="hidden"
+                           value="${data.hash}"/>
+                    <button class="btn btn-primary float-right">Make payment</button>
+                </form>
             </div>
         </div>
-        <form name="webpay" action="https://sandbox.interswitchng.com/webpay/pay" method="post">
-            <input name="productId" type="hidden" value="6204"/>
-            <input name="paymentItemId" type="hidden" value="103"/>
-            <input name="amount" type="hidden" value="50000"/>
-            <input name="currency" type="hidden" value="566"/>
-            <input name="siteRedirectUrl" type="hidden" value="http://abc.com/getresponse"/>
-            <input name="transactionReference" type="hidden" value="AB-12385_TT"/>
-            <input name="customerId" type="hidden" value="AD99">
-            <input name="hash" type="hidden"
-                   value="402D39A072B15B557D0E04E74D6F896EAA98EDFF5B81726C52F6A73C6CC729075C526CCF56EB1ADA1E 336BFA297D2288A069385BD4ED210F381B5F61135BBF0D"/>
-            <button class="btn btn-primary">Pay now</button>
-        </form>
+
     </div>
 </@layout.myLayout>

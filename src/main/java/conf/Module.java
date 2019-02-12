@@ -18,7 +18,6 @@
 package conf;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import okhttp3.OkHttpClient;
@@ -45,14 +44,14 @@ public class Module extends AbstractModule {
         return retrofit.create(WebPayApi.class);
     }
 
-    public class WebApiProvider implements Provider<WebPayApi> {
-
-        @Override
-        public WebPayApi get() {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.github.com/")
-                    .build();
-            return retrofit.create(WebPayApi.class);
-        }
-    }
+//    static class WebApiProvider implements Provider<WebPayApi> {
+//
+//        @Override
+//        public WebPayApi get() {
+//            Retrofit retrofit = new Retrofit.Builder()
+//                    .baseUrl("https://api.github.com/")
+//                    .build();
+//            return retrofit.create(WebPayApi.class);
+//        }
+//    }
 }

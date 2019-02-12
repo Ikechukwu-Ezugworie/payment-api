@@ -238,6 +238,9 @@ public class PaymentUtil {
     }
 
     public static String formatNameString(String name) {
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
         String firstChar = name.substring(0, 1).toUpperCase();
         name = name.substring(1).toLowerCase();
         name = firstChar + name;
