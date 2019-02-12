@@ -21,8 +21,9 @@ import pojo.webPay.BwPaymentsWebPayRequest;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
 import pojo.webPay.WebPayTransactionResponsePojo;
+import services.NotificationService;
+import services.PaymentService;
 import services.PaymentTransactionService;
-import services.QuickTellerService;
 import services.WebPayService;
 
 import java.util.Arrays;
@@ -34,13 +35,15 @@ import java.util.Arrays;
 public class WebPayController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Inject
-    private QuickTellerService quickTellerService;
-    @Inject
     private PaymentTransactionService paymentTransactionService;
+    @Inject
+    private NotificationService notificationService;
     @Inject
     private PaymentTransactionDao paymentTransactionDao;
     @Inject
     private WebPayService webPayService;
+    @Inject
+    private PaymentService paymentService;
 
 
     public Result doCreateTransaction(@JSR303Validation BwPaymentsWebPayRequest data, Validation validation) {
@@ -93,10 +96,14 @@ public class WebPayController {
 
     public Result paymentCompleted(WebPayTransactionResponsePojo data) {
         PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(data.getTxnref());
+
         WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
         if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+            webPayService.queueNotification(webPayPaymentDataDto,paymentTransaction);
+            notificationService.sendPaymentNotification(10);
         }
-        return Results.redirect("http://localhost:8081/online-payment/bw-payment?customerReference="+paymentTransaction.getCustomerTransactionReference());
+        String redirectUrl = paymentService.getWebPayCredentials(null).getMerchantRedirectUrl() + "?customerReference=" + paymentTransaction.getCustomerTransactionReference();
+        return Results.redirect(redirectUrl);
     }
 }

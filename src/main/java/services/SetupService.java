@@ -1,5 +1,7 @@
 package services;
 
+import com.bw.payment.entity.Merchant;
+import com.bw.payment.entity.WebPayServiceCredentials;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import dao.BaseDao;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import pojo.MerchantRequestPojo;
 import utils.Constants;
 
+import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -21,12 +24,14 @@ public class SetupService {
     private BaseDao baseDao;
     private MerchantDao merchantDao;
     private NinjaProperties ninjaProperties;
+    private PaymentService paymentService;
 
     @Inject
-    public SetupService(BaseDao baseDao, MerchantDao merchantDao, NinjaProperties ninjaProperties) {
+    public SetupService(BaseDao baseDao, MerchantDao merchantDao, NinjaProperties ninjaProperties, PaymentService paymentService) {
         this.baseDao = baseDao;
         this.merchantDao = merchantDao;
         this.ninjaProperties = ninjaProperties;
+        this.paymentService = paymentService;
     }
 
 
@@ -47,15 +52,31 @@ public class SetupService {
     }
 
     private void createDefaultMerchant() {
-        long merc = merchantDao.getNumberOfMerchantRecords();
-        if (merc < 1) {
+        Merchant merchant = merchantDao.getFirstMerchant();
+        if (merchant == null) {
             MerchantRequestPojo merchantRequestPojo = new MerchantRequestPojo();
-            merchantRequestPojo.setName("DEFAULT MERCHANT");
-            merchantRequestPojo.setPaydirectMerchantReference("_CHANGE_");
-            merchantRequestPojo.setLookupUrl("_CHANGE_");
-            merchantRequestPojo.setNotificationUrl("_CHANGE_");
+            merchantRequestPojo.setName("- NOT CONFIGURED -");
+            merchantRequestPojo.setPaydirectMerchantReference("- NOT CONFIGURED -");
+            merchantRequestPojo.setLookupUrl("- NOT CONFIGURED -");
+            merchantRequestPojo.setNotificationUrl("- NOT CONFIGURED -");
 
-            merchantDao.createMerchant(merchantRequestPojo);
+            merchant = merchantDao.createMerchant(merchantRequestPojo);
+        }
+        createWebPayCredentials(merchant);
+    }
+
+    private void createWebPayCredentials(Merchant merchant) {
+        WebPayServiceCredentials webPayServiceCredentials = paymentService.getWebPayCredentials(merchant);
+
+        if (webPayServiceCredentials == null) {
+            webPayServiceCredentials = new WebPayServiceCredentials();
+            webPayServiceCredentials.setMacKey("E187B1191265B18338B5DEBAF9F38FEC37B170FF582D4666DAB1F098304D5EE7F3BE15540461FE92F1D40332FDBBA34579034EE2AC78B1A1B8D9A321974025C4");
+            webPayServiceCredentials.setServiceBaseUrl("- NOT CONFIGURED -");
+            webPayServiceCredentials.setDateCreated(new Timestamp(new java.util.Date().getTime()));
+            webPayServiceCredentials.setMerchant(merchant);
+
+            baseDao.saveObject(webPayServiceCredentials);
+
         }
     }
 

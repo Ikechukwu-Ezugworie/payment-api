@@ -1,102 +1,45 @@
 package services;
 
-import com.bw.payment.entity.Item;
-import com.bw.payment.entity.Payer;
-import com.bw.payment.entity.PaymentTransaction;
+import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.inject.Inject;
-import dao.BaseDao;
+import com.google.inject.persist.Transactional;
 import dao.PaymentTransactionDao;
-import ninja.utils.NinjaProperties;
+import pojo.PayerPojo;
+import pojo.TransactionNotificationPojo;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
 import retrofit2.Response;
 import services.api.WebPayApi;
+import services.sequence.NotificationIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
+
+import java.sql.Timestamp;
+import java.time.Instant;
 
 /*
  * Created by Gibah Joseph on Feb, 2019
  */
 public class WebPayService {
-    public static final String AMOUNT_FIELD = "amount"; //numeric
-    public static final String CURRENCY = "currency";//566
-    public static final String CUSTOMER_ID = "cust_id";// string
-    public static final String HASH = "hash"; // string
-    public static final String TRANSACTION_REF = "txn_ref";
-    public static final String PAYMENT_ITEM_ID = "pay_item_id";//numeric
-    public static final String PRODUCT_ID = "product_id";//numeric
-    public static final String SITE_REDIRECT_URL = "site_redirect_url";
-    public static final String CUSTOMER_ID_DESCRIPTION = "cust_id_desc";
-    public static final String CUSTOMER_NAME = "cust_name";
-    public static final String CUSTOMER_NAME_DESC = "cust_name_desc";
-    public static final String LOCAL_DATE_TIME = "local_date_time";
-    public static final String SITE_NAME = "site_name";
-    public static final String PAYMENT_ITEM_NAME = "pay_item_name";
     private static String WEBPAY_PAYMENT_REQUEST_URL = "WEBPAY_PAYMENT_REQUEST_URL";
-
-    private NinjaProperties ninjaProperties;
-    //    private OkHttpClient client;
-    private String webpayRequestUrl;
     private PaymentTransactionDao paymentTransactionDao;
-    private PaymentTransactionService paymentTransactionService;
     private WebPayApi webPayApi;
+    private WebPayServiceCredentials webPayServiceCredentials;
+    private Merchant merchant;
+    private PaymentService paymentService;
+    private NotificationIdSequence notificationIdSequence;
 
     @Inject
-    public WebPayService(NinjaProperties ninjaProperties, BaseDao baseDao, PaymentTransactionDao paymentTransactionDao, PaymentTransactionService paymentTransactionService, WebPayApi webPayApi) {
-        this.ninjaProperties = ninjaProperties;
-//        this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
-        webpayRequestUrl = baseDao.getSettingsValue(WEBPAY_PAYMENT_REQUEST_URL, "20", true);
+    public WebPayService(PaymentTransactionDao paymentTransactionDao, WebPayApi webPayApi,
+                         PaymentService paymentService, NotificationIdSequence notificationIdSequence) {
         this.paymentTransactionDao = paymentTransactionDao;
-        this.paymentTransactionService = paymentTransactionService;
         this.webPayApi = webPayApi;
+        this.paymentService = paymentService;
+        merchant = paymentService.getMerchant();
+        webPayServiceCredentials = paymentService.getWebPayCredentials(merchant);
+        this.notificationIdSequence = notificationIdSequence;
     }
-
-//    public void initiateTransaction(TransactionRequestPojo data) {
-//        WebPayTransactionRequestPojo webPayTransactionRequestPojo=new WebPayTransactionRequestPojo();
-//        webPayTransactionRequestPojo.setCustomerIdDescription("");
-//        webPayTransactionRequestPojo.setCustomerName("");
-//        webPayTransactionRequestPojo.setCustomerNameDescription("");
-//        webPayTransactionRequestPojo.setSiteName("");
-//        webPayTransactionRequestPojo.setPaymentItemName("");
-//        webPayTransactionRequestPojo.setAmount(data.getAmountInKobo());
-//        webPayTransactionRequestPojo.setCurrency(566);
-//        webPayTransactionRequestPojo.setCustomerId(data.getTransactionId());
-//        webPayTransactionRequestPojo.setTransactionReference(data.getTransactionId());
-//        webPayTransactionRequestPojo.setPaymentItemId(data.get);
-//        webPayTransactionRequestPojo.setProductId("");
-//        webPayTransactionRequestPojo.setSiteRedirectUrl("");
-//
-//        webPayTransactionRequestPojo.setHash("");
-
-//        RequestBody requestBody = new MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart(AMOUNT_FIELD, "someValue")
-//                .addFormDataPart(CURRENCY, "someValue")
-//                .addFormDataPart(CUSTOMER_ID, "someValue")
-//                .addFormDataPart(HASH, "someValue")
-//                .addFormDataPart(TRANSACTION_REF, "someValue")
-//                .addFormDataPart(PAYMENT_ITEM_ID, "someValue")
-//                .addFormDataPart(PRODUCT_ID, "someValue")
-//                .addFormDataPart(SITE_REDIRECT_URL, "someValue")
-//                .addFormDataPart(CUSTOMER_ID_DESCRIPTION, "someValue")
-//                .addFormDataPart(CUSTOMER_NAME, "someValue")
-//                .addFormDataPart(CUSTOMER_NAME_DESC, "someValue")
-//                .addFormDataPart(LOCAL_DATE_TIME, "someValue")
-//                .addFormDataPart(SITE_NAME, "someValue")
-//                .addFormDataPart(PAYMENT_ITEM_NAME, "someValue")
-//                .build();
-//
-//        Request request = new Request.Builder()
-//                .url(webpayRequestUrl)
-//                .post(requestBody)
-//                .build();
-//        try (Response response = client.newCall(request).execute()) {
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public WebPayTransactionRequestPojo createWebPayRequest(PaymentTransaction paymentTransaction) {
         WebPayTransactionRequestPojo webPayTransactionRequestPojo = new WebPayTransactionRequestPojo();
@@ -114,23 +57,53 @@ public class WebPayService {
             webPayTransactionRequestPojo.setCustomerName(PaymentUtil.getFormattedFullName(payer.getFirstName(), payer.getLastName()));
         }
 
-        String mac = paymentTransactionDao.getSettingsValue(Constants.WEB_PAY_MAC_SETTINGS_KEY, "E187B1191265B18338B5DEBAF9F38FEC37B170FF582D4666DAB1F098304D5EE7F3BE15540461FE92F1D40332FDBBA34579034EE2AC78B1A1B8D9A321974025C4", true);
+        String mac = webPayServiceCredentials.getMacKey();
         webPayTransactionRequestPojo.computeHash(mac);
-
-//        webPayTransactionRequestPojo.setCustomerNameDescription("");
-//        webPayTransactionRequestPojo.setSiteName("");
-//        webPayTransactionRequestPojo.setPaymentItemName("");
 
         return webPayTransactionRequestPojo;
 
     }
 
+    @Transactional
+    public void queueNotification(WebPayPaymentDataDto paymentPojo, PaymentTransaction paymentTransaction) {
+        Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
+        TransactionNotificationPojo<WebPayPaymentDataDto> transactionNotificationPojo = new TransactionNotificationPojo<>();
+        transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
+        transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
+        transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
+        transactionNotificationPojo.setReceiptNumber(paymentPojo.getRetrievalReferenceNumber());
+        transactionNotificationPojo.setAmountPaidInKobo(paymentPojo.getAmount());
+        transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue() + "_" + paymentTransaction.getPaymentChannel().getValue());
+        transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
+        transactionNotificationPojo.setPaymentDate(paymentPojo.getTransactionDate());
+//        transactionNotificationPojo.setSettlementDate(paymentPojo.getSettlementDate());
+        transactionNotificationPojo.setPaymentChannelName(paymentTransaction.getPaymentChannel().getValue());
+        transactionNotificationPojo.setPaymentProviderPaymentReference(paymentPojo.getPaymentReference());
+        transactionNotificationPojo.setPaymentMethod("CARD");
+        transactionNotificationPojo.setDescription(paymentPojo.getResponseDescription());
+        transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
+        transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
+        transactionNotificationPojo.setMerchantTransactionReference(paymentTransaction.getMerchantTransactionReferenceId());
+        transactionNotificationPojo.setActualNotification(paymentPojo);
+
+        PayerPojo payerPojo = paymentTransactionDao.getPayerAsPojo(paymentTransaction.getPayer().getId());
+        transactionNotificationPojo.setPayer(payerPojo);
+
+        NotificationQueue notificationQueue = new NotificationQueue();
+        notificationQueue.setMessageInJson(PaymentUtil.toJSON(transactionNotificationPojo));
+        notificationQueue.setNotificationUrl(merchant.getNotificationUrl());
+        notificationQueue.setNotificationSent(false);
+        notificationQueue.setDateCreated(Timestamp.from(Instant.now()));
+        notificationQueue.setPaymentTransaction(paymentTransaction);
+
+        paymentTransactionDao.saveObject(notificationQueue);
+    }
+
     public WebPayPaymentDataDto getPaymentData(PaymentTransaction paymentTransaction) {
-        String mac = paymentTransactionDao.getSettingsValue(Constants.WEB_PAY_MAC_SETTINGS_KEY, "E187B1191265B18338B5DEBAF9F38FEC37B170FF582D4666DAB1F098304D5EE7F3BE15540461FE92F1D40332FDBBA34579034EE2AC78B1A1B8D9A321974025C4", true);
+        String mac = webPayServiceCredentials.getMacKey();
         String message = paymentTransaction.getServiceTypeId() + paymentTransaction.getAmountInKobo() + mac;
         retrofit2.Call<WebPayPaymentDataDto> transactionStatus = webPayApi.getTransactionStatus(paymentTransaction.getServiceTypeId(),
                 paymentTransaction.getAmountInKobo(), paymentTransaction.getTransactionId(), PaymentUtil.getHash(message, Constants.SHA_512_ALGORITHM_NAME));
-
         try {
             Response<WebPayPaymentDataDto> response = transactionStatus.execute();
             if (response.code() == 200) {

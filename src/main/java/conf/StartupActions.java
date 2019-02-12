@@ -11,12 +11,16 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.Provides;
+import dao.BaseDao;
 import ninja.lifecycle.Start;
 import ninja.utils.NinjaProperties;
 import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import retrofit2.Retrofit;
 import services.SetupService;
+import services.api.WebPayApi;
 import utils.Constants;
 
 import javax.inject.Singleton;
@@ -28,9 +32,8 @@ import java.util.TimeZone;
 
 @Singleton
 public class StartupActions {
-
     final static Logger logger = LoggerFactory.getLogger(StartupActions.class);
-    private NinjaProperties ninjaProperties;
+
     private ObjectMapper objectMapper;
     private XmlMapper xmlMapper;
     private Provider<EntityManager> entityManagerProvider;
@@ -39,12 +42,10 @@ public class StartupActions {
     @Inject
     public StartupActions(
             Provider<EntityManager> entityManagerProvider,
-            NinjaProperties ninjaProperties,
             ObjectMapper objectMapper,
             XmlMapper xmlMapper,
             SetupService setupService) {
         this.entityManagerProvider = entityManagerProvider;
-        this.ninjaProperties = ninjaProperties;
         this.objectMapper = objectMapper;
         this.xmlMapper = xmlMapper;
         this.setupService = setupService;
