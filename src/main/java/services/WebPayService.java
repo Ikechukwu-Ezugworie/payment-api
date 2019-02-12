@@ -107,7 +107,7 @@ public class WebPayService {
             webPayTransactionRequestPojo.setPaymentItemId(Integer.valueOf(paymentTransactionItem.getItemId()));
         }
         webPayTransactionRequestPojo.setProductId(Integer.valueOf(paymentTransaction.getServiceTypeId()));
-        webPayTransactionRequestPojo.setSiteRedirectUrl(paymentTransactionDao.getSettingsValue(Constants.WEB_PAY_REDIRECT_URL_SETTINGS_KEY, "- MODIFY -", true));
+        webPayTransactionRequestPojo.setSiteRedirectUrl(paymentTransactionDao.getSettingsValue(Constants.WEB_PAY_REDIRECT_URL_SETTINGS_KEY, "http://localhost:8080/payments/webpay/", true));
 //        webPayTransactionRequestPojo.setCustomerIdDescription("");
         if (paymentTransaction.getPayer() != null) {
             Payer payer = paymentTransactionDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());

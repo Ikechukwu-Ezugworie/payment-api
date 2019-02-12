@@ -1,6 +1,7 @@
 package controllers;
 
 import com.bw.payment.entity.PaymentTransaction;
+import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -51,7 +52,7 @@ public class WebPayController {
         transactionRequestPojo.setNotifyOnStatusChange(true);
         transactionRequestPojo.setNotificationUrl(data.getNotificationUrl());
         transactionRequestPojo.setPaymentProvider("INTERSWITCH");
-        transactionRequestPojo.setPaymentChannel("WEBPAY");
+        transactionRequestPojo.setPaymentChannel(PaymentChannelConstant.WEBPAY.getValue());
         transactionRequestPojo.setServiceTypeId(data.getProductId());
         transactionRequestPojo.setCustomerTransactionReference(data.getCustomerReference());
         PayerPojo payer = new PayerPojo();
@@ -96,6 +97,6 @@ public class WebPayController {
         if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
         }
-        return Results.html().render("data", webPayPaymentDataDto);
+        return Results.redirect("http://localhost:8081?customerReference="+paymentTransaction.getCustomerTransactionReference());
     }
 }

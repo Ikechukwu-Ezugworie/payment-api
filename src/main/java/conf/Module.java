@@ -18,15 +18,27 @@
 package conf;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import ninja.utils.NinjaProperties;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import services.api.WebPayApi;
 import utils.CronSchedule;
+import utils.PaymentUtil;
 
 @Singleton
 public class Module extends AbstractModule {
+
+    private NinjaProperties ninjaProperties;
+
+    @Inject
+    public Module(NinjaProperties ninjaProperties) {
+        super();
+        this.ninjaProperties = ninjaProperties;
+    }
 
     protected void configure() {
         bind(OkHttpClient.class).toInstance(new OkHttpClient());
@@ -40,6 +52,8 @@ public class Module extends AbstractModule {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(PaymentUtil.getOkHttpClient(ninjaProperties))
                 .build();
         return retrofit.create(WebPayApi.class);
     }

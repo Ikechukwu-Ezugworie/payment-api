@@ -57,7 +57,10 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setAmountInKobo(request.getAmountInKobo());
         paymentTransaction.setAmountPaidInKobo(0L);
         paymentTransaction.setPaymentProvider(PaymentProviderConstant.fromValue(request.getPaymentProvider()));
-        paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
+        if(StringUtils.isNotBlank(request.getPaymentChannel())){
+            paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
+        }
+
         paymentTransaction.setServiceTypeId(request.getServiceTypeId());
         paymentTransaction.setMerchant(merchant);
         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
