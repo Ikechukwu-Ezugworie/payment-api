@@ -97,6 +97,6 @@ public class WebPayController {
         if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
         }
-        return Results.redirect("http://localhost:8081?customerReference="+paymentTransaction.getCustomerTransactionReference());
+        return Results.redirect("http://localhost:8081/online-payment/bw-payment?customerReference="+paymentTransaction.getCustomerTransactionReference());
     }
 }
