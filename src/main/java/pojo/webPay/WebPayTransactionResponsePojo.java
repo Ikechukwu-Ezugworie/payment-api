@@ -1,5 +1,7 @@
 package pojo.webPay;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.util.Map;
 
 /*
@@ -12,6 +14,15 @@ public class WebPayTransactionResponsePojo {
     private String retRef;
     private String txnref;
     private String url;
+    private String amt;
+
+    public String getAmt() {
+        return amt;
+    }
+
+    public void setAmt(String amt) {
+        this.amt = amt;
+    }
 
     public Long getApprAmnt() {
         return apprAmnt;
@@ -67,7 +78,15 @@ public class WebPayTransactionResponsePojo {
         return this;
     }
 
-    public Map<String, String> toMap() {
-        return null;
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("apprAmnt", apprAmnt)
+                .append("cardNum", cardNum)
+                .append("payRef", payRef)
+                .append("retRef", retRef)
+                .append("txnref", txnref)
+                .append("url", url)
+                .toString();
     }
 }

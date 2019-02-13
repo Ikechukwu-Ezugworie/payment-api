@@ -5,10 +5,14 @@ import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import dao.PaymentTransactionDao;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
+import pojo.webPay.WebPayTransactionResponsePojo;
 import retrofit2.Response;
 import services.api.WebPayApi;
 import services.sequence.NotificationIdSequence;
@@ -23,9 +27,11 @@ import java.time.Instant;
  */
 public class WebPayService {
     private static String WEBPAY_PAYMENT_REQUEST_URL = "WEBPAY_PAYMENT_REQUEST_URL";
+
+    private Logger logger= LoggerFactory.getLogger(WebPayService.class);
+
     private PaymentTransactionDao paymentTransactionDao;
     private WebPayApi webPayApi;
-    private WebPayServiceCredentials webPayServiceCredentials;
     private Merchant merchant;
     private PaymentService paymentService;
     private NotificationIdSequence notificationIdSequence;
@@ -37,7 +43,6 @@ public class WebPayService {
         this.webPayApi = webPayApi;
         this.paymentService = paymentService;
         merchant = paymentService.getMerchant();
-        webPayServiceCredentials = paymentService.getWebPayCredentials(merchant);
         this.notificationIdSequence = notificationIdSequence;
     }
 
@@ -57,7 +62,7 @@ public class WebPayService {
             webPayTransactionRequestPojo.setCustomerName(PaymentUtil.getFormattedFullName(payer.getFirstName(), payer.getLastName()));
         }
 
-        String mac = webPayServiceCredentials.getMacKey();
+        String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
         webPayTransactionRequestPojo.computeHash(mac);
 
         return webPayTransactionRequestPojo;
@@ -100,11 +105,16 @@ public class WebPayService {
     }
 
     public WebPayPaymentDataDto getPaymentData(PaymentTransaction paymentTransaction) {
-        String mac = webPayServiceCredentials.getMacKey();
-        String message = paymentTransaction.getServiceTypeId() + paymentTransaction.getAmountInKobo() + mac;
+        String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
+        String message = paymentTransaction.getServiceTypeId() +paymentTransaction.getTransactionId() +  mac;
+        String hash = PaymentUtil.getHash(message, Constants.SHA_512_ALGORITHM_NAME);
+        logger.info("===> hash {} for message {}",hash,message);
         retrofit2.Call<WebPayPaymentDataDto> transactionStatus = webPayApi.getTransactionStatus(paymentTransaction.getServiceTypeId(),
-                paymentTransaction.getAmountInKobo(), paymentTransaction.getTransactionId(), PaymentUtil.getHash(message, Constants.SHA_512_ALGORITHM_NAME));
+                paymentTransaction.getAmountInKobo(), paymentTransaction.getTransactionId(), hash);
+        logger.info("===> Verifying payment from ISW ::: {} ::: {} ::: {}",transactionStatus.request().url(),paymentTransaction.getCustomerTransactionReference(),
+                transactionStatus.request().header("hash"));
         try {
+            transactionStatus.request().url();
             Response<WebPayPaymentDataDto> response = transactionStatus.execute();
             if (response.code() == 200) {
                 return response.body();
@@ -115,4 +125,9 @@ public class WebPayService {
             throw new IllegalArgumentException(e);
         }
     }
+
+//    public PaymentTransaction processPaymentResponse(WebPayTransactionResponsePojo data) {
+//        PaymentTransaction paymentTransaction=paymentTransactionDao.getByTransactionId(data.getTxnref());
+//        paymentTransaction.setProviderTransactionReference(data.getPayRef());
+//    }
 }

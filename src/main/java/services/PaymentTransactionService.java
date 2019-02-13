@@ -61,6 +61,7 @@ public class PaymentTransactionService {
         transactionRequestPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
         transactionRequestPojo.setPaymentChannel(paymentTransaction.getPaymentChannel().getValue());
         transactionRequestPojo.setServiceTypeId(paymentTransaction.getServiceTypeId());
+        transactionRequestPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
 
         Payer payer = paymentTransactionDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
         transactionRequestPojo.setPayer(generatePayerPojo(payer));

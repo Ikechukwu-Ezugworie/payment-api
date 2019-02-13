@@ -285,4 +285,8 @@ public class PaymentTransactionDao extends BaseDao {
         System.out.println("<== RETURNING FIRST OF MANY MERCHANTS xx");
         return merchants.get(0);
     }
+
+    public PaymentTransaction getByTransactionId(String transactionId) {
+        return getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);
+    }
 }

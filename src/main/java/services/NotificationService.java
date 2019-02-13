@@ -50,7 +50,7 @@ public class NotificationService {
             Request request = new Request.Builder().url(notificationQueue.getNotificationUrl()).post(body).build();
 
             try (Response response = client.newCall(request).execute()) {
-                logger.info("<== payment notification response code [] " + request.url() + " : " + response.code());
+                logger.info("<== payment notification response code [] " + request.url() + " : " + response.code() + response.message());
                 if (response.code() == 200) {
                     notificationSent(notificationQueue);
                 }

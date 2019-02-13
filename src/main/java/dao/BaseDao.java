@@ -155,6 +155,7 @@ public class BaseDao {
         return obj;
     }
 
+    @Transactional
     public <T> T updateObject(T obj) {
         return entityManagerProvider.get().merge(obj);
     }

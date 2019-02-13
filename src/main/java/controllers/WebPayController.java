@@ -12,6 +12,7 @@ import ninja.params.Param;
 import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.ItemPojo;
@@ -21,6 +22,7 @@ import pojo.webPay.BwPaymentsWebPayRequest;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
 import pojo.webPay.WebPayTransactionResponsePojo;
+import retrofit2.http.Url;
 import services.NotificationService;
 import services.PaymentService;
 import services.PaymentTransactionService;
@@ -91,19 +93,37 @@ public class WebPayController {
 
         WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction);
 
-        return Results.html().render("data", webPayTransactionRequestPojo);
+        return Results.html()
+                .render("data", webPayTransactionRequestPojo)
+                .render("transactionData", paymentTransactionService.getFullPaymentTransactionDetailsAsPojo(paymentTransaction));
     }
 
     public Result paymentCompleted(WebPayTransactionResponsePojo data) {
-        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(data.getTxnref());
+        try {
+            PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(data.getTxnref());
 
-        WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
-        if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
-            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
-            webPayService.queueNotification(webPayPaymentDataDto,paymentTransaction);
-            notificationService.sendPaymentNotification(10);
+            WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
+
+            URIBuilder b = new URIBuilder(paymentService.getWebPayCredentials(null).getMerchantRedirectUrl());
+            if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+                paymentTransaction.setProviderTransactionReference(webPayPaymentDataDto.getPaymentReference());
+                paymentTransactionDao.updateObject(paymentTransaction);
+                webPayService.queueNotification(webPayPaymentDataDto, paymentTransaction);
+                notificationService.sendPaymentNotification(10);
+                b.addParameter("status", "successful");
+            } else {
+                b.addParameter("status", "failed");
+                b.addParameter("description", String.format("%s : %s", webPayPaymentDataDto.getResponseCode(), webPayPaymentDataDto.getResponseDescription()));
+            }
+            b.addParameter("customerReference", paymentTransaction.getCustomerTransactionReference());
+            logger.info("=== > response: {}", webPayPaymentDataDto);
+
+            String redirectUrl = b.build().toString();
+            return Results.redirect(redirectUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        String redirectUrl = paymentService.getWebPayCredentials(null).getMerchantRedirectUrl() + "?customerReference=" + paymentTransaction.getCustomerTransactionReference();
-        return Results.redirect(redirectUrl);
+        return Results.internalServerError();
     }
 }

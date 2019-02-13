@@ -7,6 +7,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import ninja.utils.NinjaProperties;
 import okhttp3.OkHttpClient;
+//import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -805,10 +806,14 @@ public class PaymentUtil {
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             builder.hostnameVerifier((hostname, session) -> true);
 
+//            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
             OkHttpClient okHttpClient = builder
                     .connectTimeout(timeout, TimeUnit.SECONDS)
                     .writeTimeout(timeout, TimeUnit.SECONDS)
                     .readTimeout(timeout, TimeUnit.SECONDS)
+//                    .addInterceptor(interceptor)
                     .build();
             return okHttpClient;
         } catch (Exception e) {
