@@ -1,76 +1,125 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
-<@layout.myLayout "Interswitch">
+<@layout.myLayout "WebPay">
+<#include "../layout/header.ftl.html"/>
     <div class="row">
-        <div class="col-md-8 offset-md-2 card mt-5">
-            <div class="row m-5">
-                <#--<div class=" col-12">-->
-                <#--<div id="paying" class="progress">-->
-                <#--<div class="progress-bar progress-bar-striped  bg-success progress-bar-animated" role="progressbar"-->
-                <#--aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">-->
+        <br><br>
 
-                <#--</div>-->
-                <#--</div>-->
-                <#--</div>-->
-                <#--<div class=" col-12">-->
-                <#--<div id="errorPay" class="alert-danger alert" role="alert">-->
-                <#--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-                <#--<span aria-hidden="true">&times;</span>-->
-                <#--</button>-->
-                <#--<span id="payErrorMessage">An error has occurred</span>-->
-                <#--</div>-->
-                <#--</div>-->
-                <div class="col-12">
-                    <table class="table table-striped table-bordered" style="width: 100%">
-                        <tr>
-                            <th style="width: 30%;">Payment reference</th>
-                            <td id="ppr">${transactionData.customerTransactionReference!""}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 30%;">Name</th>
-                            <td id="transactionId">${data.customerName}</td>
-                        </tr>
+    </div>
+
+    <!-- Start Form Area -->
+    <section class="featured-area">
+        <div class="container" style="padding: 20px;border: 2px solid #28a74540;border-radius: 10px;">
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <#--<#if (paymentbooking ??)>-->
+                        <div class="mt-10">
+                            <!-- Notifications -->
+
+                           <#-- <div class="alert alert-warning">
+                                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                <strong><i class="fa fa-info-circle"></i></strong> Find payment details below.
+                            </div>-->
+                            <!-- End Notifications -->
+                        </div>
+                        <div class="row">
+                            <div class = "col-md-8">
+                            <h2 style="color: darkgreen">   WEB PAY </h2>
+                            </div>
+
+                            <div class = "col-md-4">
+                                <div class="dashboard-breadcrumb">
+                                    <a href="http://localhost:8081/online-payment" title="Go back to Your Payment Page">Online Payment Portal</a>
+                                    &nbsp;>&nbsp;
+                                    <span>Transaction Details</span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-md-8 offset-md-2 card mt-5">
+
+                            <div class="row m-5">
+                            <#--<div class=" col-12">-->
+                            <#--<div id="paying" class="progress">-->
+                            <#--<div class="progress-bar progress-bar-striped  bg-success progress-bar-animated" role="progressbar"-->
+                            <#--aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">-->
+
+                            <#--</div>-->
+                            <#--</div>-->
+                            <#--</div>-->
+                            <#--<div class=" col-12">-->
+                            <#--<div id="errorPay" class="alert-danger alert" role="alert">-->
+                            <#--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+                            <#--<span aria-hidden="true">&times;</span>-->
+                            <#--</button>-->
+                            <#--<span id="payErrorMessage">An error has occurred</span>-->
+                            <#--</div>-->
+                            <#--</div>-->
+                                <div class="col-12">
+
+                                    <table class="table table-striped table-bordered" style="width: 100%">
+                                        <h3 class="text-center">ORDER DETAILS</h3>
+                                        <tr>
+                                            <th style="width: 40%;">Payment reference</th>
+                                            <td id="ppr">${transactionData.customerTransactionReference!""}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 40%;">Name</th>
+                                            <td id="transactionId">${data.customerName}</td>
+                                        </tr>
                         <#if transactionData.payer??>
                         <tr>
-                            <th style="width: 30%;">Email</th>
+                            <th style="width: 40%;">Email</th>
                             <td id="ppr">${transactionData.payer.email!""}</td>
                         </tr>
                         </#if>
-                        <#--<tr>-->
-                            <#--<th style="width: 30%;">Email</th>-->
-                            <#--<td id="ppr">${data.transactionReference}</td>-->
-                        <#--</tr>-->
-                        <tr>
-                            <th style="width: 30%;">Amount</th>
-                            <td id="amountPaid">&#8358; ${data.amount/100}</td>
-                        </tr>
-                        <#--<tr>-->
-                        <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
-                        <#--<td id="amountPaid">${data.amount/100}</td>-->
-                        <#--</tr>-->
-                        <#--<tr>-->
-                        <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
-                        <#--<td id="amountPaid">${data.amount/100}</td>-->
-                        <#--</tr>-->
-                        <#--<tr>-->
-                        <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
-                        <#--<td id="amountPaid">${data.amount/100}</td>-->
-                        <#--</tr>-->
-                    </table>
+                                    <#--<tr>-->
+                                    <#--<th style="width: 30%;">Email</th>-->
+                                    <#--<td id="ppr">${data.transactionReference}</td>-->
+                                    <#--</tr>-->
+                                        <tr>
+                                            <th style="width: 30%;">Amount</th>
+                                            <td id="amountPaid">&#8358; ${data.amount/100}</td>
+                                        </tr>
+                                    <#--<tr>-->
+                                    <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
+                                    <#--<td id="amountPaid">${data.amount/100}</td>-->
+                                    <#--</tr>-->
+                                    <#--<tr>-->
+                                    <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
+                                    <#--<td id="amountPaid">${data.amount/100}</td>-->
+                                    <#--</tr>-->
+                                    <#--<tr>-->
+                                    <#--<th style="width: 30%;">Amount (&#8358;)</th>-->
+                                    <#--<td id="amountPaid">${data.amount/100}</td>-->
+                                    <#--</tr>-->
+                                    </table>
+                                </div>
+                                <form name="webpay" action="https://sandbox.interswitchng.com/webpay/pay" method="post" class=" col-12">
+                                    <input name="product_id" type="hidden" value="${data.productId}"/>
+                                    <input name="pay_item_id" type="hidden" value="${data.paymentItemId}"/>
+                                    <input name="amount" type="hidden" value="${data.amount}"/>
+                                    <input name="currency" type="hidden" value="566"/>
+                                    <input name="site_redirect_url" type="hidden" value="${data.siteRedirectUrl}"/>
+                                    <input name="txn_ref" type="hidden" value="${data.transactionReference}"/>
+                                    <input name="cust_id" type="hidden" value="${data.customerId}">
+                                    <input name="hash" type="hidden"
+                                           value="${data.hash}"/>
+                                    <button class="btn btn-success float-right">Make payment</button>
+                                </form>
+                            </div>
+                            <div class="modal-header">
+
+                                <h4 class="text-center"><img src="/assets/images/card_logos.jpg" width="200em"/> <img src="/assets/images/Interswitch_Logo_New.jpg" width="160em"/></h4>  <h4 class="text-center"> </h4>
+                            </div>
+
+
+                        </div>
                 </div>
-                <form name="webpay" action="https://sandbox.interswitchng.com/webpay/pay" method="post" class=" col-12">
-                    <input name="product_id" type="hidden" value="${data.productId}"/>
-                    <input name="pay_item_id" type="hidden" value="${data.paymentItemId}"/>
-                    <input name="amount" type="hidden" value="${data.amount}"/>
-                    <input name="currency" type="hidden" value="566"/>
-                    <input name="site_redirect_url" type="hidden" value="${data.siteRedirectUrl}"/>
-                    <input name="txn_ref" type="hidden" value="${data.transactionReference}"/>
-                    <input name="cust_id" type="hidden" value="${data.customerId}">
-                    <input name="hash" type="hidden"
-                           value="${data.hash}"/>
-                    <button class="btn btn-primary float-right">Make payment</button>
-                </form>
             </div>
         </div>
+    </section>
 
-    </div>
+<br><br>
+
+
 </@layout.myLayout>
