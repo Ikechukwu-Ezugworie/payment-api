@@ -22,6 +22,15 @@ public class WebPayTransactionRequestPojo {
     private String customerNameDescription;
     private String siteName;
     private String paymentItemName;
+    private String postUrl;
+
+    public String getPostUrl() {
+        return postUrl;
+    }
+
+    public void setPostUrl(String postUrl) {
+        this.postUrl = postUrl;
+    }
 
     public Long getAmount() {
         return amount;

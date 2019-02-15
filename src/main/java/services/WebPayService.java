@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import controllers.WebPayController;
 import dao.PaymentTransactionDao;
-import org.apache.commons.lang3.StringUtils;
+import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ninja.Context;
@@ -15,7 +15,6 @@ import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
-import pojo.webPay.WebPayTransactionResponsePojo;
 import retrofit2.Response;
 import services.api.WebPayApi;
 import services.sequence.NotificationIdSequence;
@@ -39,16 +38,18 @@ public class WebPayService {
     private PaymentService paymentService;
     private NotificationIdSequence notificationIdSequence;
     private ReverseRouter reverseRouter;
+    private NinjaProperties ninjaProperties;
 
     @Inject
     public WebPayService(PaymentTransactionDao paymentTransactionDao, WebPayApi webPayApi,
-                         PaymentService paymentService, NotificationIdSequence notificationIdSequence, ReverseRouter reverseRouter) {
+                         PaymentService paymentService, NotificationIdSequence notificationIdSequence, ReverseRouter reverseRouter, NinjaProperties ninjaProperties) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.webPayApi = webPayApi;
         this.paymentService = paymentService;
         merchant = paymentService.getMerchant();
         this.notificationIdSequence = notificationIdSequence;
         this.reverseRouter = reverseRouter;
+        this.ninjaProperties = ninjaProperties;
     }
 
     public WebPayTransactionRequestPojo createWebPayRequest(PaymentTransaction paymentTransaction, Context context) {

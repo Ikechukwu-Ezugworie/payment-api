@@ -16,13 +16,13 @@ public class BwPaymentsWebPayRequest {
     private String notificationUrl;
     @NotBlank(message = "Product id may not be empty")
     private String productId;
-    @NotBlank
+    @NotBlank (message = "Payer name not found")
     private String payerName;
-    @NotBlank
+    @NotBlank (message = "Payer email cannot be empty")
     private String payerEmail;
-    @NotBlank
+    @NotBlank (message = "Customer reference cannot be empty")
     private String customerReference;
-    @NotBlank
+    @NotBlank (message = "Payment ID cannot be empty")
     private String paymentItemId;
 
     public Long getAmount() {
