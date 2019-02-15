@@ -4,10 +4,13 @@ import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import controllers.WebPayController;
 import dao.PaymentTransactionDao;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ninja.Context;
+import ninja.ReverseRouter;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.webPay.WebPayPaymentDataDto;
@@ -35,18 +38,20 @@ public class WebPayService {
     private Merchant merchant;
     private PaymentService paymentService;
     private NotificationIdSequence notificationIdSequence;
+    private ReverseRouter reverseRouter;
 
     @Inject
     public WebPayService(PaymentTransactionDao paymentTransactionDao, WebPayApi webPayApi,
-                         PaymentService paymentService, NotificationIdSequence notificationIdSequence) {
+                         PaymentService paymentService, NotificationIdSequence notificationIdSequence, ReverseRouter reverseRouter) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.webPayApi = webPayApi;
         this.paymentService = paymentService;
         merchant = paymentService.getMerchant();
         this.notificationIdSequence = notificationIdSequence;
+        this.reverseRouter = reverseRouter;
     }
 
-    public WebPayTransactionRequestPojo createWebPayRequest(PaymentTransaction paymentTransaction) {
+    public WebPayTransactionRequestPojo createWebPayRequest(PaymentTransaction paymentTransaction, Context context) {
         WebPayTransactionRequestPojo webPayTransactionRequestPojo = new WebPayTransactionRequestPojo();
         webPayTransactionRequestPojo.setAmount(paymentTransaction.getAmountInKobo());
         webPayTransactionRequestPojo.setCustomerId(paymentTransaction.getCustomerTransactionReference());
@@ -55,8 +60,7 @@ public class WebPayService {
             webPayTransactionRequestPojo.setPaymentItemId(Integer.valueOf(paymentTransactionItem.getItemId()));
         }
         webPayTransactionRequestPojo.setProductId(Integer.valueOf(paymentTransaction.getServiceTypeId()));
-        webPayTransactionRequestPojo.setSiteRedirectUrl(paymentTransactionDao.getSettingsValue(Constants.WEB_PAY_REDIRECT_URL_SETTINGS_KEY, "http://localhost:8080/payments/webpay/", true));
-//        webPayTransactionRequestPojo.setCustomerIdDescription("");
+        webPayTransactionRequestPojo.setSiteRedirectUrl(reverseRouter.with(WebPayController::paymentCompleted).absolute(context).build());
         if (paymentTransaction.getPayer() != null) {
             Payer payer = paymentTransactionDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
             webPayTransactionRequestPojo.setCustomerName(PaymentUtil.getFormattedFullName(payer.getFirstName(), payer.getLastName()));
@@ -111,10 +115,8 @@ public class WebPayService {
         logger.info("===> hash {} for message {}",hash,message);
         retrofit2.Call<WebPayPaymentDataDto> transactionStatus = webPayApi.getTransactionStatus(paymentTransaction.getServiceTypeId(),
                 paymentTransaction.getAmountInKobo(), paymentTransaction.getTransactionId(), hash);
-        logger.info("===> Verifying payment from ISW ::: {} ::: {} ::: {}",transactionStatus.request().url(),paymentTransaction.getCustomerTransactionReference(),
-                transactionStatus.request().header("hash"));
+        logger.info("===> Verifying payment from ISW ::: {} ::: {}",transactionStatus.request().url(),paymentTransaction.getCustomerTransactionReference());
         try {
-            transactionStatus.request().url();
             Response<WebPayPaymentDataDto> response = transactionStatus.execute();
             if (response.code() == 200) {
                 return response.body();

@@ -18,6 +18,7 @@ public class WebPayTransactionRequestPojo {
 
     private String customerIdDescription;
     private String customerName;
+    private String customerEmail; // not required by ISW
     private String customerNameDescription;
     private String siteName;
     private String paymentItemName;
@@ -37,6 +38,15 @@ public class WebPayTransactionRequestPojo {
 
     public WebPayTransactionRequestPojo setCurrency(int currency) {
         this.currency = currency;
+        return this;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public WebPayTransactionRequestPojo setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
         return this;
     }
 

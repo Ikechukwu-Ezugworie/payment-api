@@ -6,6 +6,7 @@ import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.PaymentTransactionDao;
+import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
@@ -80,18 +81,18 @@ public class WebPayController {
     }
 
 
-    public Result paymentPage(@Param("transactionId") String transactionId) {
+    public Result paymentPage(@Param("transactionId") String transactionId, Context context) {
         if (StringUtils.isBlank(transactionId)) {
-            return Results.badRequest().json().render("message", "Invalid transactionId");
+            return Results.ok().html().render("error", "Invalid transactionId");
         }
 
         PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
 
         if (paymentTransaction == null || paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
-            return Results.notFound().json().render("message", "Transaction not found");
+            return Results.ok().html().render("error", "Transaction not found");
         }
 
-        WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction);
+        WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction,context);
 
         return Results.html()
                 .render("data", webPayTransactionRequestPojo)
