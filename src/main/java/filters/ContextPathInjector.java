@@ -4,6 +4,7 @@ import ninja.Context;
 import ninja.Filter;
 import ninja.FilterChain;
 import ninja.Result;
+import org.apache.commons.lang3.StringUtils;
 
 /*
  * Created by Gibah Joseph on Feb, 2019
@@ -18,7 +19,7 @@ public class ContextPathInjector implements Filter {
     public Result filter(FilterChain filterChain, Context context) {
         context.getSession().put("contextPath", context.getContextPath());
         Result result = filterChain.next(context);
-        if (result.getContentType().contains("html")) {
+        if (StringUtils.isNotBlank(result.getContentType()) && result.getContentType().contains("html")) {
             result.render("contextPath", context.getContextPath());
         }
         return result;
