@@ -89,7 +89,7 @@ public class WebPayController {
         PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
 
         if (paymentTransaction == null || paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
-            return Results.ok().html().render("error", "Transaction not found");
+            return Results.ok().html().render("error", "Transaction not found"); // ToDo: Clarification
         }
 
         WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction,context);
