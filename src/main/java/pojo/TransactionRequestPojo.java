@@ -24,11 +24,11 @@ public class TransactionRequestPojo {
     private Long amountInKobo;
     private Boolean notifyOnStatusChange = false;
     private String notificationUrl;
-    @NotBlank(message = "validation.not.null")
-    @PaymentProvider
+//    @NotBlank(message = "validation.not.null")
+//    @PaymentProvider
     private String paymentProvider;
-    @NotBlank(message = "validation.not.null")
-    @PaymentChannel
+//    @NoBlank(message = "validation.not.null")
+////    @PaytmentChannel
     private String paymentChannel;
     private String serviceTypeId;
     private MerchantRequestPojo merchant;
@@ -42,6 +42,7 @@ public class TransactionRequestPojo {
     private String transactionValidationUrl;
     private boolean instantTransaction = false;
     private String customerTransactionReference;
+    private String description;
 
     public Long getId() {
         return id;
@@ -208,5 +209,14 @@ public class TransactionRequestPojo {
 
     public void setCustomerTransactionReference(String customerTransactionReference) {
         this.customerTransactionReference = customerTransactionReference;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public TransactionRequestPojo setDescription(String description) {
+        this.description = description;
+        return this;
     }
 }

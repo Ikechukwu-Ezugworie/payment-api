@@ -65,6 +65,7 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setMerchant(merchant);
         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
         paymentTransaction.setCustomerTransactionReference(request.getCustomerTransactionReference());
+        paymentTransaction.setProviderTransactionReference(request.getProviderTransactionReference());
 
         System.out.println("<=== cref" + request.getCustomerTransactionReference());
 

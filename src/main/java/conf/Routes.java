@@ -51,7 +51,8 @@ public class Routes implements ApplicationRoutes {
         //////////////////////////////////////////////////////////////////////
         //  Remitta
         //////////////////////////////////////////////////////////////////////
-        router.POST().route(String.format("%s/api/v1/payments/remitta", urlPrefix)).with(RemitaController::doRemittaNotification);
+        router.POST().route(String.format("%s/api/v1/payments/remitta", urlPrefix)).with(RemitaController::doCreateTransaction);
+        router.POST().route(String.format("%s/api/v1/payments/remitta/notify", urlPrefix)).with(RemitaController::doRemittaNotification);
 
         /////////////////////////////////////////////////////////////////////
         // WEBPAY

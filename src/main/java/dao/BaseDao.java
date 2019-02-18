@@ -138,6 +138,8 @@ public class BaseDao {
         }
 
         entityManagerProvider.get().persist(setting);
+
+
     }
 
     public <T> List<T> getAllRecords(Class<T> tClass) {

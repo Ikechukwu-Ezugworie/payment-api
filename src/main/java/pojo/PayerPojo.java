@@ -11,6 +11,7 @@ public class PayerPojo {
     @NotBlank(message = "validation.not.null")
     private String firstName;
     private String lastName;
+    @NotBlank(message = "validation.not.null")
     private String email;
     @NotBlank(message = "validation.not.null")
     private String phoneNumber;
