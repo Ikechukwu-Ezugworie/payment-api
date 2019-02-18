@@ -11,13 +11,13 @@ import dao.MerchantDao;
  */
 public class PaymentService {
     @Inject
-    BaseDao baseDao;
+    private BaseDao baseDao;
     @Inject
-    MerchantDao merchantDao;
+    private MerchantDao merchantDao;
 
     public WebPayServiceCredentials getWebPayCredentials(Merchant merchant) {
         if (merchant == null) {
-            return baseDao.getAllRecords(WebPayServiceCredentials.class).get(0);
+            return null;
         }
         return baseDao.getUniqueRecordByProperty(WebPayServiceCredentials.class, "merchant", merchant);
     }
