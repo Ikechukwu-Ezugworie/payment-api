@@ -6,6 +6,8 @@ import com.google.inject.Inject;
 import dao.BaseDao;
 import dao.MerchantDao;
 
+import java.util.List;
+
 /*
  * Created by Gibah Joseph on Feb, 2019
  */
@@ -17,6 +19,10 @@ public class PaymentService {
 
     public WebPayServiceCredentials getWebPayCredentials(Merchant merchant) {
         if (merchant == null) {
+            List<WebPayServiceCredentials> allRecords = baseDao.getAllRecords(WebPayServiceCredentials.class);
+            if (allRecords.size() > 0) {
+                return allRecords.get(0);
+            }
             return null;
         }
         return baseDao.getUniqueRecordByProperty(WebPayServiceCredentials.class, "merchant", merchant);
