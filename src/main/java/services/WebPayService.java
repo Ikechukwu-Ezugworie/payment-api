@@ -68,6 +68,8 @@ public class WebPayService {
         }
 
         String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
+
+        logger.info("mac key is " + mac);
         webPayTransactionRequestPojo.computeHash(mac);
 
         return webPayTransactionRequestPojo;

@@ -94,6 +94,8 @@ public class WebPayController {
 
         WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction,context);
 
+        logger.info("webPayTransactionRequestPojo is " + webPayTransactionRequestPojo);
+
         return Results.html()
                 .render("data", webPayTransactionRequestPojo)
                 .render("transactionData", paymentTransactionService.getFullPaymentTransactionDetailsAsPojo(paymentTransaction));
