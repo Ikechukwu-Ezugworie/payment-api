@@ -2,7 +2,9 @@ package pojo.remitta;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class RemittaRrrResponse {
+import java.io.Serializable;
+
+public class RemittaRrrResponse  implements Serializable {
     private String statuscode;
     private String RRR;
     private String status;
@@ -34,6 +36,7 @@ public class RemittaRrrResponse {
         this.status = status;
         return this;
     }
+
 
     @Override
     public String toString() {

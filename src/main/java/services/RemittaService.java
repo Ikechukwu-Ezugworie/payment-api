@@ -80,7 +80,7 @@ public class RemittaService {
         // Try to Generate an RRR
 
         String transactionId = transactionIdSequence.getNext();
-        String serviceTypeId = remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "123456", Boolean.TRUE);
+        String serviceTypeId = remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "4430731", Boolean.TRUE);
 
         RemittaGenerateRequestRRRPojo requestData = new RemittaGenerateRequestRRRPojo();
         requestData.setServiceTypeId(serviceTypeId);

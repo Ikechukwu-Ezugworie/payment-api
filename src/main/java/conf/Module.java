@@ -17,6 +17,9 @@
 
 package conf;
 
+import Adapters.GsonPConverterFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
@@ -60,9 +63,14 @@ public class Module extends AbstractModule {
 
     @Provides
     private RemittaApi getRemitterBaseRetrofitApi() {
+
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ninjaProperties.getWithDefault("remitta.base.url", "https://remitademo.net"))
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(new GsonPConverterFactory(new Gson()))
                 .client(PaymentUtil.getOkHttpClient(ninjaProperties))
                 .build();
         return retrofit.create(RemittaApi.class);

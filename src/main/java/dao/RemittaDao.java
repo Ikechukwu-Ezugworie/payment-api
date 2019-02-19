@@ -24,7 +24,7 @@ public class RemittaDao extends BaseDao {
 
 
     public String getMerchantId(){
-        return getSettingsValue(REMITTA_MECHANT_ID, "123456", Boolean.TRUE);
+        return getSettingsValue(REMITTA_MECHANT_ID, "2547916", Boolean.TRUE);
     }
 
     private String getRemittaCustomerToken(String orderId, String serviceTypeId, BigInteger totalAmount ){
@@ -33,11 +33,11 @@ public class RemittaDao extends BaseDao {
         }
 
         StringBuilder customerToken = new StringBuilder();
-        customerToken.append(getSettingsValue(REMITTA_MECHANT_ID,"123456", Boolean.TRUE));
+        customerToken.append(getMerchantId());
         customerToken.append(serviceTypeId);
         customerToken.append(orderId.trim());
-        customerToken.append(totalAmount.toString());
-        customerToken.append(getSettingsValue(REMITTA_API_KEY,"7bd7d59cfe90e4d32b1d2f20d39c86df-fbaa8670-1008-ac7a-398a-3c11ac797c77", Boolean.TRUE));
+        customerToken.append(totalAmount);
+        customerToken.append(getSettingsValue(REMITTA_API_KEY,"1956", Boolean.TRUE));
 
         logger.info(customerToken.toString());
         return customerToken.toString();
@@ -53,7 +53,7 @@ public class RemittaDao extends BaseDao {
         logger.info("Remitta Authorisation is " + authHeader.toString());
 
 
-        return authHeader.toString().toLowerCase();
+        return authHeader.toString();
 
     }
 
