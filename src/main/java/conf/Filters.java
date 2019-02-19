@@ -17,6 +17,7 @@
 
 package conf;
 
+import filters.ContextPathInjector;
 import filters.ExceptionFilter;
 import ninja.Filter;
 
@@ -27,6 +28,7 @@ public class Filters implements ninja.application.ApplicationFilters {
     @Override
     public void addFilters(List<Class<? extends Filter>> filters) {
         // Add your application - wide filters here
+        filters.add(ContextPathInjector.class);
         filters.add(ExceptionFilter.class);
     }
 }

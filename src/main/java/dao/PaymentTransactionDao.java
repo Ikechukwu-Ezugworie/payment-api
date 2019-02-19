@@ -5,6 +5,7 @@ import com.bw.payment.enumeration.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
@@ -38,6 +39,8 @@ public class PaymentTransactionDao extends BaseDao {
     protected TicketIdSequence ticketIdSequence;
     @Inject
     protected MerchantDao merchantDao;
+    @Inject
+    private NinjaProperties ninjaProperties;
 
 
     @Transactional
@@ -51,13 +54,20 @@ public class PaymentTransactionDao extends BaseDao {
         }
 
         PaymentTransaction paymentTransaction = new PaymentTransaction();
-        paymentTransaction.setTransactionId(transactionId);
+        if (ninjaProperties.isDev()) {
+            paymentTransaction.setTransactionId("DEV" + transactionId);
+        } else if (ninjaProperties.isTest()) {
+            paymentTransaction.setTransactionId("TEST" + transactionId);
+        } else {
+            paymentTransaction.setTransactionId(transactionId);
+
+        }
         paymentTransaction.setDateCreated(PaymentUtil.nowToTimeStamp());
         paymentTransaction.setMerchantTransactionReferenceId(request.getMerchantTransactionReferenceId());
         paymentTransaction.setAmountInKobo(request.getAmountInKobo());
         paymentTransaction.setAmountPaidInKobo(0L);
         paymentTransaction.setPaymentProvider(PaymentProviderConstant.fromValue(request.getPaymentProvider()));
-        if(StringUtils.isNotBlank(request.getPaymentChannel())){
+        if (StringUtils.isNotBlank(request.getPaymentChannel())) {
             paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
         }
 

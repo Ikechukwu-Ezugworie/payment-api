@@ -88,8 +88,13 @@ public class WebPayController {
 
         PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
 
-        if (paymentTransaction == null || paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
-            return Results.ok().html().render("error", "Transaction not found"); // ToDo: Clarification
+        if (paymentTransaction == null) {
+            return Results.ok().html().render("error", "Transaction not found");
+        }
+        TransactionRequestPojo fullPaymentTransactionDetailsAsPojo = paymentTransactionService.getFullPaymentTransactionDetailsAsPojo(paymentTransaction);
+        if (paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
+            return Results.ok().html().render("success", "Payment has already been made")
+                    .render("transactionData", fullPaymentTransactionDetailsAsPojo);
         }
 
         WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction,context);
@@ -98,7 +103,7 @@ public class WebPayController {
 
         return Results.html()
                 .render("data", webPayTransactionRequestPojo)
-                .render("transactionData", paymentTransactionService.getFullPaymentTransactionDetailsAsPojo(paymentTransaction));
+                .render("transactionData", fullPaymentTransactionDetailsAsPojo);
     }
 
     public Result paymentCompleted(WebPayTransactionResponsePojo data) {
