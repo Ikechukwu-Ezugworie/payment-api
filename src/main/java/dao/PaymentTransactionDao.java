@@ -57,7 +57,7 @@ public class PaymentTransactionDao extends BaseDao {
         paymentTransaction.setAmountInKobo(request.getAmountInKobo());
         paymentTransaction.setAmountPaidInKobo(0L);
         paymentTransaction.setPaymentProvider(PaymentProviderConstant.fromValue(request.getPaymentProvider()));
-        if(StringUtils.isNotBlank(request.getPaymentChannel())){
+        if (StringUtils.isNotBlank(request.getPaymentChannel())) {
             paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
         }
 
@@ -117,6 +117,10 @@ public class PaymentTransactionDao extends BaseDao {
 
     public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
         return createTransaction(request, merchant, null);
+    }
+
+    public PaymentTransaction createTransaction(TransactionRequestPojo request, String transactionId) {
+        return createTransaction(request, null, transactionId);
     }
 
     public List<Item> getPaymentTransactionItems(Long id, GenericStatusConstant status) {

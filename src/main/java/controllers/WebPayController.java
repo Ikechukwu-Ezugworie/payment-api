@@ -75,7 +75,7 @@ public class WebPayController {
         transactionRequestPojo.setItems(Arrays.asList(item));
         transactionRequestPojo.setInstantTransaction(true);
 
-        PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null);
+        PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
 
         return Results.ok().json().render("transactionId", paymentTransaction.getTransactionId());
     }

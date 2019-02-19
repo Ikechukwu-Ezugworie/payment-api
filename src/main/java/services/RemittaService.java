@@ -1,14 +1,17 @@
 package services;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import com.bw.payment.entity.Merchant;
 import com.bw.payment.entity.NotificationQueue;
+import com.bw.payment.entity.Payer;
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -17,19 +20,19 @@ import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
+import javassist.NotFoundException;
 import ninja.Context;
 import ninja.ReverseRouter;
+import org.apache.commons.lang3.RandomUtils;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
-import pojo.remitta.RemittaGenerateRequestRRRPojo;
-import pojo.remitta.RemittaNotification;
-import pojo.remitta.RemittaPaymentRequestPojo;
-import pojo.remitta.RemittaRrrResponse;
+import pojo.remitta.*;
 import retrofit2.Call;
 import retrofit2.Response;
 import services.api.RemittaApi;
 import services.sequence.NotificationIdSequence;
+import services.sequence.PayerIdSequence;
 import services.sequence.TransactionIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
@@ -58,10 +61,16 @@ public class RemittaService {
     private RemittaApi remittaApi;
 
     @Inject
+    private PayerIdSequence payerIdSequence;
+
+    @Inject
     private RemittaDao remittaDao;
 
     @Inject
     private ReverseRouter reverseRouter;
+
+    @Inject
+    private NotificationService notificationService;
 
 
     @Transactional
@@ -70,91 +79,145 @@ public class RemittaService {
 
         // Try to Generate an RRR
 
+        String transactionId = transactionIdSequence.getNext();
+        String serviceTypeId = remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "123456", Boolean.TRUE);
+
         RemittaGenerateRequestRRRPojo requestData = new RemittaGenerateRequestRRRPojo();
-        requestData.setServiceTypeId("");
+        requestData.setServiceTypeId(serviceTypeId);
         requestData.setAmount(BigInteger.valueOf(request.getAmountInKobo()));
-        requestData.setOrderId(request.getTransactionId());
+        requestData.setOrderId(transactionId);
         requestData.setPayerName(request.getPayer().getFirstName() + " " + request.getPayer().getLastName());
-        requestData.setPayerEmail(request.getPayer().getPhoneNumber());
+        requestData.setPayerEmail(request.getPayer().getEmail());
         requestData.setPayerPhone(request.getPayer().getPhoneNumber());
         requestData.setDescription(request.getDescription());
 
 
+        System.out.println("Payload:::: " + requestData.toString());
+
         Call<RemittaRrrResponse> remittaRrrResponseCall = remittaApi
-                .postToGenerateRRR(requestData, remittaDao.generateAutorisationHeader(request.getTransactionId(), BigInteger.valueOf(request.getAmountInKobo())));
+                .postToGenerateRRR(requestData, remittaDao.generateAutorisationHeader(transactionId, serviceTypeId, BigInteger.valueOf(request.getAmountInKobo())));
 
         try {
             Response<RemittaRrrResponse> execute = remittaRrrResponseCall.execute();
+
             if (execute.isSuccessful() && execute.body() != null) {
                 // Create Payment Transaction
                 RemittaRrrResponse remittaRrrResponse = execute.body();
 
-                if(!remittaRrrResponse.getStatuscode().equals("025")){
-                    throw new ApiResponseException(remittaRrrResponse.getStatus());
+
+                if (remittaRrrResponse.getStatuscode() == null) {
+                    //createFakerRemitta(request); //TODO fAKER
+                    throw new ApiResponseException("REMITA:::" + remittaRrrResponse.getStatus());
                 }
 
+                if (!remittaRrrResponse.getStatuscode().equalsIgnoreCase("025")) {
+                    //createFakerRemitta(request); //TODO fAKER
+                    throw new ApiResponseException(remittaRrrResponse.getStatus());
+                }
                 request.setProviderTransactionReference(remittaRrrResponse.getRRR());
+                request.setCustomerTransactionReference(remittaRrrResponse.getRRR());
             } else {
                 throw new ApiResponseException(execute.message());
             }
         } catch (IOException e) {
+            e.printStackTrace();
+            //createFakerRemitta(request); //TODO fAKER
             throw new ApiResponseException(e.getMessage());
         }
 
-
-        return paymentTransactionDao.createTransaction(request, null);
+        return paymentTransactionDao.createTransaction(request, transactionId);
     }
 
 
-    public RemittaPaymentRequestPojo createRemittaPaymentRequestPojo(PaymentTransaction paymentTransaction, Context context){
-        RemittaPaymentRequestPojo requestData = new RemittaPaymentRequestPojo();
-        requestData.setHash(remittaDao.generateHash(paymentTransaction.getCustomerTransactionReference()));
-        requestData.setMerchantId(remittaDao.getMerchantId());
-        requestData.setResponseurl(reverseRouter.with(RemitaController::paymentCompleted).absolute(context).build());
-        requestData.setRrr(paymentTransaction.getProviderTransactionReference());
-        return requestData;
-
-    }
 
     @Transactional
-    public PaymentTransaction processPaymentNotification(List<RemittaNotification> remittaNotifications) {
+    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws Exception {
         for (RemittaNotification remittaNotification : remittaNotifications) {
-            TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
-            transactionRequestPojo.setPaymentProvider(PaymentProviderConstant.REMITA.getValue());
-            transactionRequestPojo.setPaymentChannel(PaymentChannelConstant.BANK.getValue());
-            transactionRequestPojo.setAmountInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
-            transactionRequestPojo.setMerchantTransactionReferenceId(remittaNotification.getOrderRef());
-            transactionRequestPojo.setCustomerTransactionReference(remittaNotification.getRrr());
+            PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
+            if (paymentTransaction == null) {
+                throw new NotFoundException("Payment Transaction with RRR cannot be found");
+            }
+            paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
+            paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK); // TODO update after model update
+            paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
+            paymentTransaction.setMerchantTransactionReferenceId(remittaNotification.getOrderRef());
+            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+
+
+            Payer payer = new Payer();
+            payer.setPayerId(payerIdSequence.getNext());
+            payer.setFirstName(remittaNotification.getPayerName());
+            payer.setLastName("");
+            payer.setEmail(remittaNotification.getPayerEmail());
+            payer.setPhoneNumber(remittaNotification.getPayerPhoneNumber());
+            remittaDao.saveObject(payer);
+            paymentTransaction.setPayer(payer);
+
+
+            Call<RemittaTransactionStatusPojo> transactionStatusResponse = remittaApi.getTransactionStatus(remittaDao.getSettingsValue(RemittaDao.REMITTA_MECHANT_ID, "657", true),
+                    remittaNotification.getRrr(),
+                    remittaDao.generateHash(remittaNotification.getRrr()));
 
             try {
-                PayerPojo payerPojo = new PayerPojo();
-                payerPojo.setFirstName(remittaNotification.getPayerName());
-                payerPojo.setLastName("");
-                payerPojo.setEmail(remittaNotification.getPayerEmail());
-                payerPojo.setAddress("");
-                payerPojo.setPhoneNumber(remittaNotification.getPayerPhoneNumber());
-                transactionRequestPojo.setPayer(payerPojo);
-            } catch (Exception e) {
+                Response<RemittaTransactionStatusPojo> execute = transactionStatusResponse.execute();
+                RemittaTransactionStatusPojo responseBody = execute.body();
+                if (execute.isSuccessful() && responseBody != null) {
+                    if (responseBody.getStatus().equalsIgnoreCase("01")) {
+                        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+                    }
+                }
+
+            } catch (IOException e) {
                 e.printStackTrace();
+                throw new ApiResponseException(e.getMessage());
             }
-
-            transactionRequestPojo.setNotifyOnStatusChange(false);
-            transactionRequestPojo.setNotificationUrl("");
-
-            PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
-
-            if (paymentTransaction == null) {
-                return null;
-            }
-
-            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
 
             paymentTransactionDao.updateObject(paymentTransaction);
-
             queueNotification(remittaNotification, paymentTransaction);
+            notificationService.sendPaymentNotification(10);
+
         }
+
         return null;
+
     }
+//
+//    @Transactional
+//    public PaymentTransaction processPaymentNotification(List<RemittaNotification> remittaNotifications) {
+//        for (RemittaNotification remittaNotification : remittaNotifications) {
+//            TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
+//
+//
+//            try {
+//                PayerPojo payerPojo = new PayerPojo();
+//                payerPojo.setFirstName(remittaNotification.getPayerName());
+//                payerPojo.setLastName("");
+//                payerPojo.setEmail(remittaNotification.getPayerEmail());
+//                payerPojo.setAddress("");
+//                payerPojo.setPhoneNumber(remittaNotification.getPayerPhoneNumber());
+//                transactionRequestPojo.setPayer(payerPojo);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            transactionRequestPojo.setNotifyOnStatusChange(false);
+//            transactionRequestPojo.setNotificationUrl("");
+//
+//            PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
+//
+//            if (paymentTransaction == null) {
+//                return null;
+//            }
+//
+//            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+//            paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
+//            paymentTransactionDao.updateObject(paymentTransaction);
+//            queueNotification(remittaNotification, paymentTransaction);
+//            notificationService.sendPaymentNotification(10);
+//
+//        }
+//        return null;
+//    }
 
     private void queueNotification(RemittaNotification paymentPojo, PaymentTransaction paymentTransaction) {
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
@@ -184,5 +247,12 @@ public class RemittaService {
         notificationQueue.setPaymentTransaction(paymentTransaction);
 
         paymentTransactionDao.saveObject(notificationQueue);
+    }
+
+
+    public void createFakerRemitta(TransactionRequestPojo request) {
+        String fakeRRR = "RRR" + System.currentTimeMillis();
+        request.setProviderTransactionReference(fakeRRR);
+        request.setCustomerTransactionReference(fakeRRR);
     }
 }

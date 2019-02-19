@@ -26,6 +26,7 @@ import ninja.utils.NinjaProperties;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import services.api.RemittaApi;
 import services.api.WebPayApi;
 import utils.Constants;
 import utils.CronSchedule;
@@ -58,12 +59,12 @@ public class Module extends AbstractModule {
     }
 
     @Provides
-    private WebPayApi getRemitterBaseRetrofitApi() {
+    private RemittaApi getRemitterBaseRetrofitApi() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ninjaProperties.getWithDefault("remitta.base.url", "https://remitademo.net"))
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(PaymentUtil.getOkHttpClient(ninjaProperties))
                 .build();
-        return retrofit.create(WebPayApi.class);
+        return retrofit.create(RemittaApi.class);
     }
 }

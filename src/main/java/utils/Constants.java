@@ -27,4 +27,6 @@ public class Constants {
     public static final String END_SYSTEM_BASE_URL = "END_SYSTEM_BASE_URL";
     public static final String WEB_PAY_REDIRECT_URL_SETTINGS_KEY = "WEB_PAY_REDIRECT_URL";
     public static final String WEB_PAY_BASE_URL_SETTINGS_KEY = "WEB_PAY_BASE_URL";
+    public static final String OK_MESSAGE = "OK";
+    public static final String NOT_OK_MESSAGE = "not ok";
 }

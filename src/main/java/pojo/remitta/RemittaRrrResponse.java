@@ -1,5 +1,7 @@
 package pojo.remitta;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class RemittaRrrResponse {
     private String statuscode;
     private String RRR;
@@ -31,5 +33,15 @@ public class RemittaRrrResponse {
     public RemittaRrrResponse setStatus(String status) {
         this.status = status;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RemittaRrrResponse{");
+        sb.append("statuscode='").append(statuscode).append('\'');
+        sb.append(", RRR='").append(RRR).append('\'');
+        sb.append(", status='").append(status).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
