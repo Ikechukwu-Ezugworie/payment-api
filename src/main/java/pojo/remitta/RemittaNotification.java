@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 /*
@@ -41,6 +42,7 @@ public class RemittaNotification {
     public void setChannel(String channel) {
         this.channel = channel;
     }
+
 
     public BigDecimal getAmount() {
         return amount;

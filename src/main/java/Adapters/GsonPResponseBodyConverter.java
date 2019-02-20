@@ -18,17 +18,18 @@ public class GsonPResponseBodyConverter<T> implements Converter<ResponseBody, T>
         this.adapter = adapter;
     }
 
-    @Override public T convert(ResponseBody value) throws IOException {
-        Reader reader = value.charStream();
-        int item = reader.read();
-        while(item != '(' && item != -1) {
-            item = reader.read();
+    @Override
+    public T convert(ResponseBody value) throws IOException {
+
+
+        String response = value.string();
+
+        if (response.indexOf('{') == 0) { // this is a json
+            return adapter.fromJson(response);
         }
-        JsonReader jsonReader = gson.newJsonReader(reader);
-        try {
-            return adapter.read(jsonReader);
-        } finally {
-            reader.close();
-        }
+        String formatToJson = response.substring(response.indexOf("(") + 1, response.lastIndexOf(")"));
+        return adapter.fromJson(formatToJson);
+
+
     }
 }

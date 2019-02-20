@@ -24,6 +24,7 @@ public final class GsonPConverterFactory extends Converter.Factory {
         @Override
         public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
                                                                 Retrofit retrofit) {
+
             TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
             return new GsonPResponseBodyConverter<>(gson, adapter);
         }
@@ -33,6 +34,7 @@ public final class GsonPConverterFactory extends Converter.Factory {
                                                               Annotation[] parameterAnnotations,
                                                               Annotation[] methodAnnotations,
                                                               Retrofit retrofit) {
+
             TypeAdapter<?> adapter = this.gson.getAdapter(TypeToken.get(type));
             return new JsonRequestBodyConverter<>(gson,adapter);
         }

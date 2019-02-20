@@ -1,5 +1,7 @@
 package pojo.remitta;
 
+import com.google.gson.Gson;
+
 public class RemittaTransactionStatusPojo {
 
     private String statusmessage;
@@ -61,5 +63,10 @@ public class RemittaTransactionStatusPojo {
     public RemittaTransactionStatusPojo setOrderId(String orderId) {
         this.orderId = orderId;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

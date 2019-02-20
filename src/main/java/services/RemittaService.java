@@ -10,6 +10,7 @@ import com.bw.payment.entity.Payer;
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.bw.payment.enumeration.PaymentResponseStatusConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -37,6 +38,7 @@ import services.sequence.TransactionIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -106,12 +108,10 @@ public class RemittaService {
 
 
                 if (remittaRrrResponse.getStatuscode() == null) {
-                    //createFakerRemitta(request); //TODO fAKER
                     throw new ApiResponseException("REMITA:::" + remittaRrrResponse.getStatus());
                 }
 
                 if (!remittaRrrResponse.getStatuscode().equalsIgnoreCase("025")) {
-                    //createFakerRemitta(request); //TODO fAKER
                     throw new ApiResponseException(remittaRrrResponse.getStatus());
                 }
                 request.setProviderTransactionReference(remittaRrrResponse.getRRR());
@@ -121,7 +121,6 @@ public class RemittaService {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            //createFakerRemitta(request); //TODO fAKER
             throw new ApiResponseException(e.getMessage());
         }
 
@@ -129,21 +128,21 @@ public class RemittaService {
     }
 
 
-
     @Transactional
     public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws Exception {
         for (RemittaNotification remittaNotification : remittaNotifications) {
+
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
+
             if (paymentTransaction == null) {
                 throw new NotFoundException("Payment Transaction with RRR cannot be found");
             }
             paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
             paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK); // TODO update after model update
-            paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
+            paymentTransaction.setAmountPaidInKobo(remittaNotification.getAmount().longValue());
             paymentTransaction.setMerchantTransactionReferenceId(remittaNotification.getOrderRef());
+            paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-
-
             Payer payer = new Payer();
             payer.setPayerId(payerIdSequence.getNext());
             payer.setFirstName(remittaNotification.getPayerName());
@@ -154,70 +153,72 @@ public class RemittaService {
             paymentTransaction.setPayer(payer);
 
 
-            Call<RemittaTransactionStatusPojo> transactionStatusResponse = remittaApi.getTransactionStatus(remittaDao.getSettingsValue(RemittaDao.REMITTA_MECHANT_ID, "657", true),
-                    remittaNotification.getRrr(),
-                    remittaDao.generateHash(remittaNotification.getRrr()));
+            Boolean shouldNotify = requestForPaymentTransactionStatus(paymentTransaction);
 
-            try {
-                Response<RemittaTransactionStatusPojo> execute = transactionStatusResponse.execute();
-                RemittaTransactionStatusPojo responseBody = execute.body();
-                if (execute.isSuccessful() && responseBody != null) {
-                    if (responseBody.getStatus().equalsIgnoreCase("01")) {
-                        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
-                    }
-                }
+            if (true) {
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new ApiResponseException(e.getMessage());
+                queueNotification(remittaNotification, paymentTransaction);
+
+                notificationService.sendPaymentNotification(10);
             }
 
+
             paymentTransactionDao.updateObject(paymentTransaction);
-            queueNotification(remittaNotification, paymentTransaction);
-            notificationService.sendPaymentNotification(10);
+
 
         }
 
         return null;
 
     }
-//
-//    @Transactional
-//    public PaymentTransaction processPaymentNotification(List<RemittaNotification> remittaNotifications) {
-//        for (RemittaNotification remittaNotification : remittaNotifications) {
-//            TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
-//
-//
-//            try {
-//                PayerPojo payerPojo = new PayerPojo();
-//                payerPojo.setFirstName(remittaNotification.getPayerName());
-//                payerPojo.setLastName("");
-//                payerPojo.setEmail(remittaNotification.getPayerEmail());
-//                payerPojo.setAddress("");
-//                payerPojo.setPhoneNumber(remittaNotification.getPayerPhoneNumber());
-//                transactionRequestPojo.setPayer(payerPojo);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            transactionRequestPojo.setNotifyOnStatusChange(false);
-//            transactionRequestPojo.setNotificationUrl("");
-//
-//            PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
-//
-//            if (paymentTransaction == null) {
-//                return null;
-//            }
-//
-//            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-//            paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
-//            paymentTransactionDao.updateObject(paymentTransaction);
-//            queueNotification(remittaNotification, paymentTransaction);
-//            notificationService.sendPaymentNotification(10);
-//
-//        }
-//        return null;
-//    }
+
+
+    /**
+     * @param paymentTransaction
+     * @return Boolean Value to make a notify decision
+     * @throws ApiResponseException
+     */
+    private Boolean requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException {
+
+        Boolean shouldDoNotifaction = false;
+
+        Call<RemittaTransactionStatusPojo> transactionStatusResponse = remittaApi.getTransactionStatus(remittaDao.getSettingsValue(RemittaDao.REMITTA_MECHANT_ID, "657", true),
+                paymentTransaction.getProviderTransactionReference(),
+                remittaDao.generateHash(paymentTransaction.getProviderTransactionReference()));
+
+        try {
+
+            Response<RemittaTransactionStatusPojo> execute = transactionStatusResponse.execute();
+
+            RemittaTransactionStatusPojo responseBody = execute.body();
+
+            if (execute.isSuccessful() && responseBody != null) {
+
+                System.out.println("Response from remitta" + responseBody);
+                if (responseBody.getStatus().equalsIgnoreCase("01") || responseBody.getStatus().equalsIgnoreCase("00")) {
+
+                    if (paymentTransaction.getAmountPaidInKobo() < paymentTransaction.getAmountInKobo()) {
+                        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PARTIAL);
+                    } else {
+                        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+                    }
+
+                    shouldDoNotifaction = true;
+                }
+
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.FAILED);
+
+            }
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+            throw new ApiResponseException(e.getMessage());
+        }
+
+        return shouldDoNotifaction;
+    }
+
 
     private void queueNotification(RemittaNotification paymentPojo, PaymentTransaction paymentTransaction) {
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
