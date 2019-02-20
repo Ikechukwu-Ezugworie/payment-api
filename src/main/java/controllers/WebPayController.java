@@ -122,7 +122,7 @@ public class WebPayController {
                 b.addParameter("status", "successful");
             } else {
                 b.addParameter("status", "failed");
-                b.addParameter("description", String.format("%s : %s", webPayPaymentDataDto.getResponseCode(), webPayPaymentDataDto.getResponseDescription()));
+                b.addParameter("description", String.format("%s", webPayPaymentDataDto.getResponseDescription()));
             }
             b.addParameter("customerReference", paymentTransaction.getCustomerTransactionReference());
             logger.info("=== > response: {}", webPayPaymentDataDto);
