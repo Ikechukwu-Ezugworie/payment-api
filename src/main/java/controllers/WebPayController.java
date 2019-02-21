@@ -114,11 +114,7 @@ public class WebPayController {
 
             URIBuilder b = new URIBuilder(paymentService.getWebPayCredentials(null).getMerchantRedirectUrl());
             if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
-                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
-                paymentTransaction.setProviderTransactionReference(webPayPaymentDataDto.getPaymentReference());
-                paymentTransactionDao.updateObject(paymentTransaction);
-                webPayService.queueNotification(webPayPaymentDataDto, paymentTransaction);
-                notificationService.sendPaymentNotification(10);
+                webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
                 b.addParameter("status", "successful");
             } else {
                 b.addParameter("status", "failed");
