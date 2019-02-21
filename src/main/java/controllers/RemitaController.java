@@ -140,7 +140,7 @@ public class RemitaController {
             return Results.json().render(HttpStatus.SC_NOT_FOUND);
         }
 
-        RemittaNotification notification = new RemittaNotification();
+               RemittaNotification notification = new RemittaNotification();
         notification.setRrr(request.getRrr());
         notification.setChannel("BRANCH");
         notification.setAmount(request.getAmount());

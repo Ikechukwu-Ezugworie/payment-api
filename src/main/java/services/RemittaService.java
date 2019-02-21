@@ -30,17 +30,16 @@ import services.sequence.PayerIdSequence;
 import services.sequence.TransactionIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
 /**
-
-    Author: Oluwatobi Adenekan
-    email:  tadenekan@byteworks.com.ng
-    date:    21/02/2019
-
-**/
+ * Author: Oluwatobi Adenekan
+ * email:  tadenekan@byteworks.com.ng
+ * date:    21/02/2019
+ **/
 
 
 @Singleton
@@ -123,7 +122,7 @@ public class RemittaService {
 
 
     @Transactional
-    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException  {
+    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException {
         for (RemittaNotification remittaNotification : remittaNotifications) {
 
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
@@ -134,7 +133,6 @@ public class RemittaService {
             paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
             paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK); // TODO update after model update
             paymentTransaction.setAmountPaidInKobo(remittaNotification.getAmount().longValue());
-            paymentTransaction.setMerchantTransactionReferenceId(remittaNotification.getOrderRef());
             paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
             Payer payer = new Payer();
@@ -148,8 +146,6 @@ public class RemittaService {
 
 
             Boolean shouldNotify = requestForPaymentTransactionStatus(paymentTransaction);
-
-
 
 
             // Todo:: Please Update the True to shouldNotify - This is only Useful for Testing
@@ -225,18 +221,19 @@ public class RemittaService {
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
-        if(paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.REMITA)){  //TODO This is to alter the system
+        if (paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.REMITA)) {  //TODO This is to alter the system
             transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
-        }else {
+        } else {
             transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue() + "_" + paymentTransaction.getPaymentChannel().getValue());
 
         }
-       transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
+        transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentDate(paymentPojo.getTransactiondate());
         transactionNotificationPojo.setPaymentChannelName(paymentPojo.getChannel());
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
         transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
+
         transactionNotificationPojo.setMerchantTransactionReference(paymentTransaction.getMerchantTransactionReferenceId());
         transactionNotificationPojo.setActualNotification(paymentPojo);
 
@@ -252,7 +249,6 @@ public class RemittaService {
 
         paymentTransactionDao.saveObject(notificationQueue);
     }
-
 
 
 }
