@@ -8,12 +8,12 @@ import org.hibernate.validator.constraints.NotBlank;
 public class PayerPojo {
     private Long id;
     private String payerId;
-    @NotBlank(message = "validation.not.null")
+    @NotBlank
     private String firstName;
     private String lastName;
-    @NotBlank(message = "validation.not.null")
+    @NotBlank
     private String email;
-    @NotBlank(message = "validation.not.null")
+    @NotBlank
     private String phoneNumber;
     private String address;
 

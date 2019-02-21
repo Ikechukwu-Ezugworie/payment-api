@@ -20,7 +20,7 @@ public class TransactionRequestPojo {
     private String lastUpdated;
     private String providerTransactionReference;
     private String merchantTransactionReferenceId;
-    @NotNull(message = "validation.not.null")
+    @NotNull
     private Long amountInKobo;
     private Boolean notifyOnStatusChange = false;
     private String notificationUrl;
@@ -33,7 +33,7 @@ public class TransactionRequestPojo {
     private String serviceTypeId;
     private MerchantRequestPojo merchant;
     private String paymentTransactionStatus;
-    @NotNull(message = "validation.not.null")
+    @NotNull
     @Valid
     private PayerPojo payer;
     @Valid
