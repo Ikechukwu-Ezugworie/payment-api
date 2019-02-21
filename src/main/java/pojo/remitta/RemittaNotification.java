@@ -25,6 +25,7 @@ public class RemittaNotification {
     private String payerPhoneNumber;
     private String payerEmail;
     private String type;
+    private String dateRequested;
     private List<Object> customFieldData = null;
 
     public String getRrr() {
@@ -149,4 +150,12 @@ public class RemittaNotification {
         this.customFieldData = customFieldData;
     }
 
+    public String getDateRequested() {
+        return dateRequested;
+    }
+
+    public RemittaNotification setDateRequested(String dateRequested) {
+        this.dateRequested = dateRequested;
+        return this;
+    }
 }

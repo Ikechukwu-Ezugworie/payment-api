@@ -60,9 +60,11 @@ public class RemittaDao extends BaseDao {
     public String generateHash(String rrr){
         StringBuilder unHashed = new StringBuilder();
 
-        unHashed.append(getSettingsValue(REMITTA_MECHANT_ID,"123456", Boolean.TRUE));
+
         unHashed.append(rrr);
         unHashed.append(getSettingsValue(REMITTA_API_KEY,"7bd7d59cfe90e4d32b1d2f20d39c86df-fbaa8670-1008-ac7a-398a-3c11ac797c77", Boolean.TRUE));
+        unHashed.append(getSettingsValue(REMITTA_MECHANT_ID,"123456", Boolean.TRUE));
+
 
         logger.info("Hashed is " + unHashed.toString());
 

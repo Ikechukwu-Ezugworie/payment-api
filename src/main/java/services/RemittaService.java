@@ -123,7 +123,7 @@ public class RemittaService {
 
 
     @Transactional
-    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws Exception {
+    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException  {
         for (RemittaNotification remittaNotification : remittaNotifications) {
 
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
@@ -149,7 +149,11 @@ public class RemittaService {
 
             Boolean shouldNotify = requestForPaymentTransactionStatus(paymentTransaction);
 
-            if (shouldNotify) {
+
+
+
+            // Todo:: Please Update the True to shouldNotify - This is only Useful for Testing
+            if (true) {
 
                 queueNotification(remittaNotification, paymentTransaction);
 
@@ -199,6 +203,7 @@ public class RemittaService {
                     shouldDoNotifaction = true;
                 }
 
+                System.out.println("()()()() Remitta Result " + responseBody);
                 paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.FAILED);
 
             }
@@ -244,9 +249,5 @@ public class RemittaService {
     }
 
 
-    public void createFakerRemitta(TransactionRequestPojo request) {
-        String fakeRRR = "RRR" + System.currentTimeMillis();
-        request.setProviderTransactionReference(fakeRRR);
-        request.setCustomerTransactionReference(fakeRRR);
-    }
+
 }

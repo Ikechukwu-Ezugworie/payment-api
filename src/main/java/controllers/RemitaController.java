@@ -1,5 +1,9 @@
 package controllers;
 
+import java.math.BigDecimal;
+
+import com.google.common.collect.Lists;
+
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.entity.RawDump;
 import com.bw.payment.enumeration.PaymentChannelConstant;
@@ -8,9 +12,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import dao.RemittaDao;
 import exceptions.ApiResponseException;
 import extractors.ContentExtract;
 import extractors.IPAddress;
+import javassist.NotFoundException;
 import ninja.Result;
 import ninja.Results;
 import ninja.validation.JSR303Validation;
@@ -21,13 +27,18 @@ import org.slf4j.LoggerFactory;
 import pojo.ApiResponse;
 import pojo.TransactionRequestPojo;
 import pojo.remitta.RemittaCreateTransactionResponse;
+import pojo.remitta.RemittaDummyNotificationPojo;
 import pojo.remitta.RemittaNotification;
 import services.PaymentTransactionService;
 import services.RemittaService;
 import utils.Constants;
+import utils.PaymentUtil;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,6 +51,9 @@ public class RemitaController {
     private RemittaService remittaService;
     @Inject
     PaymentTransactionService paymentTransactionService;
+
+    @Inject
+    RemittaDao remittaDao;
 
 
     public Result doCreateTransaction(@JSR303Validation TransactionRequestPojo data, Validation validation) {
@@ -101,6 +115,53 @@ public class RemitaController {
             e.printStackTrace();
             return Results.json().render(Constants.NOT_OK_MESSAGE);
         }
+
+    }
+
+
+    public Result showRemittaBankNotification() {
+
+        return Results.html().render("result", "12345");
+
+    }
+
+
+    public Result performTestNotification(@ContentExtract String requestData ) {
+
+        System.out.println("{}{}{}{}Data " + requestData);
+
+        RemittaDummyNotificationPojo request = new Gson().fromJson(requestData, new TypeToken<RemittaDummyNotificationPojo>(){}.getType());
+
+        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(request.getRrr());
+
+        if(paymentTransaction == null){
+            return Results.json().render(HttpStatus.SC_NOT_FOUND);
+        }
+
+        RemittaNotification notification = new RemittaNotification();
+        notification.setRrr(request.getRrr());
+        notification.setChannel("BRANCH");
+        notification.setAmount(request.getAmount());
+        notification.setTransactiondate(PaymentUtil.format(new Date(), "dd/MM/yyy"));
+        notification.setDebitdate(PaymentUtil.format(new Date(), "dd/MM/yyy"));
+        notification.setBank("030");
+        notification.setBranch("02");
+        notification.setServiceTypeId(remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "45635464"));
+        notification.setOrderRef(request.getRrr());
+        notification.setOrderId(String.valueOf(System.currentTimeMillis()));
+        notification.setPayerName(request.getName());
+        notification.setPayerPhoneNumber(request.getPhoneNumber());
+        notification.setPayerEmail(request.getEmail());
+        notification.setCustomFieldData(Lists.newArrayList());
+        notification.setDateRequested(PaymentUtil.format(new Date(), "dd/MM/yyy"));
+        List<RemittaNotification> data = new ArrayList<>();
+
+        data.add(notification);
+
+        String payload = new Gson().toJson(data);
+
+        return doRemittaNotification(payload, "127.0.0.1");
+
 
     }
 }
