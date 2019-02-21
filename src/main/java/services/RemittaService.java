@@ -225,8 +225,13 @@ public class RemittaService {
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
-        transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue() + "_" + paymentTransaction.getPaymentChannel().getValue());
-        transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
+        if(paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.REMITA)){  //TODO This is to alter the system
+            transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
+        }else {
+            transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue() + "_" + paymentTransaction.getPaymentChannel().getValue());
+
+        }
+       transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentDate(paymentPojo.getTransactiondate());
         transactionNotificationPojo.setPaymentChannelName(paymentPojo.getChannel());
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());

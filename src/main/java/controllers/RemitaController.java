@@ -108,6 +108,8 @@ public class RemitaController {
 
         List<RemittaNotification> remittaNotifications = new Gson().fromJson(payload, new TypeToken<List<RemittaNotification>>() {
         }.getType());
+
+
         try {
             remittaService.updatePaymentTransaction(remittaNotifications);
             return Results.json().render(Constants.OK_MESSAGE);
