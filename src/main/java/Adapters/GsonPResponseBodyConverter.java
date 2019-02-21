@@ -27,6 +27,7 @@ public class GsonPResponseBodyConverter<T> implements Converter<ResponseBody, T>
         if (response.indexOf('{') == 0) { // this is a json
             return adapter.fromJson(response);
         }
+
         String formatToJson = response.substring(response.indexOf("(") + 1, response.lastIndexOf(")"));
         return adapter.fromJson(formatToJson);
 

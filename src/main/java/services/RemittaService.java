@@ -1,7 +1,6 @@
 package services;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import com.bw.payment.entity.Merchant;
@@ -10,21 +9,15 @@ import com.bw.payment.entity.Payer;
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
-import com.bw.payment.enumeration.PaymentResponseStatusConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-import controllers.RemitaController;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
 import javassist.NotFoundException;
-import ninja.Context;
-import ninja.ReverseRouter;
-import org.apache.commons.lang3.RandomUtils;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
@@ -37,15 +30,19 @@ import services.sequence.PayerIdSequence;
 import services.sequence.TransactionIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
-
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
-/*
- * Created by Gibah Joseph on Jan, 2019
- */
+/**
+
+    Author: Oluwatobi Adenekan
+    email:  tadenekan@byteworks.com.ng
+    date:    21/02/2019
+
+**/
+
+
 @Singleton
 public class RemittaService {
     @Inject
@@ -67,9 +64,6 @@ public class RemittaService {
 
     @Inject
     private RemittaDao remittaDao;
-
-    @Inject
-    private ReverseRouter reverseRouter;
 
     @Inject
     private NotificationService notificationService;
@@ -155,7 +149,7 @@ public class RemittaService {
 
             Boolean shouldNotify = requestForPaymentTransactionStatus(paymentTransaction);
 
-            if (true) {
+            if (shouldNotify) {
 
                 queueNotification(remittaNotification, paymentTransaction);
 
@@ -194,7 +188,6 @@ public class RemittaService {
 
             if (execute.isSuccessful() && responseBody != null) {
 
-                System.out.println("Response from remitta" + responseBody);
                 if (responseBody.getStatus().equalsIgnoreCase("01") || responseBody.getStatus().equalsIgnoreCase("00")) {
 
                     if (paymentTransaction.getAmountPaidInKobo() < paymentTransaction.getAmountInKobo()) {

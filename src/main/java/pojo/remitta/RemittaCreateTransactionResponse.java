@@ -2,18 +2,18 @@ package pojo.remitta;
 
 public class RemittaCreateTransactionResponse {
     private String transactionId;
-    private String paymentProviderReference;
+    private String rrr;
 
     public String getTransactionId() {
         return transactionId;
     }
 
-    public String getPaymentProviderReference() {
-        return paymentProviderReference;
+    public String getRrr() {
+        return rrr;
     }
 
-    public RemittaCreateTransactionResponse setPaymentProviderReference(String paymentProviderReference) {
-        this.paymentProviderReference = paymentProviderReference;
+    public RemittaCreateTransactionResponse setRrr(String rrr) {
+        this.rrr = rrr;
         return this;
     }
 

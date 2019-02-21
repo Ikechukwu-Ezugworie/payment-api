@@ -4,48 +4,30 @@ import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.entity.RawDump;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
-import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
-import dao.MerchantDao;
-import dao.PaymentTransactionDao;
 import exceptions.ApiResponseException;
 import extractors.ContentExtract;
 import extractors.IPAddress;
-import ninja.Context;
 import ninja.Result;
 import ninja.Results;
-import ninja.i18n.Messages;
-import ninja.params.Param;
 import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.ApiResponse;
-import pojo.ItemPojo;
-import pojo.PayerPojo;
 import pojo.TransactionRequestPojo;
 import pojo.remitta.RemittaCreateTransactionResponse;
 import pojo.remitta.RemittaNotification;
-import pojo.remitta.RemittaPaymentRequestPojo;
-import pojo.webPay.BwPaymentsWebPayRequest;
-import pojo.webPay.WebPayPaymentDataDto;
-import pojo.webPay.WebPayTransactionRequestPojo;
-import pojo.webPay.WebPayTransactionResponsePojo;
-import services.PayDirectService;
 import services.PaymentTransactionService;
 import services.RemittaService;
 import utils.Constants;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -77,7 +59,7 @@ public class RemitaController {
             apiResponse.setMessage("Created a payment Transaction Successfully");
             apiResponse.setData(new RemittaCreateTransactionResponse()
                     .setTransactionId(paymentTransaction.getTransactionId())
-                    .setPaymentProviderReference(paymentTransaction.getProviderTransactionReference()));
+                    .setRrr(paymentTransaction.getProviderTransactionReference()));
             apiResponse.setCode(HttpStatus.SC_OK);
             return Results.ok().json().render(apiResponse);
 
