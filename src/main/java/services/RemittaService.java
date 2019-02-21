@@ -132,7 +132,7 @@ public class RemittaService {
             }
             paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
             paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK); // TODO update after model update
-            paymentTransaction.setAmountPaidInKobo(remittaNotification.getAmount().longValue());
+            paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
             paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
             Payer payer = new Payer();
