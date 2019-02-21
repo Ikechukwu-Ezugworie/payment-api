@@ -3,9 +3,11 @@ package controllers;
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.PaymentTransactionDao;
+import extractors.ContentExtract;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -16,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pojo.ApiResponse;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
 import pojo.TransactionRequestPojo;
@@ -29,7 +32,12 @@ import services.PaymentService;
 import services.PaymentTransactionService;
 import services.WebPayService;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * CREATED BY GIBAH
@@ -49,9 +57,17 @@ public class WebPayController {
     private PaymentService paymentService;
 
 
-    public Result doCreateTransaction(@JSR303Validation BwPaymentsWebPayRequest data, Validation validation) {
-        if (validation.hasViolations()) {
-            return Results.badRequest().json().render("message", validation.getViolations().get(0).getDefaultMessage());
+    public Result doCreateTransaction(@ContentExtract String payload, Validation validation) {
+        logger.info("====> {}", payload);
+        BwPaymentsWebPayRequest data = new Gson().fromJson(payload, BwPaymentsWebPayRequest.class);
+        Set<ConstraintViolation<BwPaymentsWebPayRequest>> constraintViolations = javax.validation.Validation.buildDefaultValidatorFactory().getValidator().validate(data);
+        if (!constraintViolations.isEmpty()) {
+            for (ConstraintViolation<BwPaymentsWebPayRequest> constraintViolation : constraintViolations) {
+                ApiResponse apiResponse = new ApiResponse();
+                apiResponse.setCode(400);
+                apiResponse.setMessage(constraintViolation.getMessage());
+                return Results.ok().json().render(apiResponse);
+            }
         }
         TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
         transactionRequestPojo.setAmountInKobo(data.getAmount());
@@ -77,7 +93,12 @@ public class WebPayController {
 
         PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null);
 
-        return Results.ok().json().render("transactionId", paymentTransaction.getTransactionId());
+        ApiResponse<Map> apiResponse = new ApiResponse<>();
+        Map<String, String> res = new HashMap<>();
+        res.put("transactionId", paymentTransaction.getTransactionId());
+        apiResponse.setData(res);
+        apiResponse.setCode(200);
+        return Results.ok().json().render(apiResponse);
     }
 
 
@@ -97,7 +118,7 @@ public class WebPayController {
                     .render("transactionData", fullPaymentTransactionDetailsAsPojo);
         }
 
-        WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction,context);
+        WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction, context);
 
         logger.info("webPayTransactionRequestPojo is " + webPayTransactionRequestPojo);
 
