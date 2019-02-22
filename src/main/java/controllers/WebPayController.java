@@ -141,16 +141,15 @@ public class WebPayController {
                 .render("transactionData", fullPaymentTransactionDetailsAsPojo);
     }
 
-    public Result paymentCompleted(@ContentExtract String payload, @IPAddress String ipAddress) {
+    public Result paymentCompleted(WebPayTransactionResponsePojo data, @IPAddress String ipAddress, Context context) {
 
-        WebPayTransactionResponsePojo data = PaymentUtil.fromJSON(payload, WebPayTransactionResponsePojo.class);
         PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(data.getTxnref());
         RawDump rawDump = transactionTemplate.execute(entityManager -> {
             return paymentTransactionDao.getUniqueRecordByProperty(RawDump.class, "paymentTransaction", paymentTransaction);
         });
 
         if (rawDump != null) {
-            rawDump.setResponse(payload);
+            rawDump.setResponse(new Gson().toJson(context.getParameters()));
             rawDump.setRequestIp(ipAddress);
             transactionTemplate.execute(entityManager -> {
                 entityManager.merge(rawDump);
