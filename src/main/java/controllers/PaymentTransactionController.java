@@ -7,12 +7,14 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
+import dao.RawDumpDao;
 import extractors.ContentExtract;
 import extractors.Merch;
 import filters.MerchantFilter;
 import ninja.Context;
 import ninja.FilterWith;
 import ninja.Result;
+import ninja.Results;
 import ninja.i18n.Messages;
 import ninja.params.Param;
 import ninja.params.PathParam;
@@ -20,9 +22,7 @@ import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pojo.ItemPojo;
-import pojo.Ticket;
-import pojo.TransactionRequestPojo;
+import pojo.*;
 import services.PaymentTransactionService;
 import utils.Constants;
 import utils.LocalizationUtils;
@@ -33,6 +33,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,6 +53,8 @@ public class PaymentTransactionController {
     private PaymentTransactionService paymentTransactionService;
     @Inject
     private NinjaProperties ninjaProperties;
+    @Inject
+    private RawDumpDao rawDumpDao;
 
     @FilterWith(MerchantFilter.class)
     public Result createPaymentTransaction(@ContentExtract String payload,
@@ -221,7 +225,7 @@ public class PaymentTransactionController {
 
     @FilterWith(MerchantFilter.class)
     public Result createTicketForNewTransaction(@ContentExtract String payload,
-                                                Context context, @Merch Merchant merchant, @PathParam("type")String type) {
+                                                Context context, @Merch Merchant merchant, @PathParam("type") String type) {
         logger.info(payload);
         String hash = context.getHeader(Constants.REQUEST_HASH_HEADER);
         if (StringUtils.isBlank(hash)) {
@@ -255,11 +259,32 @@ public class PaymentTransactionController {
         PaymentTransaction paymentTransaction = null;
         try {
             paymentTransaction = paymentTransactionService.processTransactionCreationRequest(request, merchant);
-            return ResponseUtil.returnJsonResult(200,paymentTransactionService.getInstantTransaction(paymentTransaction,merchant));
+            return ResponseUtil.returnJsonResult(200, paymentTransactionService.getInstantTransaction(paymentTransaction, merchant));
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.returnJsonResult(400, e.getMessage());
         }
+    }
+
+    public Result findPaymentTransaction(PaymentTransactionFilterRequestDto filter) {
+
+        List<PaymentTransaction> paymentTransactions = paymentTransactionDao.filterPaymentTransactions(filter);
+        Long count = paymentTransactionDao.countPaymentTransactions(filter);
+
+        List<PaymentTransactionFilterResponseDto> data = new ArrayList<>();
+
+        for (PaymentTransaction paymentTransaction : paymentTransactions) {
+            PaymentTransactionFilterResponseDto paymentTransactionFilterResponseDto = PaymentTransactionFilterResponseDto.from(paymentTransaction);
+
+            paymentTransactionFilterResponseDto.setAdditionalData(rawDumpDao.getAllByPaymentTransaction(paymentTransaction));
+            data.add(paymentTransactionFilterResponseDto);
+        }
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setData(data);
+        apiResponse.setCode(200);
+        apiResponse.addMeta("total", count);
+        return Results.json().render(apiResponse);
     }
 }

@@ -9,19 +9,19 @@ import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
+import pojo.PaymentTransactionFilterRequestDto;
 import pojo.TransactionRequestPojo;
 import pojo.payDirect.paymentNotification.request.Payment;
 import services.sequence.PayerIdSequence;
 import services.sequence.TicketIdSequence;
 import services.sequence.TransactionIdSequence;
+import utils.Constants;
 import utils.PaymentUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -168,18 +168,29 @@ public class PaymentTransactionDao extends BaseDao {
 //        return uniqueResultOrNull(q, Merchant.class);
 //    }
 
-    public List<NotificationQueue> getPendingNotifications(int max) {
-        if (max == 0) {
-            max = 10;
+    public List<NotificationQueue> getPendingNotifications(int limit, int maxRetryCount) {
+        if (limit == 0) {
+            limit = 10;
         }
         EntityManager entityManager = entityManagerProvider.get();
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<NotificationQueue> clientCriteriaQuery = criteriaBuilder.createQuery(NotificationQueue.class);
         Root<NotificationQueue> clientRoot = clientCriteriaQuery.from(NotificationQueue.class);
-        clientCriteriaQuery.where(criteriaBuilder.equal(clientRoot.get("notificationSent"), false));
 
-        return resultsList(entityManager.createQuery(clientCriteriaQuery).setMaxResults(max));
+        Subquery<Integer> subquery = clientCriteriaQuery.subquery(Integer.class);
+        subquery.select(criteriaBuilder.greatest(clientRoot.<Integer>get("retryCount"))).from(NotificationQueue.class);
+
+        clientCriteriaQuery.where(criteriaBuilder.and(
+                criteriaBuilder.equal(clientRoot.get("notificationSent"), false),
+                criteriaBuilder.or(
+                        criteriaBuilder.isNull(clientRoot.get("retryCount")),
+                        criteriaBuilder.le(clientRoot.<Integer>get("retryCount"), maxRetryCount)
+                )
+                )
+        );
+
+        return resultsList(entityManager.createQuery(clientCriteriaQuery).setMaxResults(limit));
     }
 
     public boolean isProcessed(Payment request) {
@@ -298,5 +309,105 @@ public class PaymentTransactionDao extends BaseDao {
 
     public PaymentTransaction getByTransactionId(String transactionId) {
         return getUniqueRecordByProperty(PaymentTransaction.class, "transactionId", transactionId);
+    }
+
+    public List<PaymentTransaction> filterPaymentTransactions(PaymentTransactionFilterRequestDto filter) {
+        EntityManager entityManager = entityManagerProvider.get();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PaymentTransaction> criteriaQuery = criteriaBuilder.createQuery(PaymentTransaction.class);
+        Root<PaymentTransaction> root = criteriaQuery.from(PaymentTransaction.class);
+        List<Predicate> predicates = getPredicates(filter, criteriaBuilder, root);
+
+        criteriaQuery.where(predicates.toArray(new Predicate[]{}));
+        return resultsList(entityManager.createQuery(criteriaQuery).setFirstResult(filter.getOffset()).setMaxResults(filter.getLimit().orElse(10)));
+    }
+
+    private List<Predicate> getPredicates(PaymentTransactionFilterRequestDto filter, CriteriaBuilder criteriaBuilder, Root<PaymentTransaction> root) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        filter.getTransactionId().ifPresent(transactionId -> {
+            if (StringUtils.isNotBlank(transactionId)) {
+                predicates.add(criteriaBuilder.like(root.get("transactionId"), transactionId));
+            }
+        });
+
+        filter.getMerchantTransactionReferenceId().ifPresent(merchantTr -> {
+            if (StringUtils.isNotBlank(merchantTr)) {
+                predicates.add(criteriaBuilder.like(root.get("merchantTransactionReferenceId"), merchantTr));
+            }
+        });
+
+        filter.getProviderTransactionReference().ifPresent(x -> {
+            if (StringUtils.isNotBlank(x)) {
+                predicates.add(criteriaBuilder.like(root.get("providerTransactionReference"), x));
+            }
+        });
+
+        filter.getAmountInKobo().ifPresent(x -> {
+            predicates.add(criteriaBuilder.equal(root.get("amountInKobo"), x));
+        });
+
+        filter.getAmountPaidInKobo().ifPresent(x -> {
+            predicates.add(criteriaBuilder.equal(root.get("amountPaidInKobo"), x));
+        });
+
+        filter.getPaymentProvider().ifPresent(p -> {
+            predicates.add(criteriaBuilder.equal(root.get("paymentProvider"), p));
+        });
+
+        filter.getPaymentChannel().ifPresent(p -> {
+            predicates.add(criteriaBuilder.equal(root.get("paymentChannel"), p));
+        });
+
+        filter.getPaymentTransactionStatus().ifPresent(p -> {
+            predicates.add(criteriaBuilder.equal(root.get("paymentTransactionStatus"), p));
+        });
+
+        filter.getCustomerTransactionReference().ifPresent(x -> {
+            if (StringUtils.isNotBlank(x)) {
+                predicates.add(criteriaBuilder.like(root.get("customerTransactionReference"), x));
+            }
+        });
+
+        filter.getDateCreatedStart(Constants.DEFAULT_DATE_FORMAT).ifPresent(d -> {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("dateCreated"), d));
+        });
+
+        filter.getDateCreatedEnd(Constants.DEFAULT_DATE_FORMAT).ifPresent(d -> {
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dateCreated"), d));
+        });
+
+        filter.getServiceTypeId().ifPresent(x -> {
+            if (StringUtils.isNotBlank(x)) {
+                predicates.add(criteriaBuilder.like(root.get("serviceTypeId"), x));
+            }
+        });
+        return predicates;
+    }
+
+    public Long countPaymentTransactions(PaymentTransactionFilterRequestDto filter) {
+        EntityManager entityManager = entityManagerProvider.get();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<PaymentTransaction> root = criteriaQuery.from(PaymentTransaction.class);
+        List<Predicate> predicates = getPredicates(filter, criteriaBuilder, root);
+
+        criteriaQuery.where(predicates.toArray(new Predicate[]{}));
+
+        Long c = uniqueResultOrNull(entityManager.createQuery(criteriaQuery));
+        return c == null ? 0 : c;
+    }
+
+    public int getMaxRetryCount() {
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Integer> clientCriteriaQuery = criteriaBuilder.createQuery(Integer.class);
+        Root<NotificationQueue> clientRoot = clientCriteriaQuery.from(NotificationQueue.class);
+
+        clientCriteriaQuery.select(criteriaBuilder.<Integer>greatest(clientRoot.get("retryCount")));
+
+        Integer max = uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
+        return max == null ? 0 : max;
     }
 }
