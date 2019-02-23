@@ -192,15 +192,15 @@ public class RemittaService {
 
                     if (paymentTransaction.getAmountPaidInKobo() < paymentTransaction.getAmountInKobo()) {
                         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PARTIAL);
-                    } else {
+                    } else  {
                         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
                     }
 
                     shouldDoNotifaction = true;
                 }
 
-                System.out.println("()()()() Remitta Result " + responseBody);
-                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.FAILED);
+
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
 
             }
 
@@ -221,7 +221,7 @@ public class RemittaService {
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
-        if (paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.REMITA)) {  //TODO This is to alter the system
+        if (paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.REMITA)) {  //TODO This is to avoid  alter the system
             transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
         } else {
             transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue() + "_" + paymentTransaction.getPaymentChannel().getValue());
