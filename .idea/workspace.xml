@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,8 +32,8 @@
       <file leaf-file-name="RemitaController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1406">
-              <caret line="113" column="48" selection-start-line="113" selection-start-column="48" selection-end-line="113" selection-end-column="48" />
+            <state relative-caret-position="281">
+              <caret line="144" column="9" lean-forward="true" selection-start-line="144" selection-start-column="9" selection-end-line="144" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -68,11 +68,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="339">
-              <caret line="198" column="47" selection-start-line="198" selection-start-column="47" selection-end-line="198" selection-end-column="47" />
+            <state relative-caret-position="723">
+              <caret line="244" column="55" selection-start-line="244" selection-start-column="55" selection-end-line="244" selection-end-column="55" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -116,11 +116,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="showRemittaBankNotification.ftl.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="showRemittaBankNotification.ftl.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2071">
-              <caret line="109" selection-start-line="109" selection-end-line="109" />
+            <state relative-caret-position="623">
+              <caret line="119" column="41" lean-forward="true" selection-start-line="119" selection-start-column="41" selection-end-line="119" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -237,9 +237,9 @@
         <option value="$PROJECT_DIR$/src/main/java/views/RemitaController/doRemittaBankNotification.ftl.html" />
         <option value="$PROJECT_DIR$/src/main/java/conf/Routes.java" />
         <option value="$PROJECT_DIR$/src/main/java/dao/RemittaDao.java" />
-        <option value="$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html" />
-        <option value="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/RemittaService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html" />
       </list>
     </option>
   </component>
@@ -982,7 +982,7 @@
       <workItem from="1550594642192" duration="43523000" />
       <workItem from="1550858976258" duration="2745000" />
       <workItem from="1550871013705" duration="577000" />
-      <workItem from="1550917764370" duration="591000" />
+      <workItem from="1550917764370" duration="2961000" />
     </task>
     <task id="LOCAL-00016" summary="model change">
       <created>1536076362389</created>
@@ -1331,7 +1331,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="545112000" />
+    <option name="totallyTimeSpent" value="547482000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1366,7 +1366,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.33660132" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.3278867" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.22814499" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.22814499" />
       <window_info anchor="right" id="Bean Validation" order="3" />
       <window_info id="Web" order="2" sideWeight="0.5067114" side_tool="true" weight="0.15733737" />
       <window_info anchor="right" id="Theme Preview" order="3" />
@@ -1760,13 +1760,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2071">
-          <caret line="109" selection-start-line="109" selection-end-line="109" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/bw/payment/payment-common/1.0-SNAPSHOT/payment-common-1.0-SNAPSHOT.jar!/com/bw/payment/enumeration/PaymentTransactionStatus.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
@@ -1816,23 +1809,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1406">
-          <caret line="113" column="48" selection-start-line="113" selection-start-column="48" selection-end-line="113" selection-end-column="48" />
+        <state relative-caret-position="723">
+          <caret line="244" column="55" selection-start-line="244" selection-start-column="55" selection-end-line="244" selection-end-column="55" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="198" column="47" selection-start-line="198" selection-start-column="47" selection-end-line="198" selection-end-column="47" />
+        <state relative-caret-position="281">
+          <caret line="144" column="9" lean-forward="true" selection-start-line="144" selection-start-column="9" selection-end-line="144" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="623">
+          <caret line="119" column="41" lean-forward="true" selection-start-line="119" selection-start-column="41" selection-end-line="119" selection-end-column="41" />
         </state>
       </provider>
     </entry>

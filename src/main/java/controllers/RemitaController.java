@@ -140,7 +140,11 @@ public class RemitaController {
             return Results.json().render(HttpStatus.SC_NOT_FOUND);
         }
 
-               RemittaNotification notification = new RemittaNotification();
+        if(PaymentUtil.getAmountInKobo(request.getAmount()) < paymentTransaction.getAmountInKobo()){
+            return Results.json().render(HttpStatus.SC_NOT_ACCEPTABLE);
+        }
+
+        RemittaNotification notification = new RemittaNotification();
         notification.setRrr(request.getRrr());
         notification.setChannel("BRANCH");
         notification.setAmount(request.getAmount());

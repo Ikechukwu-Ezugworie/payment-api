@@ -14,7 +14,9 @@
         <div class="form-group col-md-5">
             <label>Amount</label>
             <input type="text" class="form-control" id="amount"
-                   placeholder="Enter Amount" name="amountToBePaid" required>
+                   placeholder="Enter Amount" name="amountToBePaid"
+                   pattern="^[+-]?[0-9]{1,}(?:[0-9]*(?:[.,][0-9]{1})?|(?:,[0-9]{3})*(?:\.[0-9]{1,2})?|(?:\.[0-9]{3})*(?:,[0-9]{1,2})?)$"
+                   required>
             <input type="hidden" class="form-control" name="type" value="ar" required>
         </div>
 
@@ -101,6 +103,11 @@
                         // cannot be found
                         $("#errorDiv").show();
                         $("#errorMessage").text("Remita Payment Reference Does not exist");
+                    }
+
+                    if(data == 406){
+                        $("#errorDiv").show();
+                        $("#errorMessage").text("Only Completed amount on the bill can be paid. Please make full payment");
                     }
 
                     if(data === "OK"){
