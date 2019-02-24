@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
@@ -119,8 +118,11 @@
       <file leaf-file-name="showRemittaBankNotification.ftl.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="623">
-              <caret line="119" column="41" lean-forward="true" selection-start-line="119" selection-start-column="41" selection-end-line="119" selection-end-column="41" />
+            <state relative-caret-position="38">
+              <caret line="68" column="52" lean-forward="true" selection-start-line="68" selection-start-column="52" selection-end-line="68" selection-end-column="52" />
+              <folding>
+                <element signature="n#style#0;n#p#0;n#div#1;n#form#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -982,7 +984,7 @@
       <workItem from="1550594642192" duration="43523000" />
       <workItem from="1550858976258" duration="2745000" />
       <workItem from="1550871013705" duration="577000" />
-      <workItem from="1550917764370" duration="2961000" />
+      <workItem from="1550917764370" duration="4490000" />
     </task>
     <task id="LOCAL-00016" summary="model change">
       <created>1536076362389</created>
@@ -1331,7 +1333,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="547482000" />
+    <option name="totallyTimeSpent" value="549011000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1359,12 +1361,13 @@
       <window_info id="UI Designer" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39978212" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.49673203" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="bottom" id="Java Enterprise" order="7" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.33660132" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.33660132" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.3278867" />
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.22814499" />
       <window_info anchor="right" id="Bean Validation" order="3" />
@@ -1372,7 +1375,6 @@
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.49673203" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info id="Persistence" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Database Console" order="13" weight="0.32897604" />
@@ -1831,8 +1833,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/showRemittaBankNotification.ftl.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="623">
-          <caret line="119" column="41" lean-forward="true" selection-start-line="119" selection-start-column="41" selection-end-line="119" selection-end-column="41" />
+        <state relative-caret-position="38">
+          <caret line="68" column="52" lean-forward="true" selection-start-line="68" selection-start-column="52" selection-end-line="68" selection-end-column="52" />
+          <folding>
+            <element signature="n#style#0;n#p#0;n#div#1;n#form#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
