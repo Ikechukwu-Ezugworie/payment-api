@@ -1,5 +1,6 @@
 package pojo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import utils.PaymentUtil;
 
@@ -9,14 +10,14 @@ import java.util.Optional;
 /*
  * Created by Gibah Joseph on Feb, 2019
  */
-public abstract class PaginatedRequestDto {
+public class PaginatedRequestDto {
     private Integer offset;
     private Integer limit;
     private String dateCreatedStart;
     private String dateCreatedEnd;
 
-    public Integer getOffset() {
-        return offset;
+    public Optional<Integer> getOffset() {
+        return Optional.ofNullable(offset);
     }
 
     public PaginatedRequestDto setOffset(Integer offset) {
@@ -34,7 +35,10 @@ public abstract class PaginatedRequestDto {
     }
 
     public Optional<Timestamp> getDateCreatedStart(String format) {
-        return Optional.ofNullable(PaymentUtil.getTimestamp(format));
+        if(StringUtils.isBlank(dateCreatedStart)){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(PaymentUtil.getTimestamp(dateCreatedStart,format));
     }
 
     public PaginatedRequestDto setDateCreatedStart(String dateCreatedStart) {
@@ -43,7 +47,10 @@ public abstract class PaginatedRequestDto {
     }
 
     public Optional<Timestamp> getDateCreatedEnd(String format) {
-        return Optional.ofNullable(PaymentUtil.getTimestamp(format));
+        if(StringUtils.isBlank(dateCreatedEnd)){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(PaymentUtil.getTimestamp(dateCreatedEnd,format));
     }
 
     public PaginatedRequestDto setDateCreatedEnd(String dateCreatedEnd) {

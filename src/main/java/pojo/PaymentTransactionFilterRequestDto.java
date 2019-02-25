@@ -3,14 +3,17 @@ package pojo;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import utils.PaymentUtil;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 /*
  * Created by Gibah Joseph on Feb, 2019
  */
-public class PaymentTransactionFilterRequestDto extends PaginatedRequestDto {
+public class PaymentTransactionFilterRequestDto{
     private String transactionId;
     private String merchantTransactionReferenceId;
     private String providerTransactionReference;
@@ -22,6 +25,10 @@ public class PaymentTransactionFilterRequestDto extends PaginatedRequestDto {
     private PaymentTransactionStatus paymentTransactionStatus;
     private String customerTransactionReference;
     private Long id;
+    private Integer offset;
+    private Integer limit;
+    private String dateCreatedStart;
+    private String dateCreatedEnd;
 
     public Optional<String> getTransactionId() {
         return Optional.ofNullable(transactionId);
@@ -119,6 +126,48 @@ public class PaymentTransactionFilterRequestDto extends PaginatedRequestDto {
 
     public PaymentTransactionFilterRequestDto setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    public Optional<Integer> getOffset() {
+        return Optional.ofNullable(offset);
+    }
+
+    public PaymentTransactionFilterRequestDto setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    public Optional<Integer> getLimit() {
+        return Optional.ofNullable(limit);
+    }
+
+    public PaymentTransactionFilterRequestDto setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public Optional<Timestamp> getDateCreatedStart(String format) {
+        if(StringUtils.isBlank(dateCreatedStart)){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(PaymentUtil.getTimestamp(dateCreatedStart,format));
+    }
+
+    public PaymentTransactionFilterRequestDto setDateCreatedStart(String dateCreatedStart) {
+        this.dateCreatedStart = dateCreatedStart;
+        return this;
+    }
+
+    public Optional<Timestamp> getDateCreatedEnd(String format) {
+        if(StringUtils.isBlank(dateCreatedEnd)){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(PaymentUtil.getTimestamp(dateCreatedEnd,format));
+    }
+
+    public PaymentTransactionFilterRequestDto setDateCreatedEnd(String dateCreatedEnd) {
+        this.dateCreatedEnd = dateCreatedEnd;
         return this;
     }
 

@@ -319,11 +319,14 @@ public class PaymentTransactionDao extends BaseDao {
         List<Predicate> predicates = getPredicates(filter, criteriaBuilder, root);
 
         criteriaQuery.where(predicates.toArray(new Predicate[]{}));
-        return resultsList(entityManager.createQuery(criteriaQuery).setFirstResult(filter.getOffset()).setMaxResults(filter.getLimit().orElse(10)));
+        return resultsList(entityManager.createQuery(criteriaQuery).setFirstResult(filter.getOffset().orElse(0)).setMaxResults(filter.getLimit().orElse(10)));
     }
 
     private List<Predicate> getPredicates(PaymentTransactionFilterRequestDto filter, CriteriaBuilder criteriaBuilder, Root<PaymentTransaction> root) {
         List<Predicate> predicates = new ArrayList<>();
+        if(filter == null)  {
+            filter = new PaymentTransactionFilterRequestDto();
+        }
 
         filter.getTransactionId().ifPresent(transactionId -> {
             if (StringUtils.isNotBlank(transactionId)) {
@@ -352,15 +355,15 @@ public class PaymentTransactionDao extends BaseDao {
         });
 
         filter.getPaymentProvider().ifPresent(p -> {
-            predicates.add(criteriaBuilder.equal(root.get("paymentProvider"), p));
+            predicates.add(criteriaBuilder.equal(root.get("paymentProvider"), p.getValue()));
         });
 
         filter.getPaymentChannel().ifPresent(p -> {
-            predicates.add(criteriaBuilder.equal(root.get("paymentChannel"), p));
+            predicates.add(criteriaBuilder.equal(root.get("paymentChannel"), p.getValue()));
         });
 
         filter.getPaymentTransactionStatus().ifPresent(p -> {
-            predicates.add(criteriaBuilder.equal(root.get("paymentTransactionStatus"), p));
+            predicates.add(criteriaBuilder.equal(root.get("paymentTransactionStatus"), p.getValue()));
         });
 
         filter.getCustomerTransactionReference().ifPresent(x -> {
@@ -392,10 +395,9 @@ public class PaymentTransactionDao extends BaseDao {
         Root<PaymentTransaction> root = criteriaQuery.from(PaymentTransaction.class);
         List<Predicate> predicates = getPredicates(filter, criteriaBuilder, root);
 
-        criteriaQuery.where(predicates.toArray(new Predicate[]{}));
+        criteriaQuery.select(criteriaBuilder.count(root)).where(predicates.toArray(new Predicate[]{}));
 
-        Long c = uniqueResultOrNull(entityManager.createQuery(criteriaQuery));
-        return c == null ? 0 : c;
+        return getCount(entityManager.createQuery(criteriaQuery));
     }
 
     public int getMaxRetryCount() {

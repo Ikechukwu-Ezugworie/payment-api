@@ -7,6 +7,7 @@ import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class PaymentTransactionFilterResponseDto {
     private PaymentChannelConstant paymentChannel;
     private String serviceTypeId;
     private PaymentTransactionStatus paymentTransactionStatus;
+    private Timestamp dateCreated;
     private String customerTransactionReference;
     private Long id;
     private List<RawDump> additionalData;
@@ -40,8 +42,17 @@ public class PaymentTransactionFilterResponseDto {
         paymentTransactionFilterResponseDto.setPaymentTransactionStatus(paymentTransaction.getPaymentTransactionStatus());
         paymentTransactionFilterResponseDto.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
         paymentTransactionFilterResponseDto.setId(paymentTransaction.getId());
+        paymentTransactionFilterResponseDto.setDateCreated(paymentTransaction.getDateCreated());
 
         return paymentTransactionFilterResponseDto;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public String getTransactionId() {

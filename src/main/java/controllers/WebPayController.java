@@ -148,18 +148,18 @@ public class WebPayController {
             return paymentTransactionDao.getUniqueRecordByProperty(RawDump.class, "paymentTransaction", paymentTransaction);
         });
 
-        if (rawDump != null) {
-            rawDump.setResponse(new Gson().toJson(context.getParameters()));
-            rawDump.setRequestIp(ipAddress);
-            transactionTemplate.execute(entityManager -> {
-                entityManager.merge(rawDump);
-            });
-        }
+
 
         try {
 
             WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
-
+            if (rawDump != null) {
+                rawDump.setResponse(new Gson().toJson(webPayPaymentDataDto));
+                rawDump.setRequestIp(ipAddress);
+                transactionTemplate.execute(entityManager -> {
+                    entityManager.merge(rawDump);
+                });
+            }
             URIBuilder b = new URIBuilder(paymentService.getWebPayCredentials(null).getMerchantRedirectUrl());
             if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
                 webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
