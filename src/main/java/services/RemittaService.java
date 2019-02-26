@@ -1,5 +1,9 @@
 package services;
 
+import java.math.BigDecimal;
+
+import com.google.common.collect.Lists;
+
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -13,6 +17,7 @@ import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+import com.sun.xml.internal.ws.message.PayloadElementSniffer;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import dao.RemittaDao;
@@ -79,7 +84,7 @@ public class RemittaService {
 
         RemittaGenerateRequestRRRPojo requestData = new RemittaGenerateRequestRRRPojo();
         requestData.setServiceTypeId(serviceTypeId);
-        requestData.setAmount(BigInteger.valueOf(request.getAmountInKobo()));
+        requestData.setAmount(PaymentUtil.koboToNaira(BigInteger.valueOf(request.getAmountInKobo())));
         requestData.setOrderId(transactionId);
         requestData.setPayerName(request.getPayer().getFirstName() + " " + request.getPayer().getLastName());
         requestData.setPayerEmail(request.getPayer().getEmail());
@@ -90,7 +95,7 @@ public class RemittaService {
         System.out.println("Payload:::: " + requestData.toString());
 
         Call<RemittaRrrResponse> remittaRrrResponseCall = remittaApi
-                .postToGenerateRRR(requestData, remittaDao.generateAutorisationHeader(transactionId, serviceTypeId, BigInteger.valueOf(request.getAmountInKobo())));
+                .postToGenerateRRR(requestData, remittaDao.generateAutorisationHeader(transactionId, serviceTypeId, requestData.getAmount()));
 
         try {
             Response<RemittaRrrResponse> execute = remittaRrrResponseCall.execute();
@@ -130,6 +135,7 @@ public class RemittaService {
             if (paymentTransaction == null) {
                 throw new NotFoundException("Payment Transaction with RRR cannot be found");
             }
+
             paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
             paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK); // TODO update after model update
             paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
@@ -145,10 +151,13 @@ public class RemittaService {
             paymentTransaction.setPayer(payer);
 
 
-            Boolean shouldNotify = requestForPaymentTransactionStatus(paymentTransaction);
+            RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction);
+
+            if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {
+                // Todo:: Please Update pass the code in the if true below after testing on Bw sandbox.
+            }
 
 
-            // Todo:: Please Update the True to shouldNotify - This is only Useful for Testing
             if (true) {
 
                 queueNotification(remittaNotification, paymentTransaction);
@@ -172,9 +181,8 @@ public class RemittaService {
      * @return Boolean Value to make a notify decision
      * @throws ApiResponseException
      */
-    private Boolean requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException {
+    private RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException {
 
-        Boolean shouldDoNotifaction = false;
 
         Call<RemittaTransactionStatusPojo> transactionStatusResponse = remittaApi.getTransactionStatus(remittaDao.getSettingsValue(RemittaDao.REMITTA_MECHANT_ID, "657", true),
                 paymentTransaction.getProviderTransactionReference(),
@@ -192,15 +200,16 @@ public class RemittaService {
 
                     if (paymentTransaction.getAmountPaidInKobo() < paymentTransaction.getAmountInKobo()) {
                         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PARTIAL);
-                    } else  {
+                    } else {
                         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
                     }
 
-                    shouldDoNotifaction = true;
+
                 }
 
 
                 paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+                return responseBody;
 
             }
 
@@ -210,7 +219,56 @@ public class RemittaService {
             throw new ApiResponseException(e.getMessage());
         }
 
-        return shouldDoNotifaction;
+        return null;
+    }
+
+
+    @Transactional
+    public RemittaTransactionStatusPojo updatePaymentTransactionOnCardPay(PaymentTransaction paymentTransaction) throws NotFoundException, ApiResponseException {
+        if (paymentTransaction == null) {
+            throw new NotFoundException("Payment Transaction with RRR cannot be found");
+        }
+
+        RemittaTransactionStatusPojo response = null;
+
+        if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
+            paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
+            paymentTransaction.setPaymentChannel(PaymentChannelConstant.MASTERCARD); // TODO update after model update
+            paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountInKobo());
+            paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
+            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+
+
+            response = requestForPaymentTransactionStatus(paymentTransaction);
+
+            if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {
+
+                Payer payer = remittaDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
+                RemittaNotification notification = new RemittaNotification();
+                notification.setRrr(paymentTransaction.getProviderTransactionReference());
+                notification.setChannel(PaymentChannelConstant.MASTERCARD.getValue());
+                notification.setAmount(PaymentUtil.getAmountInNaira(paymentTransaction.getAmountPaidInKobo()));
+                notification.setTransactiondate(PaymentUtil.getDate(paymentTransaction.getLastUpdated()));
+                notification.setDebitdate("");
+                notification.setBank("CARD");
+                notification.setBranch("CARD");
+                notification.setServiceTypeId(remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "1234"));
+                notification.setPayerName(String.format("%s-%s", payer.getFirstName(), payer.getLastName()));
+                notification.setPayerPhoneNumber(payer.getPhoneNumber());
+                notification.setPayerEmail(payer.getEmail());
+                queueNotification(notification, paymentTransaction);
+
+                notificationService.sendPaymentNotification(10);
+
+            }
+
+            paymentTransactionDao.updateObject(paymentTransaction);
+        }
+
+
+        return response;
+
+
     }
 
 

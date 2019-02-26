@@ -149,7 +149,7 @@
                 </tr>
                 <tr>
                     <th style="width: 30%;">Amount (&#8358;)</th>
-                    <td id="amountPaid">N/A</td>
+                    <td id="totalAmount">N/A</td>
                 </tr>
             </table>
         </div>
@@ -260,7 +260,7 @@
                 console.log('<== ' + details.transactionId);
                 $("#transactionId").text(details.transactionId);
                 $("#ppr").text(details.providerTransactionReference);
-                $("#amountPaid").text(details.amountPaidInKobo / 100);
+                $("#totalAmount").text(details.amountPaidInKobo / 100);
             },
             error: function (xhr, status) {
                 $("#paying").hide();

@@ -11,7 +11,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class BaseDao {
@@ -46,6 +49,21 @@ public class BaseDao {
 
         return entityManager.createQuery(clientCriteriaQuery).getResultList();
     }
+
+    public  <T, E>  List<T> getPyPropertyIn(Class<T> tClass, String propertyName, List<E> values) {
+        EntityManager entityManager = entityManagerProvider.get();
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> clientCriteriaQuery = criteriaBuilder.createQuery(tClass);
+        Root<T> clientRoot = clientCriteriaQuery.from(tClass);
+        Predicate predicate = clientRoot.get(propertyName).in(criteriaBuilder.literal(values));
+        clientCriteriaQuery.where(predicate);
+
+        return resultsList(entityManager.createQuery(clientCriteriaQuery));
+    }
+
+
+
 
     <T> T uniqueResultOrNull(TypedQuery<T> tTypedQuery) {
         try {

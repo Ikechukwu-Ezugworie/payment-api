@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -644,6 +645,20 @@ public class PaymentUtil {
             throw new NumberFormatException();
         }
         return amount;
+    }
+
+    public static BigDecimal koboToNaira(BigInteger amountInKobo) throws NumberFormatException {
+        if (amountInKobo == null) {
+            return null;
+        }
+        try {
+            BigDecimal bigAmount = new BigDecimal(amountInKobo);
+            bigAmount = bigAmount.divide(new BigDecimal(NAIRA_TO_KOBO)).setScale(2, RoundingMode.HALF_EVEN);
+            return bigAmount;
+        } catch (Exception e) {
+            throw new NumberFormatException();
+        }
+
     }
 
 

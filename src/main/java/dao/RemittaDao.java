@@ -1,6 +1,9 @@
 package dao;
 
+import com.bw.payment.entity.Item;
 import com.bw.payment.entity.PaymentTransaction;
+import com.bw.payment.entity.PaymentTransactionItem;
+import com.google.gson.Gson;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +14,8 @@ import utils.PaymentUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Singleton
 public class RemittaDao extends BaseDao {
@@ -27,7 +32,7 @@ public class RemittaDao extends BaseDao {
         return getSettingsValue(REMITTA_MECHANT_ID, "2547916", Boolean.TRUE);
     }
 
-    private String getRemittaCustomerToken(String orderId, String serviceTypeId, BigInteger totalAmount ){
+    private String getRemittaCustomerToken(String orderId, String serviceTypeId, BigDecimal totalAmount ){
         if(StringUtils.isBlank(orderId)  || StringUtils.isBlank(serviceTypeId) ){
             throw new IllegalArgumentException("Order Id cannot be null");
         }
@@ -36,7 +41,7 @@ public class RemittaDao extends BaseDao {
         customerToken.append(getMerchantId());
         customerToken.append(serviceTypeId);
         customerToken.append(orderId.trim());
-        customerToken.append(totalAmount);
+        customerToken.append(totalAmount.toPlainString());
         customerToken.append(getSettingsValue(REMITTA_API_KEY,"1956", Boolean.TRUE));
 
         logger.info(customerToken.toString());
@@ -44,7 +49,7 @@ public class RemittaDao extends BaseDao {
     }
 
 
-    public String generateAutorisationHeader(String orderId, String serviceTypeId, BigInteger totalAmountInNaira ){
+    public String generateAutorisationHeader(String orderId, String serviceTypeId, BigDecimal totalAmountInNaira ){
         StringBuilder authHeader= new StringBuilder();
         authHeader.append("remitaConsumerKey").append("=").append(getMerchantId())
         .append(",")
@@ -72,10 +77,36 @@ public class RemittaDao extends BaseDao {
 
     }
 
+    public String generateCardHash(String rrr){
+        StringBuilder unHashed = new StringBuilder();
+
+        unHashed.append(getSettingsValue(REMITTA_MECHANT_ID,"123456", Boolean.TRUE));
+        unHashed.append(rrr);
+        unHashed.append(getSettingsValue(REMITTA_API_KEY,"7bd7d59cfe90e4d32b1d2f20d39c86df-fbaa8670-1008-ac7a-398a-3c11ac797c77", Boolean.TRUE));
+        logger.info("Hashed is " + unHashed.toString());
+
+        return PaymentUtil.getHash(unHashed.toString(), Constants.SHA_512_ALGORITHM_NAME);
+
+    }
+
+
+
+
     @Transactional
     public PaymentTransaction getPaymentTrnsactionByRRR(String rrr){
         PaymentTransaction paymentTransaction = getUniqueRecordByProperty(PaymentTransaction.class,"providerTransactionReference",rrr);
         return paymentTransaction;
+    }
+
+    public List<Item> getPaymentItemsByPaymentTransaction(PaymentTransaction paymentTransaction){
+        System.out.println("{}{}{}{}" + paymentTransaction.getId());
+       List<PaymentTransactionItem> paymentTransactions = getByProperty(PaymentTransactionItem.class, "paymentTransaction",paymentTransaction);
+       logger.info(new Gson().toJson(paymentTransactions.stream()
+               .map(it -> it.getItem().getId()).collect(Collectors.toSet())));
+        return getPyPropertyIn(Item.class, "id", paymentTransactions.stream()
+                .map(it -> it.getItem().getId()).collect(Collectors.toList()) );
+
+
     }
 
 }

@@ -15,7 +15,7 @@ import java.math.BigInteger;
 public class RemittaGenerateRequestRRRPojo {
 
     private String serviceTypeId;
-    private BigInteger amount;
+    private BigDecimal amount;
     private String orderId;
     private String payerName;
     private String payerEmail;
@@ -36,11 +36,11 @@ public class RemittaGenerateRequestRRRPojo {
     }
 
 
-    public BigInteger getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public RemittaGenerateRequestRRRPojo setAmount(BigInteger amount) {
+    public RemittaGenerateRequestRRRPojo setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }

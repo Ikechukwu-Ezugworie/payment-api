@@ -1,7 +1,5 @@
 package controllers;
 
-import java.math.BigDecimal;
-
 import com.google.common.collect.Lists;
 
 import com.bw.payment.entity.PaymentTransaction;
@@ -17,18 +15,21 @@ import exceptions.ApiResponseException;
 import extractors.ContentExtract;
 import extractors.IPAddress;
 import javassist.NotFoundException;
+import ninja.Context;
 import ninja.Result;
 import ninja.Results;
+import ninja.params.Param;
+import ninja.params.Params;
+import ninja.params.PathParam;
 import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.ApiResponse;
+import pojo.Item;
 import pojo.TransactionRequestPojo;
-import pojo.remitta.RemittaCreateTransactionResponse;
-import pojo.remitta.RemittaDummyNotificationPojo;
-import pojo.remitta.RemittaNotification;
+import pojo.remitta.*;
 import services.PaymentTransactionService;
 import services.RemittaService;
 import utils.Constants;
@@ -38,8 +39,8 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * CREATED BY GIBAH
@@ -56,6 +57,9 @@ public class RemitaController {
     RemittaDao remittaDao;
 
 
+
+
+
     public Result doCreateTransaction(@JSR303Validation TransactionRequestPojo data, Validation validation) {
 
         ApiResponse<RemittaCreateTransactionResponse> apiResponse = new ApiResponse<>();
@@ -64,7 +68,7 @@ public class RemitaController {
             apiResponse.setCode(HttpStatus.SC_BAD_REQUEST);
             return Results.ok().json().render(apiResponse);
         }
-        //transactionRequestPojo.setAmountInKobo(data.getAmount());
+        //transactionRequestPojo.setTotalAmount(data.getAmount());
         data.setNotifyOnStatusChange(true);
         data.setPaymentProvider(PaymentProviderConstant.REMITA.value());
         data.setPaymentChannel(PaymentChannelConstant.BANK.getValue()); // TODO Update after model update
@@ -96,6 +100,11 @@ public class RemitaController {
     }
 
 
+
+
+
+
+
     public Result doRemittaNotification(@ContentExtract String payload, @IPAddress String ipAddress) {
         RawDump rawDump = new RawDump();
         rawDump.setRequest(payload);
@@ -121,7 +130,74 @@ public class RemitaController {
     }
 
 
-    public Result showRemittaBankNotification() {
+    public Result makePaymentWithCard(@PathParam("rrr")String paymentReference, Context context){
+        ApiResponse apiResponse = new ApiResponse();
+        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
+
+        if(paymentTransaction == null){
+            apiResponse.setCode(HttpStatus.SC_NOT_FOUND);
+            apiResponse.setMessage(String.format("Payment transaction with  %s cannot be found", paymentReference));
+            return Results.notFound().json().render(apiResponse);
+        }
+
+        RemittaFormPayloadPojo data = new RemittaFormPayloadPojo();
+        data.setMerchantId(remittaDao.getMerchantId());
+        data.setHash(remittaDao.generateCardHash(paymentTransaction.getProviderTransactionReference()));
+        data.setRrr(paymentTransaction.getProviderTransactionReference());
+        String responseUrl = "http://localhost:8880/api/v1/payments/remitta/card/make-payment";
+        data.setResponseurl(responseUrl);
+        data.setRemittaFormActionUrl(remittaDao.getSettingsValue("REMITTA_CARD_URL", "https://remitademo.net/remita/ecomm/finalize.reg"));
+
+        data.setAmount(PaymentUtil.koboToNaira(paymentTransaction.getAmountInKobo()));
+
+        data.setPaymentTransactionReference(paymentTransaction.getTransactionId());
+        data.setItems(remittaDao.getPaymentItemsByPaymentTransaction(paymentTransaction).stream().map(it -> {
+            Item item = new Item();
+            item.setTotalAmount(PaymentUtil.koboToNaira(it.getTotalInKobo()));
+            item.setItemId(it.getItemId());
+            item.setName(it.getName());
+            item.setPricePerItem(PaymentUtil.koboToNaira(it.getPriceInKobo()));
+            item.setQuantity(it.getQuantity().toString());
+            return item;
+
+        }).collect(Collectors.toList()));
+
+        System.out.println("Data + " + data
+        );
+
+
+        return Results.html().render("data",data);
+
+
+    }
+
+
+
+
+
+    public Result cardNotificationUrl(@ContentExtract String data, @Param("RRR") String paymentReference){
+
+
+        RemittaTransactionStatusPojo response = null;
+        System.out.println("Here is the remitta respose {}{}{}{} " + data + "{}{}{}{}{}" + paymentReference);
+
+        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
+        try {
+             response = remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        } catch (ApiResponseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Response after confirming from Remitta {}{}{}" + response.toString());
+
+
+        return null;
+    }
+
+
+    public Result showRemittaBankTestSandBoxNotificationView() {
 
         return Results.html().render("result", "12345");
 

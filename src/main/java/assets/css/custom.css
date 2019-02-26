@@ -1,3 +1,41 @@
 /* Add additional stylesheets below
 -------------------------------------------------- */
 
+.position-footer-top {
+    top: 20px;
+    position: relative;
+}
+
+.g-bg-gray-light-v5 {
+    background-color: #f7f7f7 !important;
+}
+
+.g-pt-30 {
+    padding-top: 2.14286rem !important;
+}
+
+
+.g-width-100 {
+    width: 100px !important;
+}
+
+@media (min-width: 576px){
+
+    .mt-footerxlg-25 {
+        margin-top: -25px;
+    }
+}
+
+
+@media (min-width: 768px){
+    .g-mb-md-30 {
+        margin-bottom: 30px;
+    }
+}
+
+
+@media (min-width: 0){
+    .g-mb-30 {
+            margin-bottom: 2.14286rem !important;
+}
+}
