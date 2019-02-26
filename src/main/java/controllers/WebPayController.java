@@ -1,35 +1,38 @@
 package controllers;
 
 import com.bw.payment.entity.PaymentTransaction;
+import com.bw.payment.entity.RawDump;
 import com.bw.payment.enumeration.PaymentChannelConstant;
+import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.PaymentTransactionDao;
+import extractors.ContentExtract;
+import extractors.IPAddress;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
-import ninja.validation.JSR303Validation;
-import ninja.validation.Validation;
+import ninja.params.PathParam;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pojo.ItemPojo;
-import pojo.PayerPojo;
-import pojo.TransactionRequestPojo;
+import pojo.*;
 import pojo.webPay.BwPaymentsWebPayRequest;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
 import pojo.webPay.WebPayTransactionResponsePojo;
-import retrofit2.http.Url;
-import services.NotificationService;
-import services.PaymentService;
-import services.PaymentTransactionService;
-import services.WebPayService;
+import services.*;
 
+import javax.validation.ConstraintViolation;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * CREATED BY GIBAH
@@ -47,11 +50,22 @@ public class WebPayController {
     private WebPayService webPayService;
     @Inject
     private PaymentService paymentService;
+    @Inject
+    private TransactionTemplate transactionTemplate;
 
 
-    public Result doCreateTransaction(@JSR303Validation BwPaymentsWebPayRequest data, Validation validation) {
-        if (validation.hasViolations()) {
-            return Results.badRequest().json().render("message", validation.getViolations().get(0).getDefaultMessage());
+    public Result doCreateTransaction(@ContentExtract String payload, @IPAddress String ipAddress) {
+        logger.info("====> {} ", payload);
+        BwPaymentsWebPayRequest data = new Gson().fromJson(payload, BwPaymentsWebPayRequest.class);
+        Set<ConstraintViolation<BwPaymentsWebPayRequest>> constraintViolations = javax.validation.Validation.buildDefaultValidatorFactory().getValidator().validate(data);
+
+        if (!constraintViolations.isEmpty()) {
+            for (ConstraintViolation<BwPaymentsWebPayRequest> constraintViolation : constraintViolations) {
+                ApiResponse apiResponse = new ApiResponse();
+                apiResponse.setCode(400);
+                apiResponse.setMessage(constraintViolation.getMessage());
+                return Results.ok().json().render(apiResponse);
+            }
         }
         TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
         transactionRequestPojo.setAmountInKobo(data.getAmount());
@@ -77,7 +91,25 @@ public class WebPayController {
 
         PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
 
-        return Results.ok().json().render("transactionId", paymentTransaction.getTransactionId());
+        RawDump rawDump = new RawDump();
+        rawDump.setRequest(payload);
+        rawDump.setDateCreated(new Timestamp(new java.util.Date().getTime()));
+        rawDump.setPaymentProvider(PaymentProviderConstant.INTERSWITCH);
+        rawDump.setPaymentChannel(PaymentChannelConstant.WEBPAY);
+        rawDump.setDescription("PAYMENT REQUEST");
+        rawDump.setRequestIp(ipAddress);
+        rawDump.setPaymentTransaction(paymentTransaction);
+
+        transactionTemplate.execute((entityManager) -> {
+            entityManager.persist(rawDump);
+        });
+
+        ApiResponse<Map> apiResponse = new ApiResponse<>();
+        Map<String, String> res = new HashMap<>();
+        res.put("transactionId", paymentTransaction.getTransactionId());
+        apiResponse.setData(res);
+        apiResponse.setCode(200);
+        return Results.ok().json().render(apiResponse);
     }
 
 
@@ -88,34 +120,48 @@ public class WebPayController {
 
         PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
 
-        if (paymentTransaction == null || paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
+        if (paymentTransaction == null) {
             return Results.ok().html().render("error", "Transaction not found");
         }
+        TransactionRequestPojo fullPaymentTransactionDetailsAsPojo = paymentTransactionService.getFullPaymentTransactionDetailsAsPojo(paymentTransaction);
+        if (paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
+            return Results.ok().html().render("success", "Payment has already been made")
+                    .render("transactionData", fullPaymentTransactionDetailsAsPojo);
+        }
 
-        WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction,context);
+        WebPayTransactionRequestPojo webPayTransactionRequestPojo = webPayService.createWebPayRequest(paymentTransaction, context);
+
+        logger.info("webPayTransactionRequestPojo is " + webPayTransactionRequestPojo);
 
         return Results.html()
                 .render("data", webPayTransactionRequestPojo)
-                .render("transactionData", paymentTransactionService.getFullPaymentTransactionDetailsAsPojo(paymentTransaction));
+                .render("transactionData", fullPaymentTransactionDetailsAsPojo);
     }
 
-    public Result paymentCompleted(WebPayTransactionResponsePojo data) {
+    public Result paymentCompleted(WebPayTransactionResponsePojo data, @IPAddress String ipAddress, Context context) {
+
+        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(data.getTxnref());
+        RawDump rawDump = transactionTemplate.execute(entityManager -> {
+            return paymentTransactionDao.getUniqueRecordByProperty(RawDump.class, "paymentTransaction", paymentTransaction);
+        });
+
         try {
-            PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(data.getTxnref());
 
             WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
-
+            if (rawDump != null) {
+                rawDump.setResponse(new Gson().toJson(webPayPaymentDataDto));
+                rawDump.setRequestIp(ipAddress);
+                transactionTemplate.execute(entityManager -> {
+                    entityManager.merge(rawDump);
+                });
+            }
             URIBuilder b = new URIBuilder(paymentService.getWebPayCredentials(null).getMerchantRedirectUrl());
-            if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
-                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
-                paymentTransaction.setProviderTransactionReference(webPayPaymentDataDto.getPaymentReference());
-                paymentTransactionDao.updateObject(paymentTransaction);
-                webPayService.queueNotification(webPayPaymentDataDto, paymentTransaction);
-                notificationService.sendPaymentNotification(10);
+            webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
+            if (paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
                 b.addParameter("status", "successful");
             } else {
                 b.addParameter("status", "failed");
-                b.addParameter("description", String.format("%s : %s", webPayPaymentDataDto.getResponseCode(), webPayPaymentDataDto.getResponseDescription()));
+                b.addParameter("description", String.format("%s", webPayPaymentDataDto.getResponseDescription()));
             }
             b.addParameter("customerReference", paymentTransaction.getCustomerTransactionReference());
             logger.info("=== > response: {}", webPayPaymentDataDto);
@@ -125,6 +171,32 @@ public class WebPayController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Results.internalServerError();
+        return Results.internalServerError().json();
+    }
+
+    public Result requeryTransaction(@Param("transactionId") String transactionId) {
+        ApiResponse apiResponse = new ApiResponse();
+        if (StringUtils.isBlank(transactionId)) {
+            apiResponse.setCode(400);
+            apiResponse.setMessage("Transaction ID cannot be blank");
+            return Results.badRequest().json().render(apiResponse);
+        }
+        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
+        if (paymentTransaction == null || !paymentTransaction.getPaymentChannel().equals(PaymentChannelConstant.WEBPAY)) {
+            apiResponse.setCode(404);
+            apiResponse.setMessage("Payment transaction not found");
+            return Results.notFound().json().render(apiResponse);
+        }
+        try {
+            WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
+            paymentTransaction = webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto, false);
+
+            apiResponse.setData(PaymentTransactionFilterResponseDto.from(paymentTransaction));
+            apiResponse.setCode(200);
+            return Results.json().render(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Results.internalServerError().json();
     }
 }

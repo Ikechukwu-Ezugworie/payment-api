@@ -68,6 +68,14 @@ public class Routes implements ApplicationRoutes {
         router.POST().route(String.format("%s/webpay", urlPrefix)).with(WebPayController::doCreateTransaction);
         router.GET().route(String.format("%s/webpay", urlPrefix)).with(WebPayController::paymentPage);
         router.POST().route(String.format("%s/webpay/notification", urlPrefix)).with(WebPayController::paymentCompleted);
+        router.GET().route(String.format("%s/webpay/transaction/status", urlPrefix)).with(WebPayController::requeryTransaction);
+
+
+        /////////////////////////////////////////////////////////////////////
+        //  PAYMENT TRANSACTION
+        //////////////////////////////////////////////////////////////////////
+        router.GET().route(String.format("%s/payment-transactions", urlPrefix)).with(PaymentTransactionController::findPaymentTransaction);
+
 
         ///////////////////////////////////////////////////////////////////////
         // Assets (pictures / javascript)

@@ -24,6 +24,7 @@ import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
 import okhttp3.Response;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.CustomerValidationStatistics;
@@ -119,6 +120,13 @@ public class PayDirectController {
     }
 
     public Result doPayDirectRequest(@ContentExtract String payload, Context context, @IPAddress String ipAddress) {
+        if (payload.startsWith("\"")) {
+            payload = payload.replaceFirst("\"", "");
+        }
+        if (payload.endsWith("\"")) {
+            payload = payload.substring(0, payload.length() - 1);
+        }
+        payload = StringEscapeUtils.unescapeXml(payload);
         RawDump rawDump = new RawDump();
         rawDump.setRequest(payload);
         rawDump.setDateCreated(Timestamp.from(Instant.now()));

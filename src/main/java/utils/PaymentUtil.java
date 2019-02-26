@@ -7,7 +7,6 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import ninja.utils.NinjaProperties;
 import okhttp3.OkHttpClient;
-//import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -40,6 +39,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+//import okhttp3.logging.HttpLoggingInterceptor;
 
 public class PaymentUtil {
 
@@ -843,8 +844,10 @@ public class PaymentUtil {
     }
 
     public static void main(String[] args) {
-        String payload = "{ \"merchantTransactionReferenceId\": \"000000012\", \"amountInKobo\": 5000000, \"paymentProvider\": \"INTERSWITCH\", \"paymentChannel\": \"PAYDIRECT\", \"payer\": { \"firstName\": \"JOhn\", \"lastName\": \"Doe\", \"email\": \"jdoe@gmail.com\", \"phoneNumber\": \"01212023023\" } }";
-        System.out.println(generateDigest("M0000003" + "de769088d33a77b20a874b3fbace7e12" + payload, Constants.SHA_512_ALGORITHM_NAME));
+//        String payload = "{ \"merchantTransactionReferenceId\": \"000000012\", \"amountInKobo\": 5000000, \"paymentProvider\": \"INTERSWITCH\", \"paymentChannel\": \"PAYDIRECT\", \"payer\": { \"firstName\": \"JOhn\", \"lastName\": \"Doe\", \"email\": \"jdoe@gmail.com\", \"phoneNumber\": \"01212023023\" } }";
+//        System.out.println(generateDigest("M0000003" + "de769088d33a77b20a874b3fbace7e12" + payload, Constants.SHA_512_ALGORITHM_NAME));
+
+        System.out.println(getHash("3", Constants.SHA_512_ALGORITHM_NAME)); ;
     }
 
     public static String getFirstNameFromFullName(String customerName) {

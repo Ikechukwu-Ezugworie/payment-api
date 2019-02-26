@@ -34,9 +34,9 @@ public class NotificationService {
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
     }
 
-    @Transactional
     private void processPendingNotifications(Integer batchSize) {
-        List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(batchSize);
+        int maxRetry = paymentTransactionDao.getMaxRetryCount();
+        List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(batchSize, maxRetry);
         logger.info("<==== fetched payment notifications : " + notificationQueues.size());
         for (NotificationQueue notificationQueue : notificationQueues) {
             doNotification(notificationQueue);
@@ -51,9 +51,12 @@ public class NotificationService {
 
             try (Response response = client.newCall(request).execute()) {
                 logger.info("<== payment notification response code [] " + request.url() + " : " + response.code() + response.message());
+                notificationQueue.setRetryCount(notificationQueue.getRetryCount() == null ? 1 : notificationQueue.getRetryCount() + 1);
+                notificationQueue.setLastMerchantResponse(String.format("%s :: %s", response.toString(), response.body() != null ? response.body().string() : ""));
                 if (response.code() == 200) {
-                    notificationSent(notificationQueue);
+                    notificationQueue.setNotificationSent(true);
                 }
+                saveNotification(notificationQueue);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,8 +69,7 @@ public class NotificationService {
     }
 
     @Transactional
-    private void notificationSent(NotificationQueue notificationQueue) {
-        notificationQueue.setNotificationSent(true);
+    private void saveNotification(NotificationQueue notificationQueue) {
         if (notificationQueue.getId() == null) {
             paymentTransactionDao.saveObject(notificationQueue);
         } else {
@@ -80,7 +82,7 @@ public class NotificationService {
         logger.info("<=== cleaning up notification queue");
         if (notificationService != null) {
             notificationService.shutdownNow();
+            notificationService = null;
         }
-        notificationService = null;
     }
 }

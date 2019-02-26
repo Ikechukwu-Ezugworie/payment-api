@@ -2,15 +2,16 @@ package services;
 
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
+import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import controllers.WebPayController;
 import dao.PaymentTransactionDao;
+import ninja.Context;
+import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ninja.Context;
-import ninja.ReverseRouter;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.webPay.WebPayPaymentDataDto;
@@ -30,7 +31,7 @@ import java.time.Instant;
 public class WebPayService {
     private static String WEBPAY_PAYMENT_REQUEST_URL = "WEBPAY_PAYMENT_REQUEST_URL";
 
-    private Logger logger= LoggerFactory.getLogger(WebPayService.class);
+    private Logger logger = LoggerFactory.getLogger(WebPayService.class);
 
     private PaymentTransactionDao paymentTransactionDao;
     private WebPayApi webPayApi;
@@ -38,17 +39,20 @@ public class WebPayService {
     private PaymentService paymentService;
     private NotificationIdSequence notificationIdSequence;
     private ReverseRouter reverseRouter;
+    private NotificationService notificationService;
     private NinjaProperties ninjaProperties;
+    private TransactionTemplate transactionTemplate;
 
     @Inject
     public WebPayService(PaymentTransactionDao paymentTransactionDao, WebPayApi webPayApi,
-                         PaymentService paymentService, NotificationIdSequence notificationIdSequence, ReverseRouter reverseRouter, NinjaProperties ninjaProperties) {
+                         PaymentService paymentService, NotificationIdSequence notificationIdSequence, ReverseRouter reverseRouter, NotificationService notificationService, NinjaProperties ninjaProperties) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.webPayApi = webPayApi;
         this.paymentService = paymentService;
         merchant = paymentService.getMerchant();
         this.notificationIdSequence = notificationIdSequence;
         this.reverseRouter = reverseRouter;
+        this.notificationService = notificationService;
         this.ninjaProperties = ninjaProperties;
     }
 
@@ -68,6 +72,8 @@ public class WebPayService {
         }
 
         String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
+
+        logger.info("mac key is " + mac);
         webPayTransactionRequestPojo.computeHash(mac);
 
         return webPayTransactionRequestPojo;
@@ -111,12 +117,12 @@ public class WebPayService {
 
     public WebPayPaymentDataDto getPaymentData(PaymentTransaction paymentTransaction) {
         String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
-        String message = paymentTransaction.getServiceTypeId() +paymentTransaction.getTransactionId() +  mac;
+        String message = paymentTransaction.getServiceTypeId() + paymentTransaction.getTransactionId() + mac;
         String hash = PaymentUtil.getHash(message, Constants.SHA_512_ALGORITHM_NAME);
-        logger.info("===> hash {} for message {}",hash,message);
+        logger.info("===> hash {} for message {}", hash, message);
         retrofit2.Call<WebPayPaymentDataDto> transactionStatus = webPayApi.getTransactionStatus(paymentTransaction.getServiceTypeId(),
                 paymentTransaction.getAmountInKobo(), paymentTransaction.getTransactionId(), hash);
-        logger.info("===> Verifying payment from ISW ::: {} ::: {}",transactionStatus.request().url(),paymentTransaction.getCustomerTransactionReference());
+        logger.info("===> Verifying payment from ISW ::: {} ::: {}", transactionStatus.request().url(), paymentTransaction.getCustomerTransactionReference());
         try {
             Response<WebPayPaymentDataDto> response = transactionStatus.execute();
             if (response.code() == 200) {
@@ -129,8 +135,24 @@ public class WebPayService {
         }
     }
 
-//    public PaymentTransaction processPaymentResponse(WebPayTransactionResponsePojo data) {
-//        PaymentTransaction paymentTransaction=paymentTransactionDao.getByTransactionId(data.getTxnref());
-//        paymentTransaction.setProviderTransactionReference(data.getPayRef());
-//    }
+    @Transactional
+    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto) {
+       return processPaymentData(paymentTransaction, webPayPaymentDataDto, true);
+    }
+
+    @Transactional
+    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto, boolean notify) {
+        if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
+            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+        } else {
+            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.FAILED);
+        }
+        paymentTransaction.setProviderTransactionReference(webPayPaymentDataDto.getPaymentReference());
+        paymentTransactionDao.updateObject(paymentTransaction);
+        if(notify){
+            queueNotification(webPayPaymentDataDto, paymentTransaction);
+            notificationService.sendPaymentNotification(10);
+        }
+        return paymentTransaction;
+    }
 }

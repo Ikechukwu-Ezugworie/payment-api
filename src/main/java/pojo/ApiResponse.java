@@ -1,10 +1,14 @@
 package pojo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ApiResponse<T> {
     private String status;
     private String message;
     private int code;
     private T data;
+    private HashMap<String, Object> meta;
 
     public ApiResponse() {
     }
@@ -48,4 +52,20 @@ public class ApiResponse<T> {
         this.code = code;
     }
 
+    public Map<String, Object> getMeta() {
+        return meta;
+    }
+
+    public ApiResponse<T> setMeta(HashMap<String, Object> meta) {
+        this.meta = meta;
+        return this;
+    }
+
+    public ApiResponse<T> addMeta(String key, Object value) {
+        if (this.meta == null) {
+            this.meta = new HashMap<>();
+        }
+        this.meta.put(key, value);
+        return this;
+    }
 }
