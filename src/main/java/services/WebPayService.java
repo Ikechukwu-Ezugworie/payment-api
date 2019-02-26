@@ -41,6 +41,7 @@ public class WebPayService {
     private ReverseRouter reverseRouter;
     private NotificationService notificationService;
     private NinjaProperties ninjaProperties;
+    private TransactionTemplate transactionTemplate;
 
     @Inject
     public WebPayService(PaymentTransactionDao paymentTransactionDao, WebPayApi webPayApi,
@@ -138,6 +139,7 @@ public class WebPayService {
         processPaymentData(paymentTransaction, webPayPaymentDataDto, true);
     }
 
+    @Transactional
     public void processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto, boolean notify) {
         if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);

@@ -20,10 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pojo.ApiResponse;
-import pojo.ItemPojo;
-import pojo.PayerPojo;
-import pojo.TransactionRequestPojo;
+import pojo.*;
 import pojo.webPay.BwPaymentsWebPayRequest;
 import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
@@ -147,9 +144,7 @@ public class WebPayController {
         RawDump rawDump = transactionTemplate.execute(entityManager -> {
             return paymentTransactionDao.getUniqueRecordByProperty(RawDump.class, "paymentTransaction", paymentTransaction);
         });
-
-
-
+        
         try {
 
             WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
@@ -179,9 +174,14 @@ public class WebPayController {
         return Results.internalServerError().json();
     }
 
-    public Result requeryTransaction(@PathParam("transactionId") String transactionId) {
-        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
+    public Result requeryTransaction(@Param("transactionId") String transactionId) {
         ApiResponse apiResponse = new ApiResponse();
+        if(StringUtils.isBlank(transactionId)){
+            apiResponse.setCode(400);
+            apiResponse.setMessage("Transaction ID cannot be blank");
+            return Results.badRequest().json().render(apiResponse);
+        }
+        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
         if (paymentTransaction == null || !paymentTransaction.getPaymentChannel().equals(PaymentChannelConstant.WEBPAY)) {
             apiResponse.setCode(404);
             apiResponse.setMessage("Payment transaction not found");
@@ -190,7 +190,10 @@ public class WebPayController {
         try {
             WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
             webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto, false);
-            return Results.json().render(paymentTransaction);
+
+            apiResponse.setData( PaymentTransactionFilterResponseDto.from(paymentTransaction));
+            apiResponse.setCode(200);
+            return Results.json().render(apiResponse);
         } catch (Exception e) {
             e.printStackTrace();
         }
