@@ -135,10 +135,20 @@ public class WebPayService {
     }
 
     public void processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto) {
-        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+        processPaymentData(paymentTransaction, webPayPaymentDataDto, true);
+    }
+
+    public void processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto, boolean notify) {
+        if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
+            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+        } else {
+            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.FAILED);
+        }
         paymentTransaction.setProviderTransactionReference(webPayPaymentDataDto.getPaymentReference());
         paymentTransactionDao.updateObject(paymentTransaction);
-        queueNotification(webPayPaymentDataDto, paymentTransaction);
-        notificationService.sendPaymentNotification(10);
+        if(notify){
+            queueNotification(webPayPaymentDataDto, paymentTransaction);
+            notificationService.sendPaymentNotification(10);
+        }
     }
 }

@@ -15,6 +15,7 @@ import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
+import ninja.params.PathParam;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -28,7 +29,6 @@ import pojo.webPay.WebPayPaymentDataDto;
 import pojo.webPay.WebPayTransactionRequestPojo;
 import pojo.webPay.WebPayTransactionResponsePojo;
 import services.*;
-import utils.PaymentUtil;
 
 import javax.validation.ConstraintViolation;
 import java.sql.Timestamp;
@@ -161,7 +161,7 @@ public class WebPayController {
                 });
             }
             URIBuilder b = new URIBuilder(paymentService.getWebPayCredentials(null).getMerchantRedirectUrl());
-            if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
+            if (paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
                 webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
                 b.addParameter("status", "successful");
             } else {
@@ -176,6 +176,24 @@ public class WebPayController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Results.internalServerError();
+        return Results.internalServerError().json();
+    }
+
+    public Result requeryTransaction(@PathParam("transactionId") String transactionId) {
+        PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(transactionId);
+        ApiResponse apiResponse = new ApiResponse();
+        if (paymentTransaction == null || !paymentTransaction.getPaymentChannel().equals(PaymentChannelConstant.WEBPAY)) {
+            apiResponse.setCode(404);
+            apiResponse.setMessage("Payment transaction not found");
+            return Results.notFound().json().render(apiResponse);
+        }
+        try {
+            WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
+            webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto, false);
+            return Results.json().render(paymentTransaction);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Results.internalServerError().json();
     }
 }
