@@ -144,7 +144,7 @@ public class WebPayController {
         RawDump rawDump = transactionTemplate.execute(entityManager -> {
             return paymentTransactionDao.getUniqueRecordByProperty(RawDump.class, "paymentTransaction", paymentTransaction);
         });
-        
+
         try {
 
             WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
@@ -156,8 +156,8 @@ public class WebPayController {
                 });
             }
             URIBuilder b = new URIBuilder(paymentService.getWebPayCredentials(null).getMerchantRedirectUrl());
+            webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
             if (paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
-                webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
                 b.addParameter("status", "successful");
             } else {
                 b.addParameter("status", "failed");
@@ -176,7 +176,7 @@ public class WebPayController {
 
     public Result requeryTransaction(@Param("transactionId") String transactionId) {
         ApiResponse apiResponse = new ApiResponse();
-        if(StringUtils.isBlank(transactionId)){
+        if (StringUtils.isBlank(transactionId)) {
             apiResponse.setCode(400);
             apiResponse.setMessage("Transaction ID cannot be blank");
             return Results.badRequest().json().render(apiResponse);
@@ -189,9 +189,9 @@ public class WebPayController {
         }
         try {
             WebPayPaymentDataDto webPayPaymentDataDto = webPayService.getPaymentData(paymentTransaction);
-            webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto, false);
+            paymentTransaction = webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto, false);
 
-            apiResponse.setData( PaymentTransactionFilterResponseDto.from(paymentTransaction));
+            apiResponse.setData(PaymentTransactionFilterResponseDto.from(paymentTransaction));
             apiResponse.setCode(200);
             return Results.json().render(apiResponse);
         } catch (Exception e) {

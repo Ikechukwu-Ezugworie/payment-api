@@ -135,12 +135,13 @@ public class WebPayService {
         }
     }
 
-    public void processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto) {
-        processPaymentData(paymentTransaction, webPayPaymentDataDto, true);
+    @Transactional
+    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto) {
+       return processPaymentData(paymentTransaction, webPayPaymentDataDto, true);
     }
 
     @Transactional
-    public void processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto, boolean notify) {
+    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto, boolean notify) {
         if (webPayPaymentDataDto.getResponseCode().equalsIgnoreCase("00")) {
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
         } else {
@@ -152,5 +153,6 @@ public class WebPayService {
             queueNotification(webPayPaymentDataDto, paymentTransaction);
             notificationService.sendPaymentNotification(10);
         }
+        return paymentTransaction;
     }
 }
