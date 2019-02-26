@@ -1,6 +1,7 @@
 package services;
 
 import com.bw.payment.entity.Merchant;
+import com.bw.payment.entity.RemitaServiceCredentials;
 import com.bw.payment.entity.WebPayServiceCredentials;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -25,13 +26,15 @@ public class SetupService {
     private MerchantDao merchantDao;
     private NinjaProperties ninjaProperties;
     private PaymentService paymentService;
+    private TransactionTemplate transactionTemplate;
 
     @Inject
-    public SetupService(BaseDao baseDao, MerchantDao merchantDao, NinjaProperties ninjaProperties, PaymentService paymentService) {
+    public SetupService(BaseDao baseDao, MerchantDao merchantDao, NinjaProperties ninjaProperties, PaymentService paymentService, TransactionTemplate transactionTemplate) {
         this.baseDao = baseDao;
         this.merchantDao = merchantDao;
         this.ninjaProperties = ninjaProperties;
         this.paymentService = paymentService;
+        this.transactionTemplate = transactionTemplate;
     }
 
 
@@ -63,6 +66,7 @@ public class SetupService {
             merchant = merchantDao.createMerchant(merchantRequestPojo);
         }
         createWebPayCredentials(merchant);
+        createRemitaCredentials(merchant);
     }
 
     private void createWebPayCredentials(Merchant merchant) {
@@ -74,9 +78,31 @@ public class SetupService {
             webPayServiceCredentials.setServiceBaseUrl("- NOT CONFIGURED -");
             webPayServiceCredentials.setDateCreated(new Timestamp(new java.util.Date().getTime()));
             webPayServiceCredentials.setMerchant(merchant);
+            webPayServiceCredentials.setMerchantRedirectUrl("_ NOT CONFIGURED  _");
+            WebPayServiceCredentials finalWebPayServiceCredentials = webPayServiceCredentials;
+            transactionTemplate.execute(entityManager -> {
+                baseDao.saveObject(finalWebPayServiceCredentials);
+            });
 
-            baseDao.saveObject(webPayServiceCredentials);
+        }
+    }
 
+    private void createRemitaCredentials(Merchant merchant) {
+        RemitaServiceCredentials remitaServiceCredentials = paymentService.getProviderCredentials(RemitaServiceCredentials.class, merchant);
+
+        if (remitaServiceCredentials == null) {
+            remitaServiceCredentials = new RemitaServiceCredentials();
+            remitaServiceCredentials.setApiKey("_ NOT CONFIGURED _");
+            remitaServiceCredentials.setMerchantId("_ NOT CONFIGURED _");
+            remitaServiceCredentials.setBaseUrl("_ NOT CONFIGURED _");
+            remitaServiceCredentials.setServiceTypeId("_ NOT CONFIGURED _");
+            remitaServiceCredentials.setMerchantRedirectUrl("_ NOT CONFIGURED _");
+            remitaServiceCredentials.setMerchant(merchant);
+
+            RemitaServiceCredentials finalRemitaServiceCredentials = remitaServiceCredentials;
+            transactionTemplate.execute(entityManager -> {
+                entityManager.persist(finalRemitaServiceCredentials);
+            });
         }
     }
 

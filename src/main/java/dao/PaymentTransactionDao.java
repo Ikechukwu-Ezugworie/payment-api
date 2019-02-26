@@ -318,13 +318,13 @@ public class PaymentTransactionDao extends BaseDao {
         Root<PaymentTransaction> root = criteriaQuery.from(PaymentTransaction.class);
         List<Predicate> predicates = getPredicates(filter, criteriaBuilder, root);
 
-        criteriaQuery.where(predicates.toArray(new Predicate[]{}));
+        criteriaQuery.where(predicates.toArray(new Predicate[]{})).orderBy(criteriaBuilder.desc(root.get("dateCreated")));
         return resultsList(entityManager.createQuery(criteriaQuery).setFirstResult(filter.getOffset().orElse(0)).setMaxResults(filter.getLimit().orElse(10)));
     }
 
     private List<Predicate> getPredicates(PaymentTransactionFilterRequestDto filter, CriteriaBuilder criteriaBuilder, Root<PaymentTransaction> root) {
         List<Predicate> predicates = new ArrayList<>();
-        if(filter == null)  {
+        if (filter == null) {
             filter = new PaymentTransactionFilterRequestDto();
         }
 
