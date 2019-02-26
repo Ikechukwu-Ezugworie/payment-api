@@ -1,6 +1,7 @@
 package services;
 
 import com.bw.payment.entity.Merchant;
+import com.bw.payment.entity.RemitaServiceCredentials;
 import com.bw.payment.entity.WebPayServiceCredentials;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -48,10 +49,12 @@ public class SetupService {
             logger.info("<=== finished Displaying all system properties");
         }
         createInterswitchWhitelist();
-        createDefaultMerchant();
+        Merchant merchant = createDefaultMerchant();
+        createRemittaCredentials(merchant);
     }
 
-    private void createDefaultMerchant() {
+
+    private Merchant createDefaultMerchant() {
         Merchant merchant = merchantDao.getFirstMerchant();
         if (merchant == null) {
             MerchantRequestPojo merchantRequestPojo = new MerchantRequestPojo();
@@ -63,10 +66,33 @@ public class SetupService {
             merchant = merchantDao.createMerchant(merchantRequestPojo);
         }
         createWebPayCredentials(merchant);
+        return merchant;
     }
 
+
+
+
+    private void createRemittaCredentials(Merchant merchant) {
+        RemitaServiceCredentials credentials = paymentService.getProviderCredentials(RemitaServiceCredentials.class, merchant);
+
+        if (credentials == null) {
+            System.out.println("credentials are null");
+            RemitaServiceCredentials data = new RemitaServiceCredentials();
+            data.setApiKey(Constants.NOT_CONFIGURED);
+            data.setMerchantId(Constants.NOT_CONFIGURED);
+            data.setBaseUrl(Constants.NOT_CONFIGURED);
+            data.setServiceTypeId(Constants.NOT_CONFIGURED);
+            data.setMerchant(merchant);
+            baseDao.saveObject(data);
+            data.setMerchantId("1234");
+
+        }
+
+    }
+
+
     private void createWebPayCredentials(Merchant merchant) {
-        WebPayServiceCredentials webPayServiceCredentials = paymentService.getWebPayCredentials(merchant);
+        WebPayServiceCredentials webPayServiceCredentials = paymentService.getProviderCredentials(WebPayServiceCredentials.class, merchant);
 
         if (webPayServiceCredentials == null) {
             webPayServiceCredentials = new WebPayServiceCredentials();

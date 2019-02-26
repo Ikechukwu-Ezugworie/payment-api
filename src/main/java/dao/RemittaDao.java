@@ -3,6 +3,7 @@ package dao;
 import com.bw.payment.entity.Item;
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.entity.PaymentTransactionItem;
+import com.bw.payment.entity.RemitaServiceCredentials;
 import com.google.gson.Gson;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -29,7 +30,7 @@ public class RemittaDao extends BaseDao {
 
 
     public String getMerchantId(){
-        return getSettingsValue(REMITTA_MECHANT_ID, "2547916", Boolean.TRUE);
+        return getRemittaCredentials().getMerchantId();
     }
 
     private String getRemittaCustomerToken(String orderId, String serviceTypeId, BigDecimal totalAmount ){
@@ -42,7 +43,7 @@ public class RemittaDao extends BaseDao {
         customerToken.append(serviceTypeId);
         customerToken.append(orderId.trim());
         customerToken.append(totalAmount.toPlainString());
-        customerToken.append(getSettingsValue(REMITTA_API_KEY,"1956", Boolean.TRUE));
+        customerToken.append(getRemittaCredentials().getApiKey());
 
         logger.info(customerToken.toString());
         return customerToken.toString();
@@ -67,8 +68,8 @@ public class RemittaDao extends BaseDao {
 
 
         unHashed.append(rrr);
-        unHashed.append(getSettingsValue(REMITTA_API_KEY,"7bd7d59cfe90e4d32b1d2f20d39c86df-fbaa8670-1008-ac7a-398a-3c11ac797c77", Boolean.TRUE));
-        unHashed.append(getSettingsValue(REMITTA_MECHANT_ID,"123456", Boolean.TRUE));
+        unHashed.append(getRemittaCredentials().getApiKey());
+        unHashed.append(getRemittaCredentials().getMerchantId());
 
 
         logger.info("Hashed is " + unHashed.toString());
@@ -80,9 +81,9 @@ public class RemittaDao extends BaseDao {
     public String generateCardHash(String rrr){
         StringBuilder unHashed = new StringBuilder();
 
-        unHashed.append(getSettingsValue(REMITTA_MECHANT_ID,"123456", Boolean.TRUE));
+        unHashed.append(getRemittaCredentials().getMerchantId());
         unHashed.append(rrr);
-        unHashed.append(getSettingsValue(REMITTA_API_KEY,"7bd7d59cfe90e4d32b1d2f20d39c86df-fbaa8670-1008-ac7a-398a-3c11ac797c77", Boolean.TRUE));
+        unHashed.append(getRemittaCredentials().getApiKey());
         logger.info("Hashed is " + unHashed.toString());
 
         return PaymentUtil.getHash(unHashed.toString(), Constants.SHA_512_ALGORITHM_NAME);
@@ -106,7 +107,10 @@ public class RemittaDao extends BaseDao {
         return getPyPropertyIn(Item.class, "id", paymentTransactions.stream()
                 .map(it -> it.getItem().getId()).collect(Collectors.toList()) );
 
+    }
 
+    public RemitaServiceCredentials getRemittaCredentials(){
+        return getAllRecords(RemitaServiceCredentials.class).get(0);
     }
 
 }

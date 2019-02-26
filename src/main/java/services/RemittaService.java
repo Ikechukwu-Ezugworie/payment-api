@@ -17,7 +17,6 @@ import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-import com.sun.xml.internal.ws.message.PayloadElementSniffer;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import dao.RemittaDao;

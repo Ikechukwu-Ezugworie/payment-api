@@ -63,9 +63,6 @@ public class Module extends AbstractModule {
     private RemittaApi getRemitterBaseRetrofitApi() {
 
 
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ninjaProperties.getWithDefault("remitta.base.url", "https://remitademo.net"))
                 .addConverterFactory(new GsonPConverterFactory(new Gson()))

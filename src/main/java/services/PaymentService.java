@@ -17,15 +17,15 @@ public class PaymentService {
     @Inject
     private MerchantDao merchantDao;
 
-    public WebPayServiceCredentials getWebPayCredentials(Merchant merchant) {
+    public <T> T getProviderCredentials(Class<T> tClass, Merchant merchant) {
         if (merchant == null) {
-            List<WebPayServiceCredentials> allRecords = baseDao.getAllRecords(WebPayServiceCredentials.class);
+            List<T> allRecords = baseDao.getAllRecords(tClass);
             if (allRecords.size() > 0) {
                 return allRecords.get(0);
             }
             return null;
         }
-        return baseDao.getUniqueRecordByProperty(WebPayServiceCredentials.class, "merchant", merchant);
+        return baseDao.getUniqueRecordByProperty(tClass, "merchant", merchant);
     }
 
     public Merchant getMerchant() {

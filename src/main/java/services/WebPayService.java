@@ -71,7 +71,7 @@ public class WebPayService {
             webPayTransactionRequestPojo.setCustomerName(PaymentUtil.getFormattedFullName(payer.getFirstName(), payer.getLastName()));
         }
 
-        String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
+        String mac = paymentService.getProviderCredentials(WebPayServiceCredentials.class,merchant).getMacKey();
 
         logger.info("mac key is " + mac);
         webPayTransactionRequestPojo.computeHash(mac);
@@ -116,7 +116,7 @@ public class WebPayService {
     }
 
     public WebPayPaymentDataDto getPaymentData(PaymentTransaction paymentTransaction) {
-        String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
+        String mac = paymentService.getProviderCredentials(WebPayServiceCredentials.class,merchant).getMacKey();
         String message = paymentTransaction.getServiceTypeId() + paymentTransaction.getTransactionId() + mac;
         String hash = PaymentUtil.getHash(message, Constants.SHA_512_ALGORITHM_NAME);
         logger.info("===> hash {} for message {}", hash, message);
