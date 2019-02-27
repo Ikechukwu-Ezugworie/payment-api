@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.sun.javafx.fxml.builder.URLBuilder;
+import com.sun.jndi.toolkit.url.Uri;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
 import extractors.ContentExtract;
@@ -19,11 +21,11 @@ import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
-import ninja.params.Params;
 import ninja.params.PathParam;
 import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.ApiResponse;
@@ -35,6 +37,8 @@ import services.RemittaService;
 import utils.Constants;
 import utils.PaymentUtil;
 
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -55,9 +59,6 @@ public class RemitaController {
 
     @Inject
     RemittaDao remittaDao;
-
-
-
 
 
     public Result doCreateTransaction(@JSR303Validation TransactionRequestPojo data, Validation validation) {
@@ -100,11 +101,6 @@ public class RemitaController {
     }
 
 
-
-
-
-
-
     public Result doRemittaNotification(@ContentExtract String payload, @IPAddress String ipAddress) {
         RawDump rawDump = new RawDump();
         rawDump.setRequest(payload);
@@ -130,11 +126,11 @@ public class RemitaController {
     }
 
 
-    public Result makePaymentWithCard(@PathParam("rrr")String paymentReference, Context context){
+    public Result makePaymentWithCard(@PathParam("rrr") String paymentReference, Context context) {
         ApiResponse apiResponse = new ApiResponse();
         PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
 
-        if(paymentTransaction == null){
+        if (paymentTransaction == null) {
             apiResponse.setCode(HttpStatus.SC_NOT_FOUND);
             apiResponse.setMessage(String.format("Payment transaction with  %s cannot be found", paymentReference));
             return Results.notFound().json().render(apiResponse);
@@ -166,34 +162,59 @@ public class RemitaController {
         );
 
 
-        return Results.html().render("data",data);
+        return Results.html().render("data", data);
 
 
     }
 
 
+    public Result cardNotificationUrl(@ContentExtract String data, @Param("RRR") String paymentReference) {
 
 
-
-    public Result cardNotificationUrl(@ContentExtract String data, @Param("RRR") String paymentReference){
-
-
+        UriBuilder uriBuilder = UriBuilder.fromPath(remittaDao.getRemittaCredentials().getMerchantRedirectUrl());
         RemittaTransactionStatusPojo response = null;
-        System.out.println("Here is the remitta respose {}{}{}{} " + data + "{}{}{}{}{}" + paymentReference);
+
 
         PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
         try {
-             response = remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
+            response = remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
         } catch (NotFoundException e) {
             e.printStackTrace();
+            uriBuilder.queryParam("status", "404");
+            uriBuilder.queryParam("message", "RRR cannot found");
+
+            URI uri = uriBuilder.build();
+            String url = uri.toString();
+            System.out.println(url);
+            return Results.redirect(url);
+
+
         } catch (ApiResponseException e) {
             e.printStackTrace();
+            uriBuilder.queryParam("status", HttpStatus.SC_BAD_GATEWAY);
+            uriBuilder.queryParam("message", "Cannot verify payment at this time ");
+            URI uri = uriBuilder.build();
+            String url = uri.toString();
+            System.out.println(url);
+            return Results.redirect(url);
+
         }
 
         System.out.println("Response after confirming from Remitta {}{}{}" + response.toString());
 
 
-        return null;
+        uriBuilder.queryParam("rrr", paymentTransaction.getProviderTransactionReference());
+        uriBuilder.queryParam("orderId", response.getOrderId());
+        uriBuilder.queryParam("invoiceRef", paymentTransaction.getMerchantTransactionReferenceId());
+        if (response.getStatusmessage() != null) {
+            uriBuilder.queryParam("message", response.getStatusmessage());
+        }
+        uriBuilder.queryParam("status", response.getStatus());
+        URI uri = uriBuilder.build();
+        String url = uri.toString();
+        System.out.println(url);
+        return Results.redirect(url);
+
     }
 
 
@@ -204,19 +225,20 @@ public class RemitaController {
     }
 
 
-    public Result performTestNotification(@ContentExtract String requestData ) {
+    public Result performTestNotification(@ContentExtract String requestData) {
 
         System.out.println("{}{}{}{}Data " + requestData);
 
-        RemittaDummyNotificationPojo request = new Gson().fromJson(requestData, new TypeToken<RemittaDummyNotificationPojo>(){}.getType());
+        RemittaDummyNotificationPojo request = new Gson().fromJson(requestData, new TypeToken<RemittaDummyNotificationPojo>() {
+        }.getType());
 
         PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(request.getRrr());
 
-        if(paymentTransaction == null){
+        if (paymentTransaction == null) {
             return Results.json().render(HttpStatus.SC_NOT_FOUND);
         }
 
-        if(PaymentUtil.getAmountInKobo(request.getAmount()) < paymentTransaction.getAmountInKobo()){
+        if (PaymentUtil.getAmountInKobo(request.getAmount()) < paymentTransaction.getAmountInKobo()) {
             return Results.json().render(HttpStatus.SC_NOT_ACCEPTABLE);
         }
 

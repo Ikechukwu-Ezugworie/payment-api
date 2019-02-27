@@ -51,12 +51,12 @@ public class SetupService {
             logger.info("<=== finished Displaying all system properties");
         }
         createInterswitchWhitelist();
-        Merchant merchant = createDefaultMerchant();
-        createRemittaCredentials(merchant);
+       createDefaultMerchant();
+
     }
 
 
-    private Merchant createDefaultMerchant() {
+    private void createDefaultMerchant() {
         Merchant merchant = merchantDao.getFirstMerchant();
         if (merchant == null) {
             MerchantRequestPojo merchantRequestPojo = new MerchantRequestPojo();
@@ -64,7 +64,6 @@ public class SetupService {
             merchantRequestPojo.setPaydirectMerchantReference("- NOT CONFIGURED -");
             merchantRequestPojo.setLookupUrl("- NOT CONFIGURED -");
             merchantRequestPojo.setNotificationUrl("- NOT CONFIGURED -");
-
             merchant = merchantDao.createMerchant(merchantRequestPojo);
         }
         createWebPayCredentials(merchant);

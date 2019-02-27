@@ -2,20 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/1.0-SNAPSHOT/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/1.0-SNAPSHOT/maven-metadata-local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/maven-metadata-local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/1.0-SNAPSHOT/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/1.0-SNAPSHOT/maven-metadata-local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/maven-metadata-local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/conf/Module.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/conf/Module.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/WebPayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/WebPayController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dao/RemittaDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/RemittaDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/NotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/NotificationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/services/PaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/PaymentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/services/SetupService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/SetupService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/WebPayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/WebPayService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/utils/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/Constants.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -41,36 +34,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="589">
-              <caret line="68" column="19" selection-start-line="68" selection-start-column="19" selection-end-line="68" selection-end-column="19" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="StartupActions.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/conf/StartupActions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1102">
-              <caret line="86" column="25" selection-start-line="86" selection-start-column="25" selection-end-line="86" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RemittaDao.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dao/RemittaDao.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1653">
-              <caret line="105" column="72" selection-start-line="105" selection-start-column="72" selection-end-line="105" selection-end-column="72" />
-              <folding>
-                <element signature="e#976#977#0" expanded="true" />
-                <element signature="e#1038#1039#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="699">
+              <caret line="86" column="21" selection-start-line="86" selection-start-column="21" selection-end-line="86" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -78,17 +46,8 @@
       <file leaf-file-name="Module.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="798">
+            <state relative-caret-position="760">
               <caret line="70" column="40" selection-start-line="70" selection-start-column="40" selection-end-line="70" selection-end-column="40" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RemittaApi.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/services/api/RemittaApi.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="18" selection-start-line="18" selection-end-line="18" />
             </state>
           </provider>
         </entry>
@@ -96,8 +55,38 @@
       <file leaf-file-name="SetupService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/SetupService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="86">
-              <caret line="75" column="73" selection-start-line="75" selection-start-column="73" selection-end-line="75" selection-end-column="73" />
+            <state relative-caret-position="276">
+              <caret line="66" column="12" selection-start-line="66" selection-start-column="12" selection-end-line="66" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PaymentTransactionController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PaymentTransactionController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1156">
+              <caret line="110" column="33" selection-start-line="110" selection-start-column="33" selection-end-line="110" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RemitaController.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="207" column="41" selection-start-line="207" selection-start-column="41" selection-end-line="207" selection-end-column="41" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="URI.java" pinned="false" current-in-tab="false">
+        <entry file="jar://C:/Program Files/Java/jdk1.8.0_77/src.zip!/java/net/URI.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="542">
+              <caret line="847" column="22" selection-start-line="847" selection-start-column="22" selection-end-line="847" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -106,7 +95,7 @@
         <entry file="jar://$MAVEN_REPOSITORY$/com/bw/payment/payment-core/1.0-SNAPSHOT/payment-core-1.0-SNAPSHOT.jar!/com/bw/payment/entity/RemitaServiceCredentials.class">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="38">
-              <caret line="5" column="19" lean-forward="true" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
+              <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -114,17 +103,30 @@
       <file leaf-file-name="BaseDao.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/dao/BaseDao.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
+            <state relative-caret-position="355">
               <caret line="62" column="5" selection-start-line="62" selection-start-column="5" selection-end-line="62" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PaymentService.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PaymentService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/PaymentService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="131">
-              <caret line="19" column="2" lean-forward="true" selection-start-line="19" selection-start-column="2" selection-end-line="19" selection-end-column="2" />
+            <state relative-caret-position="646">
+              <caret line="41" selection-start-line="41" selection-end-line="41" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RemittaDao.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/dao/RemittaDao.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1102">
+              <caret line="109" column="5" selection-start-line="109" selection-start-column="5" selection-end-line="109" selection-end-column="5" />
+              <folding>
+                <element signature="e#976#977#0" expanded="true" />
+                <element signature="e#1038#1039#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -142,8 +144,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ailing</find>
-      <find>syst</find>
       <find>repo</find>
       <find>I am Ok</find>
       <find>=</find>
@@ -172,6 +172,8 @@
       <find>to save data::::</find>
       <find>()()()()()</find>
       <find>ls are nul</find>
+      <find>r confirming from Remit</find>
+      <find>ponse after confirmin</find>
     </findStrings>
     <replaceStrings>
       <replace>.route(String.format(urlPrefix,</replace>
@@ -233,17 +235,17 @@
         <option value="$PROJECT_DIR$/src/main/java/views/RemitaController/makePaymentWithCard.ftl.html" />
         <option value="$PROJECT_DIR$/src/main/java/dao/BaseDao.java" />
         <option value="$PROJECT_DIR$/src/main/java/conf/Routes.java" />
-        <option value="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/RemittaService.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/NotificationService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/services/PaymentService.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/Constants.java" />
         <option value="$PROJECT_DIR$/src/main/java/controllers/WebPayController.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/WebPayService.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/WebPayService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dao/RemittaDao.java" />
         <option value="$PROJECT_DIR$/src/main/java/conf/Module.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dao/RemittaDao.java" />
+        <option value="$PROJECT_DIR$/src/main/java/services/PaymentService.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/SetupService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" />
       </list>
     </option>
   </component>
@@ -332,7 +334,7 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="dao" type="462c0819:PsiDirectoryNode" />
+              <item name="controllers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
@@ -340,56 +342,7 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-            <path>
-              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: com.bw.payment:payment-core:1.0-SNAPSHOT" type="70bed36:NamedLibraryElementNode" />
-            </path>
-            <path>
-              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: com.bw.payment:payment-core:1.0-SNAPSHOT" type="70bed36:NamedLibraryElementNode" />
-              <item name="payment-core-1.0-SNAPSHOT.jar" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: com.bw.payment:payment-core:1.0-SNAPSHOT" type="70bed36:NamedLibraryElementNode" />
-              <item name="payment-core-1.0-SNAPSHOT.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="com" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: com.bw.payment:payment-core:1.0-SNAPSHOT" type="70bed36:NamedLibraryElementNode" />
-              <item name="payment-core-1.0-SNAPSHOT.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="com" type="462c0819:PsiDirectoryNode" />
-              <item name="bw" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: com.bw.payment:payment-core:1.0-SNAPSHOT" type="70bed36:NamedLibraryElementNode" />
-              <item name="payment-core-1.0-SNAPSHOT.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="com" type="462c0819:PsiDirectoryNode" />
-              <item name="bw" type="462c0819:PsiDirectoryNode" />
-              <item name="payment" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: com.bw.payment:payment-core:1.0-SNAPSHOT" type="70bed36:NamedLibraryElementNode" />
-              <item name="payment-core-1.0-SNAPSHOT.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="com" type="462c0819:PsiDirectoryNode" />
-              <item name="bw" type="462c0819:PsiDirectoryNode" />
-              <item name="payment" type="462c0819:PsiDirectoryNode" />
-              <item name="entity" type="462c0819:PsiDirectoryNode" />
+              <item name="dao" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -1293,7 +1246,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="595555000" />
+    <option name="totallyTimeSpent" value="601950000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1306,11 +1259,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="right" id="Maven Projects" order="3" weight="0.09594883" />
+      <window_info anchor="right" id="Maven Projects" order="3" visible="true" weight="0.09594883" />
       <window_info anchor="bottom" id="Database Changes" order="10" weight="0.32897604" />
       <window_info anchor="right" id="Mongo Explorer" order="7" weight="0.32995737" />
       <window_info id="Capture Tool" order="2" />
@@ -1330,20 +1282,47 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.3278867" />
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.22814499" />
-      <window_info anchor="right" id="Bean Validation" order="3" />
+      <window_info anchor="right" id="Bean Validation" order="3" weight="0.32995737" />
       <window_info id="Web" order="2" sideWeight="0.5067114" side_tool="true" weight="0.15733737" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32897604" />
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info id="Persistence" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Database Console" order="13" weight="0.32897604" />
-      <window_info anchor="bottom" id="Docker" order="14" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Docker" order="14" show_stripe_button="false" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.22814499" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Java Enterprise" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven" order="10" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="right" id="Maven Projects" order="3" weight="0.09594883" />
+      <window_info id="Web" order="2" sideWeight="0.5067114" side_tool="true" weight="0.15733737" />
+      <window_info anchor="bottom" id="Database Changes" order="10" weight="0.32897604" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info id="Image Layers" order="2" />
+      <window_info anchor="right" id="Bean Validation" order="3" />
+      <window_info id="Persistence" order="8" side_tool="true" />
+      <window_info anchor="right" id="Database" order="3" weight="0.32980332" />
+      <window_info id="Capture Tool" order="2" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.54139435" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Database Console" order="13" weight="0.32897604" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="UI Designer" order="2" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.3278867" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39978212" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.49673203" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32897604" />
+      <window_info anchor="right" id="Mongo Explorer" order="7" weight="0.32995737" />
+      <window_info id="Designer" order="2" />
     </layout>
     <layout-to-restore>
       <window_info id="Persistence" order="8" side_tool="true" />
@@ -1438,13 +1417,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/TestController/test.ftl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="409">
-          <caret line="224" column="1" selection-start-line="224" selection-start-column="1" selection-end-line="274" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/views/QuickTellerController/doQuickTellerNotification.ftl.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-883">
@@ -1484,13 +1456,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="247">
           <caret line="21" column="44" selection-start-line="21" selection-start-column="44" selection-end-line="21" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PaymentTransactionController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1254">
-          <caret line="99" column="85" selection-start-line="99" selection-start-column="85" selection-end-line="99" selection-end-column="85" />
         </state>
       </provider>
     </entry>
@@ -1693,13 +1658,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="134" column="76" selection-start-line="134" selection-start-column="76" selection-end-line="134" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/NotificationService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -1730,18 +1688,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="589">
-          <caret line="68" column="19" selection-start-line="68" selection-start-column="19" selection-end-line="68" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="665">
+          <caret line="72" selection-start-line="72" selection-end-line="72" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dao/RemittaDao.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1653">
-          <caret line="105" column="72" selection-start-line="105" selection-start-column="72" selection-end-line="105" selection-end-column="72" />
+        <state relative-caret-position="1102">
+          <caret line="109" column="5" selection-start-line="109" selection-start-column="5" selection-end-line="109" selection-end-column="5" />
           <folding>
             <element signature="e#976#977#0" expanded="true" />
             <element signature="e#1038#1039#0" expanded="true" />
@@ -1751,7 +1706,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="798">
+        <state relative-caret-position="760">
           <caret line="70" column="40" selection-start-line="70" selection-start-column="40" selection-end-line="70" selection-end-column="40" />
         </state>
       </provider>
@@ -1765,8 +1720,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/conf/StartupActions.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1102">
-          <caret line="86" column="25" selection-start-line="86" selection-start-column="25" selection-end-line="86" selection-end-column="25" />
+        <state relative-caret-position="699">
+          <caret line="86" column="21" selection-start-line="86" selection-start-column="21" selection-end-line="86" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -1780,28 +1735,52 @@
     <entry file="jar://$MAVEN_REPOSITORY$/com/bw/payment/payment-core/1.0-SNAPSHOT/payment-core-1.0-SNAPSHOT.jar!/com/bw/payment/entity/RemitaServiceCredentials.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="38">
-          <caret line="5" column="19" lean-forward="true" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
+          <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dao/BaseDao.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
+        <state relative-caret-position="355">
           <caret line="62" column="5" selection-start-line="62" selection-start-column="5" selection-end-line="62" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/SetupService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="86">
-          <caret line="75" column="73" selection-start-line="75" selection-start-column="73" selection-end-line="75" selection-end-column="73" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/PaymentService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="19" column="2" lean-forward="true" selection-start-line="19" selection-start-column="2" selection-end-line="19" selection-end-column="2" />
+        <state relative-caret-position="646">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/SetupService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="66" column="12" selection-start-line="66" selection-start-column="12" selection-end-line="66" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/PaymentTransactionController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1156">
+          <caret line="110" column="33" selection-start-line="110" selection-start-column="33" selection-end-line="110" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_77/src.zip!/java/net/URI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="542">
+          <caret line="847" column="22" selection-start-line="847" selection-start-column="22" selection-end-line="847" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="207" column="41" selection-start-line="207" selection-start-column="41" selection-end-line="207" selection-end-column="41" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
