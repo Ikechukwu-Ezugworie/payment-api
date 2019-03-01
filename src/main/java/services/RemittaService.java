@@ -22,6 +22,7 @@ import dao.PaymentTransactionDao;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
 import javassist.NotFoundException;
+import ninja.utils.NinjaProperties;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
@@ -69,6 +70,9 @@ public class RemittaService {
     private RemittaDao remittaDao;
 
     @Inject
+    private NinjaProperties ninjaProperties;
+
+    @Inject
     private NotificationService notificationService;
 
 
@@ -79,6 +83,11 @@ public class RemittaService {
         // Try to Generate an RRR
 
         String transactionId = transactionIdSequence.getNext();
+        if (ninjaProperties.isDev()) {
+            transactionId += "DV";
+        } else if (ninjaProperties.isTest()) {
+            transactionId += "TS";
+        }
         String serviceTypeId = remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "4430731", Boolean.TRUE);
 
         RemittaGenerateRequestRRRPojo requestData = new RemittaGenerateRequestRRRPojo();
