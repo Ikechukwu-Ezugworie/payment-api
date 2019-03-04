@@ -2,6 +2,7 @@ package services;
 
 import java.math.BigDecimal;
 
+import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import utils.PaymentUtil;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Author: Oluwatobi Adenekan
@@ -283,6 +285,9 @@ public class RemittaService {
     private void queueNotification(RemittaNotification paymentPojo, PaymentTransaction paymentTransaction) {
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
         TransactionNotificationPojo<RemittaNotification> transactionNotificationPojo = new TransactionNotificationPojo<>();
+        List<String> itemCodes = paymentTransactionDao
+                .getPaymentTransactionItems(paymentTransaction.getId(), GenericStatusConstant.ACTIVE).stream().map(it -> it.getItemId()).collect(Collectors.toList());
+
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
@@ -300,6 +305,8 @@ public class RemittaService {
         transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
         transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
 
+        transactionNotificationPojo.setItemCodes(itemCodes);
+
         transactionNotificationPojo.setMerchantTransactionReference(paymentTransaction.getMerchantTransactionReferenceId());
         transactionNotificationPojo.setActualNotification(paymentPojo);
 
@@ -312,6 +319,7 @@ public class RemittaService {
         notificationQueue.setNotificationSent(false);
         notificationQueue.setDateCreated(Timestamp.from(Instant.now()));
         notificationQueue.setPaymentTransaction(paymentTransaction);
+
 
         paymentTransactionDao.saveObject(notificationQueue);
     }
