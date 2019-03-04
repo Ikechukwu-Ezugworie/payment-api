@@ -71,7 +71,7 @@ public class UssdService {
         TransactionRequestPojo paymentTransaction = new TransactionRequestPojo();
         paymentTransaction.setMerchantTransactionReferenceId(String.format("%s-%s", ussdNotification.getMsisdn(), ussdNotification.getTransactionReference()));
         paymentTransaction.setAmountInKobo(PaymentUtil.getAmountInKobo(ussdNotification.getAmount()));
-        paymentTransaction.setPaymentProvider(PaymentProviderConstant.NIBBS.getValue()); // Todo:: Please Update
+        paymentTransaction.setPaymentProvider(PaymentProviderConstant.INTERSWITCH.getValue()); // Todo:: Please Update
         paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK.getValue()); // Todo:: Please Update
         PayerPojo payerPojo = new PayerPojo();
         payerPojo.setFirstName(ussdNotification.getMsisdn());
@@ -134,15 +134,12 @@ public class UssdService {
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
-        if (paymentTransaction.getPaymentProvider().equals(PaymentProviderConstant.REMITA)) {  //TODO This is to avoid  alter the system
-            transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
-        } else {
-            transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue() + "_" + paymentTransaction.getPaymentChannel().getValue());
 
-        }
+        transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
+
         transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentDate(paymentPojo.getPaymentDate());
-        transactionNotificationPojo.setPaymentChannelName(PaymentChannelConstant.BANK.value()); // Todo:: Please do Update
+        transactionNotificationPojo.setPaymentChannelName(paymentTransaction.getPaymentChannel().getValue()); // Todo:: Please do Update
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
         transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
