@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/UssdService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/UssdService.java" afterDir="false" />
-    </list>
+    <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -44,7 +41,7 @@
       <file leaf-file-name="UssdService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/UssdService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
+            <state relative-caret-position="-1021">
               <caret line="73" column="70" lean-forward="true" selection-start-line="73" selection-start-column="70" selection-end-line="73" selection-end-column="81" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -933,7 +930,7 @@
       <workItem from="1551622108581" duration="571000" />
       <workItem from="1551630723716" duration="576000" />
       <workItem from="1551648326866" duration="12423000" />
-      <workItem from="1551691323534" duration="6666000" />
+      <workItem from="1551691323534" duration="8311000" />
     </task>
     <task id="LOCAL-00016" summary="model change">
       <created>1536076362389</created>
@@ -1282,7 +1279,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="631776000" />
+    <option name="totallyTimeSpent" value="633421000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1806,7 +1803,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/UssdService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
+        <state relative-caret-position="-1021">
           <caret line="73" column="70" lean-forward="true" selection-start-line="73" selection-start-column="70" selection-end-line="73" selection-end-column="81" />
           <folding>
             <element signature="imports" expanded="true" />
