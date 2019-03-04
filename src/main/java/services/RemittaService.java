@@ -163,16 +163,11 @@ public class RemittaService {
 
             RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction);
 
-            if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {
-                // Todo:: Please Update pass the code in the if true below after testing on Bw sandbox.
-            }
-
-
-            if (true) {
+            if (ninjaProperties.isDev() || (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00")))) {
 
                 queueNotification(remittaNotification, paymentTransaction);
-
                 notificationService.sendPaymentNotification(10);
+
             }
 
 
