@@ -30,4 +30,5 @@ public class Constants {
     public static final String OK_MESSAGE = "OK";
     public static final String NOT_OK_MESSAGE = "not ok";
     public static final String NOT_CONFIGURED = "-- NOT CONFIGURED--";
+    public static final String NOT_PROVIDED = "-- NOT PROVIDED --";
 }

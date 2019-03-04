@@ -869,4 +869,9 @@ public class PaymentUtil {
         }
         return "";
     }
+
+
+    public Long multiply(Long a, Long b){
+
+    }
 }

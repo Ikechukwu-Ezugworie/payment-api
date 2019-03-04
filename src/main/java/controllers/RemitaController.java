@@ -10,8 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.sun.javafx.fxml.builder.URLBuilder;
-import com.sun.jndi.toolkit.url.Uri;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
 import extractors.ContentExtract;
@@ -25,7 +23,6 @@ import ninja.params.PathParam;
 import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.ApiResponse;
@@ -158,8 +155,7 @@ public class RemitaController {
 
         }).collect(Collectors.toList()));
 
-        System.out.println("Data + " + data
-        );
+        System.out.println("Data + " + data);
 
 
         return Results.html().render("data", data);
