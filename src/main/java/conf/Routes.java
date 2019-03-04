@@ -61,6 +61,9 @@ public class Routes implements ApplicationRoutes {
         router.POST().route(String.format("%s/api/v1/payments/remitta/bank/sand-box/notify",urlPrefix)).with(RemitaController::performTestNotification);
 
 
+        //USSD
+        router.POST().route(String.format("%s/api/v1/payments/ussd/notify", urlPrefix)).with(UssdController::doUssdNotification);
+
 
         /////////////////////////////////////////////////////////////////////
         // WEBPAY

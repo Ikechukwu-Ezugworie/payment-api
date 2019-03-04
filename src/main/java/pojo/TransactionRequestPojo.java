@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,16 @@ public class TransactionRequestPojo {
     private boolean instantTransaction = false;
     private String customerTransactionReference;
     private String description;
+    private BigDecimal amountPaid;
+
+    public BigDecimal getAmountPaid() {
+        return amountPaid;
+    }
+
+    public TransactionRequestPojo setAmountPaid(BigDecimal amountPaid) {
+        this.amountPaid = amountPaid;
+        return this;
+    }
 
     public Long getId() {
         return id;

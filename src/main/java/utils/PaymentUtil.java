@@ -871,7 +871,5 @@ public class PaymentUtil {
     }
 
 
-    public Long multiply(Long a, Long b){
 
-    }
 }

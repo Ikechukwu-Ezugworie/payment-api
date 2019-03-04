@@ -1,5 +1,7 @@
 package pojo;
 
+import java.util.List;
+
 /**
  * CREATED BY GIBAH
  */
@@ -22,8 +24,19 @@ public class TransactionNotificationPojo<T> {
     private String merchantTransactionReference;
     private String customerTransactionReference;
     private PayerPojo payer;
+    private List<String> itemCodes;
 
     private T actualNotification;
+
+
+    public List<String> getItemCodes() {
+        return itemCodes;
+    }
+
+    public TransactionNotificationPojo<T> setItemCodes(List<String> itemCodes) {
+        this.itemCodes = itemCodes;
+        return this;
+    }
 
     public String getStatus() {
         return status;

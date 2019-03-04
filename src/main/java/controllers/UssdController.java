@@ -1,6 +1,8 @@
 package controllers;
 
+import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.GenericStatusConstant;
+import com.bw.payment.enumeration.PaymentTransactionStatus;
 import constraints.PaymentChannel;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
@@ -45,6 +47,11 @@ public class UssdController {
 
 
     public Result doUssdNotification(@ContentExtract String payload, @IPAddress String ipAddress) {
+        System.out.println("About to start Ussd notification");
+        if(payload == null){
+            Results.badRequest();
+        }
+
         RawDump rawDump = new RawDump();
         rawDump.setRequest(payload);
         rawDump.setDateCreated(Timestamp.from(Instant.now()));
@@ -58,38 +65,15 @@ public class UssdController {
         }.getType());
 
 
-        TransactionRequestPojo transaction = new TransactionRequestPojo();
-        transaction.setMerchantTransactionReferenceId(String.format("%s-%s", ussdNotification.getMsisdn(), ussdNotification.getTransactionReference()));
-        transaction.setAmountInKobo(PaymentUtil.getAmountInKobo(ussdNotification.getAmount()));
-        transaction.setPaymentProvider(PaymentProviderConstant.NIBBS.getValue()); // Todo:: Please Update
-        transaction.setPaymentChannel(PaymentChannelConstant.BANK.getValue()); // Todo:: Please Update
-        PayerPojo payerPojo = new PayerPojo();
-        payerPojo.setFirstName(ussdNotification.getMsisdn());
-        payerPojo.setLastName("");
-        payerPojo.setEmail(Constants.NOT_PROVIDED);
-        payerPojo.setPhoneNumber(ussdNotification.getMsisdn());
+        PaymentTransaction createdPaymentTrnsaction = ussdService.doUssdNotification(ussdNotification);
 
-        transaction.setPayer(payerPojo);
-        List<ItemPojo> items = new ArrayList<>();
-        ItemPojo itemPojo = new ItemPojo();
-        itemPojo.setName(Constants.NOT_PROVIDED);
-        itemPojo.setItemId(ussdNotification.getRevenueCode());
-        itemPojo.setQuantity(1);
-        itemPojo.setPriceInKobo(PaymentUtil.getAmountInKobo(ussdNotification.getAmount()));
-        itemPojo.setTaxInKobo(0L);
-        itemPojo.setSubTotalInKobo(PaymentUtil.getAmountInKobo(ussdNotification.getAmount()));
-        itemPojo.setTotalInKobo(PaymentUtil.getAmountInKobo(ussdNotification.getAmount()));
-        itemPojo.setDescription(String.format("Payment made for revenue item with code %s via ussd", ussdNotification.getRevenueCode()));
-        items.add(itemPojo);
-        transaction.setItems(items);
-        transaction.setPaymentTransactionStatus(EndSystemCustomerValidationResponse.PaymentStatus.PAID.getValue());
-
-        transaction.setProviderTransactionReference(ussdNotification.getTransactionReference());
-        transaction.setMerchantTransactionReferenceId(String.format("%s-%s", ussdNotification.getMsisdn(), ussdNotification.getTransactionReference()));
+        if (createdPaymentTrnsaction == null) {
+            return Results.notFound().json();
+        }
 
 
 
-        ussdService.doUssdNotification();
+        return Results.ok();
 
 
     }
