@@ -68,7 +68,7 @@ public class UssdController {
         PaymentTransaction createdPaymentTrnsaction = ussdService.doUssdNotification(ussdNotification);
 
         if (createdPaymentTrnsaction == null) {
-            return Results.notFound().json();
+            return Results.notFound();
         }
 
 
