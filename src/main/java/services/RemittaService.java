@@ -2,16 +2,13 @@ package services;
 
 import java.math.BigDecimal;
 
+import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.math.BigInteger;
 
-import com.bw.payment.entity.Merchant;
-import com.bw.payment.entity.NotificationQueue;
-import com.bw.payment.entity.Payer;
-import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
@@ -166,6 +163,8 @@ public class RemittaService {
 
         return null;
 
+
+
     }
 
 
@@ -201,11 +200,12 @@ public class RemittaService {
                     }
 
 
+                }else {
+                    paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
                 }
 
 
                 paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
-                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
                 paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
                 return responseBody;
 

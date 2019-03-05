@@ -74,8 +74,8 @@ public class UssdService {
         paymentTransaction.setPaymentProvider(PaymentProviderConstant.MCASH.getValue()); // Todo:: Please Update when payment provider is confirmed
         paymentTransaction.setPaymentChannel(PaymentChannelConstant.USSD.getValue());
         PayerPojo payerPojo = new PayerPojo();
-        payerPojo.setFirstName(ussdNotification.getMsisdn());
-        payerPojo.setLastName("");
+        payerPojo.setFirstName(Constants.NOT_PROVIDED);
+        payerPojo.setLastName(Constants.NOT_PROVIDED);
         payerPojo.setEmail(Constants.NOT_PROVIDED);
         payerPojo.setPhoneNumber(ussdNotification.getMsisdn());
 

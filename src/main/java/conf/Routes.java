@@ -53,7 +53,7 @@ public class Routes implements ApplicationRoutes {
         //////////////////////////////////////////////////////////////////////
         router.POST().route(String.format("%s/api/v1/payments/remitta", urlPrefix)).with(RemitaController::doCreateTransaction);
         router.POST().route(String.format("%s/api/v1/payments/remitta/notify", urlPrefix)).with(RemitaController::doRemittaNotification);
-        router.GET().route(String.format("%s/api/v1/payments/remitta/card/make-payment",urlPrefix)).with(RemitaController::cardNotificationUrl);
+        router.GET().route(String.format("%s/api/v1/payments/remitta/card/re-direct",urlPrefix)).with(RemitaController::cardNotificationUrl);
         router.GET().route(String.format("%s/api/v1/payments/remitta/card/{rrr}/make-payment",urlPrefix)).with(RemitaController::makePaymentWithCard);
 
         /////////////////////////Test Remita  ////////////////////////

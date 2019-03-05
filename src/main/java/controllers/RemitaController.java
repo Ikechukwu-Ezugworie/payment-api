@@ -1,5 +1,7 @@
 package controllers;
 
+import com.bw.payment.entity.Merchant;
+import com.bw.payment.entity.RemitaServiceCredentials;
 import com.google.common.collect.Lists;
 
 import com.bw.payment.entity.PaymentTransaction;
@@ -18,6 +20,7 @@ import javassist.NotFoundException;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
+import ninja.ReverseRouter;
 import ninja.params.Param;
 import ninja.params.PathParam;
 import ninja.validation.JSR303Validation;
@@ -56,6 +59,9 @@ public class RemitaController {
 
     @Inject
     RemittaDao remittaDao;
+
+    @Inject
+    ReverseRouter reverseRouter;
 
 
     public Result doCreateTransaction(@JSR303Validation TransactionRequestPojo data, Validation validation) {
@@ -137,10 +143,14 @@ public class RemitaController {
         data.setMerchantId(remittaDao.getMerchantId());
         data.setHash(remittaDao.generateCardHash(paymentTransaction.getProviderTransactionReference()));
         data.setRrr(paymentTransaction.getProviderTransactionReference());
-        String responseUrl = "http://localhost:8880/api/v1/payments/remitta/card/make-payment";
+
+
+        String responseUrl = reverseRouter.with(RemitaController::cardNotificationUrl).absolute(context).build();
+
+        System.out.println(responseUrl);
+
         data.setResponseurl(responseUrl);
         data.setRemittaFormActionUrl(remittaDao.getSettingsValue("REMITTA_CARD_URL", "https://remitademo.net/remita/ecomm/finalize.reg"));
-
         data.setAmount(PaymentUtil.koboToNaira(paymentTransaction.getAmountInKobo()));
 
         data.setPaymentTransactionReference(paymentTransaction.getTransactionId());
@@ -157,7 +167,6 @@ public class RemitaController {
 
         System.out.println("Data + " + data);
 
-
         return Results.html().render("data", data);
 
 
@@ -166,12 +175,12 @@ public class RemitaController {
 
     public Result cardNotificationUrl(@Param("RRR") String paymentReference) {
 
+        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
 
         UriBuilder uriBuilder = UriBuilder.fromPath(remittaDao.getRemittaCredentials().getMerchantRedirectUrl());
         RemittaTransactionStatusPojo response = null;
 
 
-        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
         try {
             response = remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
         } catch (NotFoundException e) {
