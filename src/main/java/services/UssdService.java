@@ -119,7 +119,6 @@ public class UssdService {
 
 
     private void queueNotification(UssdNotification paymentPojo, PaymentTransaction paymentTransaction) {
-        System.out.println("Queuing!!!!");
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
         TransactionNotificationPojo<UssdNotification> transactionNotificationPojo = new TransactionNotificationPojo<>();
 
@@ -129,13 +128,11 @@ public class UssdService {
 
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
-        transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
 
         transactionNotificationPojo.setPaymentProvider("USSD_PROVIDER"); // Todo:: Update once provider has been fully confirmed
 
         transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
-        transactionNotificationPojo.setPaymentDate();
         transactionNotificationPojo.setPaymentChannelName(paymentTransaction.getPaymentChannel().getValue());
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());

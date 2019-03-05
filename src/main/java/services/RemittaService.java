@@ -146,33 +146,21 @@ public class RemittaService {
                 throw new NotFoundException("Payment Transaction with RRR cannot be found");
             }
 
-            paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
-            paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK); // TODO update after model update
-            paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
-            paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
-            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-            Payer payer = new Payer();
-            payer.setPayerId(payerIdSequence.getNext());
-            payer.setFirstName(remittaNotification.getPayerName());
-            payer.setLastName("");
-            payer.setEmail(remittaNotification.getPayerEmail());
-            payer.setPhoneNumber(remittaNotification.getPayerPhoneNumber());
-            remittaDao.saveObject(payer);
-            paymentTransaction.setPayer(payer);
-
 
             RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction);
+            PaymentTransactionStatus status = paymentTransaction.getPaymentTransactionStatus();
 
-            if (ninjaProperties.isDev() || (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00")))) {
+
+            if(response != null && (status.equals(PaymentTransactionStatus.PENDING)  || status.equals(PaymentTransactionStatus.SUCCESSFUL))){
+                paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK);
+                paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
 
                 queueNotification(remittaNotification, paymentTransaction);
                 notificationService.sendPaymentNotification(10);
 
             }
 
-
             paymentTransactionDao.updateObject(paymentTransaction);
-
 
         }
 
@@ -182,12 +170,15 @@ public class RemittaService {
 
 
     /**
+     * Method calls Remitta to request for a payment Status, This is called after banking notification or card Payment!!
      * @param paymentTransaction
      * @return Boolean Value to make a notify decision
      * @throws ApiResponseException
      */
     private RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException {
 
+
+        Boolean isTesting = ninjaProperties.isDev() || ninjaProperties.isTest();
 
         Call<RemittaTransactionStatusPojo> transactionStatusResponse = remittaApi.getTransactionStatus(remittaDao.getSettingsValue(RemittaDao.REMITTA_MECHANT_ID, "657", true),
                 paymentTransaction.getProviderTransactionReference(),
@@ -201,7 +192,7 @@ public class RemittaService {
 
             if (execute.isSuccessful() && responseBody != null) {
 
-                if (responseBody.getStatus().equalsIgnoreCase("01") || responseBody.getStatus().equalsIgnoreCase("00")) {
+                if (isTesting || responseBody.getStatus().equalsIgnoreCase("01") || responseBody.getStatus().equalsIgnoreCase("00")) {
 
                     if (paymentTransaction.getAmountPaidInKobo() < paymentTransaction.getAmountInKobo()) {
                         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PARTIAL);
@@ -213,7 +204,9 @@ public class RemittaService {
                 }
 
 
+                paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
                 paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+                paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
                 return responseBody;
 
             }
@@ -242,6 +235,7 @@ public class RemittaService {
             paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountInKobo());
             paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+
 
 
             response = requestForPaymentTransactionStatus(paymentTransaction);

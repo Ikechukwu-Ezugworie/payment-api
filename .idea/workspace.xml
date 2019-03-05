@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/1.0-SNAPSHOT/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/1.0-SNAPSHOT/maven-metadata-local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-common/maven-metadata-local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/1.0-SNAPSHOT/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/1.0-SNAPSHOT/maven-metadata-local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/maven-metadata-local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/repo/com/bw/payment/payment-core/maven-metadata-local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/services/UssdService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/UssdService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/utils/CronSchedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/CronSchedule.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -35,11 +29,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="UssdService.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="UssdService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/UssdService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="495">
-              <caret line="137" column="51" selection-start-line="137" selection-start-column="51" selection-end-line="137" selection-end-column="51" />
+            <state relative-caret-position="476">
+              <caret line="90" column="34" selection-start-line="90" selection-start-column="34" selection-end-line="90" selection-end-column="34" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -72,8 +66,8 @@
       <file leaf-file-name="RemitaController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="73" column="75" selection-start-line="73" selection-start-column="75" selection-end-line="73" selection-end-column="75" />
+            <state relative-caret-position="233">
+              <caret line="175" column="61" selection-start-line="175" selection-start-column="61" selection-end-line="175" selection-end-column="61" />
             </state>
           </provider>
         </entry>
@@ -90,15 +84,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="381">
-              <caret line="139" column="68" lean-forward="true" selection-start-line="139" selection-start-column="68" selection-end-line="139" selection-end-column="68" />
+            <state relative-caret-position="1179">
+              <caret line="201" lean-forward="true" selection-start-line="201" selection-end-line="201" />
               <folding>
-                <element signature="method#updatePaymentTransaction#0;class#RemittaService#0" />
-                <element signature="method#requestForPaymentTransactionStatus#0;class#RemittaService#0" />
-                <element signature="method#updatePaymentTransactionOnCardPay#0;class#RemittaService#0" />
+                <element signature="method#generateRemittaRRR#0;class#RemittaService#0" />
                 <element signature="method#queueNotification#0;class#RemittaService#0" />
               </folding>
             </state>
@@ -114,11 +106,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Module.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/conf/Module.java">
+      <file leaf-file-name="PaymentTransactionDao.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/dao/PaymentTransactionDao.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="48" column="21" lean-forward="true" selection-start-line="48" selection-start-column="21" selection-end-line="48" selection-end-column="21" />
+            <state relative-caret-position="-90">
+              <caret line="50" column="9" lean-forward="true" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -253,9 +245,9 @@
         <option value="$PROJECT_DIR$/src/main/java/pojo/ussd/UssdNotification.java" />
         <option value="$PROJECT_DIR$/src/main/java/controllers/UssdController.java" />
         <option value="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" />
-        <option value="$PROJECT_DIR$/src/main/java/services/RemittaService.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/CronSchedule.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/UssdService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/services/RemittaService.java" />
       </list>
     </option>
   </component>
@@ -1279,7 +1271,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="642346000" />
+    <option name="totallyTimeSpent" value="646306000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1675,13 +1667,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dao/PaymentTransactionDao.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="76" column="6" lean-forward="true" selection-start-line="76" selection-start-column="6" selection-end-line="76" selection-end-column="89" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dao/BaseDao.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="202">
@@ -1798,30 +1783,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="381">
-          <caret line="139" column="68" lean-forward="true" selection-start-line="139" selection-start-column="68" selection-end-line="139" selection-end-column="68" />
-          <folding>
-            <element signature="method#updatePaymentTransaction#0;class#RemittaService#0" />
-            <element signature="method#requestForPaymentTransactionStatus#0;class#RemittaService#0" />
-            <element signature="method#updatePaymentTransactionOnCardPay#0;class#RemittaService#0" />
-            <element signature="method#queueNotification#0;class#RemittaService#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pojo/remitta/RemittaNotification.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
           <caret line="21" column="23" lean-forward="true" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
-          <caret line="73" column="75" selection-start-line="73" selection-start-column="75" selection-end-line="73" selection-end-column="75" />
         </state>
       </provider>
     </entry>
@@ -1837,10 +1802,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/UssdService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="137" column="51" selection-start-line="137" selection-start-column="51" selection-end-line="137" selection-end-column="51" />
+        <state relative-caret-position="476">
+          <caret line="90" column="34" selection-start-line="90" selection-start-column="34" selection-end-line="90" selection-end-column="34" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dao/PaymentTransactionDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-90">
+          <caret line="50" column="9" lean-forward="true" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="233">
+          <caret line="175" column="61" selection-start-line="175" selection-start-column="61" selection-end-line="175" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1179">
+          <caret line="201" lean-forward="true" selection-start-line="201" selection-end-line="201" />
+          <folding>
+            <element signature="method#generateRemittaRRR#0;class#RemittaService#0" />
+            <element signature="method#queueNotification#0;class#RemittaService#0" />
           </folding>
         </state>
       </provider>
