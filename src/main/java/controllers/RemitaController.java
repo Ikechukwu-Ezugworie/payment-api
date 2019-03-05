@@ -164,7 +164,7 @@ public class RemitaController {
     }
 
 
-    public Result cardNotificationUrl(@ContentExtract String data, @Param("RRR") String paymentReference) {
+    public Result cardNotificationUrl(@Param("RRR") String paymentReference) {
 
 
         UriBuilder uriBuilder = UriBuilder.fromPath(remittaDao.getRemittaCredentials().getMerchantRedirectUrl());

@@ -16,7 +16,7 @@ public class CronSchedule {
         this.notificationService = notificationService;
     }
 
-    @Schedule(delay = 5, initialDelay = 1, timeUnit = TimeUnit.SECONDS)
+    @Schedule(delay = 15, initialDelay = 1, timeUnit = TimeUnit.SECONDS)
     public void runNotificationJob() {
         notificationService.sendPaymentNotification(100);
     }

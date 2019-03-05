@@ -71,8 +71,8 @@ public class UssdService {
         TransactionRequestPojo paymentTransaction = new TransactionRequestPojo();
         paymentTransaction.setMerchantTransactionReferenceId(String.format("%s-%s", ussdNotification.getMsisdn(), ussdNotification.getTransactionReference()));
         paymentTransaction.setAmountInKobo(PaymentUtil.getAmountInKobo(ussdNotification.getAmount()));
-        paymentTransaction.setPaymentProvider(PaymentProviderConstant.INTERSWITCH.getValue()); // Todo:: Please Update
-        paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK.getValue()); // Todo:: Please Update
+        paymentTransaction.setPaymentProvider(PaymentProviderConstant.MCASH.getValue()); // Todo:: Please Update when payment provider is confirmed
+        paymentTransaction.setPaymentChannel(PaymentChannelConstant.USSD.getValue());
         PayerPojo payerPojo = new PayerPojo();
         payerPojo.setFirstName(ussdNotification.getMsisdn());
         payerPojo.setLastName("");
@@ -92,12 +92,10 @@ public class UssdService {
         itemPojo.setDescription(String.format("Payment made for revenue item with code %s via ussd", ussdNotification.getRevenueCode()));
         items.add(itemPojo);
         paymentTransaction.setItems(items);
-        paymentTransaction.setPaymentTransactionStatus(EndSystemCustomerValidationResponse.PaymentStatus.PAID.getValue());
 
         paymentTransaction.setAmountPaid(ussdNotification.getAmount());
         paymentTransaction.setProviderTransactionReference(ussdNotification.getTransactionReference());
         paymentTransaction.setMerchantTransactionReferenceId(String.format("%s-%s", ussdNotification.getMsisdn(), ussdNotification.getTransactionReference()));
-
 
         String transactionId = transactionIdSequence.getNext();
         if (ninjaProperties.isDev()) {
@@ -121,6 +119,7 @@ public class UssdService {
 
 
     private void queueNotification(UssdNotification paymentPojo, PaymentTransaction paymentTransaction) {
+        System.out.println("Queuing!!!!");
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
         TransactionNotificationPojo<UssdNotification> transactionNotificationPojo = new TransactionNotificationPojo<>();
 
@@ -128,22 +127,21 @@ public class UssdService {
                 .getPaymentTransactionItems(paymentTransaction.getId(), GenericStatusConstant.ACTIVE).stream().map(it -> it.getItemId()).collect(Collectors.toList());
 
 
-        System.out.println("Lenth of the item codes is " + itemCodes.size());
-
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(paymentPojo.getAmount()));
 
-        transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
+        transactionNotificationPojo.setPaymentProvider("USSD_PROVIDER"); // Todo:: Update once provider has been fully confirmed
 
         transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
-        transactionNotificationPojo.setPaymentDate(paymentPojo.getPaymentDate());
-        transactionNotificationPojo.setPaymentChannelName(paymentTransaction.getPaymentChannel().getValue()); // Todo:: Please do Update
+        transactionNotificationPojo.setPaymentDate();
+        transactionNotificationPojo.setPaymentChannelName(paymentTransaction.getPaymentChannel().getValue());
         transactionNotificationPojo.setPaymentProviderPaymentReference(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setNotificationId(notificationIdSequence.getNext());
         transactionNotificationPojo.setCustomerTransactionReference(paymentTransaction.getCustomerTransactionReference());
         transactionNotificationPojo.setItemCodes(itemCodes);
+
 
         transactionNotificationPojo.setMerchantTransactionReference(paymentTransaction.getMerchantTransactionReferenceId());
         transactionNotificationPojo.setActualNotification(paymentPojo);
