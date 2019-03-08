@@ -15,16 +15,20 @@ import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+import controllers.UssdController;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
 import javassist.NotFoundException;
 import ninja.utils.NinjaProperties;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.joda.time.DateTimeUtils;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
 import pojo.remitta.*;
+import pojo.ussd.UssdNotification;
 import retrofit2.Call;
 import retrofit2.Response;
 import services.api.RemittaApi;
@@ -36,6 +40,7 @@ import utils.PaymentUtil;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -236,8 +241,6 @@ public class RemittaService {
             paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
 
-
-
             response = requestForPaymentTransactionStatus(paymentTransaction);
 
             if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {
@@ -247,8 +250,8 @@ public class RemittaService {
                 notification.setRrr(paymentTransaction.getProviderTransactionReference());
                 notification.setChannel(PaymentChannelConstant.MASTERCARD.getValue());
                 notification.setAmount(PaymentUtil.getAmountInNaira(paymentTransaction.getAmountPaidInKobo()));
-                notification.setTransactiondate(PaymentUtil.getDate(paymentTransaction.getLastUpdated()));
-                notification.setDebitdate("");
+                notification.setTransactiondate(PaymentUtil.format(new Date(), "dd/MM/yyyy"));
+                notification.setDebitdate(PaymentUtil.format(new Date(), "dd/MM/yyyy"));
                 notification.setBank("CARD");
                 notification.setBranch("CARD");
                 notification.setServiceTypeId(remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "1234"));
