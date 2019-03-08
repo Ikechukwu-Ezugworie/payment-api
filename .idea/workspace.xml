@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/conf/Routes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/conf/Routes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/views/RemitaController/makePaymentWithCard.ftl.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/views/RemitaController/makePaymentWithCard.ftl.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,8 +34,8 @@
       <file leaf-file-name="makePaymentWithCard.ftl.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/makePaymentWithCard.ftl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="551">
-              <caret line="29" column="20" selection-start-line="29" selection-start-column="20" selection-end-line="29" selection-end-column="20" />
+            <state relative-caret-position="684">
+              <caret line="47" column="41" selection-start-line="47" selection-start-column="41" selection-end-line="47" selection-end-column="41" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#nav#0;n#!!top" expanded="true" />
@@ -53,16 +55,34 @@
       <file leaf-file-name="RemitaController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3971">
-              <caret line="253" column="83" selection-start-line="253" selection-start-column="40" selection-end-line="253" selection-end-column="83" />
+            <state relative-caret-position="433">
+              <caret line="139" column="9" lean-forward="true" selection-start-line="139" selection-start-column="9" selection-end-line="139" selection-end-column="9" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="WebPayController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/controllers/WebPayController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="619">
+              <caret line="107" column="50" lean-forward="true" selection-start-line="107" selection-start-column="50" selection-end-line="107" selection-end-column="50" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Routes.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="190">
+              <caret line="53" column="81" selection-start-line="53" selection-start-column="45" selection-end-line="53" selection-end-column="81" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="134">
+            <state relative-caret-position="2261">
               <caret line="242" selection-start-line="242" selection-end-line="242" />
               <folding>
                 <element signature="method#generateRemittaRRR#0;class#RemittaService#0" />
@@ -114,29 +134,8 @@
       <file leaf-file-name="paymentPage.ftl.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/views/WebPayController/paymentPage.ftl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="38">
-              <caret line="2" column="22" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="header.ftl.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/views/layout/header.ftl.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="17" column="12" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
-              <folding>
-                <element signature="n#style#0;n#nav#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="defaultLayout.ftl.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/views/layout/defaultLayout.ftl.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1539">
-              <caret line="81" column="9" selection-start-line="81" selection-start-column="9" selection-end-line="81" selection-end-column="9" />
+            <state relative-caret-position="414">
+              <caret line="103" column="83" lean-forward="true" selection-start-line="103" selection-start-column="66" selection-end-line="103" selection-end-column="83" />
             </state>
           </provider>
         </entry>
@@ -154,7 +153,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>'</find>
       <find>todo</find>
       <find>nse from r</find>
       <find>t before conve</find>
@@ -184,6 +182,7 @@
       <find>200</find>
       <find>euing!!</find>
       <find>/api/v1/payments/remitta/card/make-payment</find>
+      <find>contextPa</find>
     </findStrings>
     <replaceStrings>
       <replace>.route(String.format(urlPrefix,</replace>
@@ -250,12 +249,12 @@
         <option value="$PROJECT_DIR$/src/main/java/pojo/ussd/UssdNotification.java" />
         <option value="$PROJECT_DIR$/src/main/java/controllers/UssdController.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/CronSchedule.java" />
-        <option value="$PROJECT_DIR$/src/main/java/conf/Routes.java" />
         <option value="$PROJECT_DIR$/src/main/java/services/UssdService.java" />
         <option value="$PROJECT_DIR$/src/main/java/pojo/remitta/RemittaNotification.java" />
+        <option value="$PROJECT_DIR$/src/main/java/services/RemittaService.java" />
         <option value="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" />
         <option value="$PROJECT_DIR$/src/main/java/views/RemitaController/makePaymentWithCard.ftl.html" />
-        <option value="$PROJECT_DIR$/src/main/java/services/RemittaService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/conf/Routes.java" />
       </list>
     </option>
   </component>
@@ -336,6 +335,14 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="conf" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bw-payment-api" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="constraints" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -353,6 +360,32 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="services" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bw-payment-api" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="views" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bw-payment-api" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="views" type="462c0819:PsiDirectoryNode" />
+              <item name="RemitaController" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bw-payment-api" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="views" type="462c0819:PsiDirectoryNode" />
+              <item name="WebPayController" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="bw-payment-api" type="b2602c69:ProjectViewProjectNode" />
@@ -924,7 +957,7 @@
       <workItem from="1551691323534" duration="9073000" />
       <workItem from="1551820251287" duration="9365000" />
       <workItem from="1551960866512" duration="3850000" />
-      <workItem from="1551990879658" duration="2348000" />
+      <workItem from="1551990879658" duration="9042000" />
     </task>
     <task id="LOCAL-00016" summary="model change">
       <created>1536076362389</created>
@@ -1273,7 +1306,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="671371000" />
+    <option name="totallyTimeSpent" value="678065000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1289,7 +1322,7 @@
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010661" side_tool="true" weight="0.54139435" />
       <window_info anchor="right" id="Maven Projects" order="3" weight="0.09594883" />
       <window_info anchor="bottom" id="Database Changes" order="10" weight="0.32897604" />
       <window_info anchor="right" id="Mongo Explorer" order="7" weight="0.32995737" />
@@ -1307,11 +1340,12 @@
       <window_info anchor="bottom" id="Java Enterprise" order="7" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.54139435" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.54139435" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.3278867" />
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.22814499" />
       <window_info anchor="right" id="Bean Validation" order="3" />
       <window_info id="Web" order="2" sideWeight="0.5067114" side_tool="true" weight="0.15733737" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32897604" />
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -1323,7 +1357,6 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="right" id="Maven" order="10" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32897604" />
     </layout>
     <layout-to-restore>
       <window_info id="Persistence" order="8" side_tool="true" />
@@ -1649,13 +1682,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="55" column="61" selection-start-line="55" selection-start-column="61" selection-end-line="55" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pojo/remitta/RemittaNotification.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="703">
@@ -1709,13 +1735,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/WebPayController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="59" column="50" selection-start-line="59" selection-start-column="50" selection-end-line="59" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/views/layout/header.ftl.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -1733,32 +1752,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/WebPayController/paymentPage.ftl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38">
-          <caret line="2" column="22" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/makePaymentWithCard.ftl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="551">
-          <caret line="29" column="20" selection-start-line="29" selection-start-column="20" selection-end-line="29" selection-end-column="20" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#nav#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="e#1713#1720#1" expanded="true" />
-            <element signature="n#style#0;n#h4#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#div#0;n#div#0;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#thead#0;n#table#0;n#div#1;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#button#0;n#form#0;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
-            <element signature="n#div#3;n#!!top" />
-            <element signature="n#style#0;n#footer#0;n#div#3;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/utils/PaymentUtil.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="12768">
@@ -1770,13 +1763,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
           <caret line="15" column="85" selection-start-line="15" selection-start-column="85" selection-end-line="15" selection-end-column="95" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3971">
-          <caret line="253" column="83" selection-start-line="253" selection-start-column="40" selection-end-line="253" selection-end-column="83" />
         </state>
       </provider>
     </entry>
@@ -1799,12 +1785,59 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
+        <state relative-caret-position="2261">
           <caret line="242" selection-start-line="242" selection-end-line="242" />
           <folding>
             <element signature="method#generateRemittaRRR#0;class#RemittaService#0" />
             <element signature="method#queueNotification#0;class#RemittaService#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/views/WebPayController/paymentPage.ftl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="103" column="83" lean-forward="true" selection-start-line="103" selection-start-column="66" selection-end-line="103" selection-end-column="83" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/views/RemitaController/makePaymentWithCard.ftl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="684">
+          <caret line="47" column="41" selection-start-line="47" selection-start-column="41" selection-end-line="47" selection-end-column="41" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#section#0;n#!!top" expanded="true" />
+            <element signature="e#1713#1720#1" expanded="true" />
+            <element signature="n#style#0;n#h4#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#div#0;n#div#0;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#thead#0;n#table#0;n#div#1;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#button#0;n#form#0;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#section#0;n#!!top" expanded="true" />
+            <element signature="n#div#3;n#!!top" />
+            <element signature="n#style#0;n#footer#0;n#div#3;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="433">
+          <caret line="139" column="9" lean-forward="true" selection-start-line="139" selection-start-column="9" selection-end-line="139" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/controllers/WebPayController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="619">
+          <caret line="107" column="50" lean-forward="true" selection-start-line="107" selection-start-column="50" selection-end-line="107" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/conf/Routes.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="53" column="81" selection-start-line="53" selection-start-column="45" selection-end-line="53" selection-end-column="81" />
         </state>
       </provider>
     </entry>

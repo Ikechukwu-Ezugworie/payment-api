@@ -135,7 +135,7 @@ public class RemitaController {
 
         if (paymentTransaction == null) {
             apiResponse.setCode(HttpStatus.SC_NOT_FOUND);
-            apiResponse.setMessage(String.format("Payment transaction with  %s cannot be found", paymentReference));
+            apiResponse.setMessage(String.format("Payment transaction with reference with  %s cannot be found", paymentReference));
             return Results.notFound().json().render(apiResponse);
         }
 
