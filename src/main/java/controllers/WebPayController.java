@@ -15,7 +15,6 @@ import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
-import ninja.params.PathParam;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -175,7 +174,7 @@ public class WebPayController {
     }
 
     public Result requeryTransaction(@Param("transactionId") String transactionId) {
-        ApiResponse apiResponse = new ApiResponse();
+        ApiResponse<PaymentTransactionFilterResponseDto> apiResponse = new ApiResponse<>();
         if (StringUtils.isBlank(transactionId)) {
             apiResponse.setCode(400);
             apiResponse.setMessage("Transaction ID cannot be blank");
@@ -193,6 +192,7 @@ public class WebPayController {
 
             apiResponse.setData(PaymentTransactionFilterResponseDto.from(paymentTransaction));
             apiResponse.setCode(200);
+            logger.info("===> Transaction Query response " + new Gson().toJson(apiResponse));
             return Results.json().render(apiResponse);
         } catch (Exception e) {
             e.printStackTrace();
