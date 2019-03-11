@@ -174,6 +174,7 @@ public class WebPayController {
     }
 
     public Result requeryTransaction(@Param("transactionId") String transactionId) {
+        logger.info("===> Checking transaction ID " + transactionId);
         ApiResponse<PaymentTransactionFilterResponseDto> apiResponse = new ApiResponse<>();
         if (StringUtils.isBlank(transactionId)) {
             apiResponse.setCode(400);
