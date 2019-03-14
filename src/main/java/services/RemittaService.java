@@ -206,7 +206,6 @@ public class RemittaService {
 
 
                 }else {
-                    paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
                     throw new PaymentConfirmationException("Payment cannot be confirmed ");
                 }
 
