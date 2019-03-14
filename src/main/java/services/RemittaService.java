@@ -138,7 +138,7 @@ public class RemittaService {
 
 
     @Transactional
-    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException {
+    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException, IllegalArgumentException {
         for (RemittaNotification remittaNotification : remittaNotifications) {
 
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
@@ -178,7 +178,7 @@ public class RemittaService {
      * @return Boolean Value to make a notify decision
      * @throws ApiResponseException
      */
-    private RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException {
+    private RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException, IllegalArgumentException {
 
 
         Boolean isTesting = ninjaProperties.isDev() || ninjaProperties.isTest();
@@ -206,6 +206,7 @@ public class RemittaService {
 
                 }else {
                     paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+                    throw new IllegalArgumentException("Payment cannot be confirmed ");
                 }
 
 

@@ -206,7 +206,6 @@ public class RemitaController {
 
         }
 
-        System.out.println("Response after confirming from Remitta {}{}{}" + response.toString());
 
 
         uriBuilder.queryParam("rrr", paymentTransaction.getProviderTransactionReference());
