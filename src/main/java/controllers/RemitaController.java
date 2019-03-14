@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
+import exceptions.PaymentConfirmationException;
 import extractors.ContentExtract;
 import extractors.IPAddress;
 import javassist.NotFoundException;
@@ -195,7 +196,15 @@ public class RemitaController {
             return Results.redirect(url);
 
 
-        } catch (ApiResponseException e) {
+        }catch (PaymentConfirmationException ex){
+            ex.printStackTrace();
+            uriBuilder.queryParam("status", response.getStatus());
+            uriBuilder.queryParam("message", "Cannot verify payment at this time ");
+            URI uri = uriBuilder.build();
+            String url = uri.toString();
+            System.out.println(url);
+            return Results.redirect(url);
+        }catch (ApiResponseException e) {
             e.printStackTrace();
             uriBuilder.queryParam("status", HttpStatus.SC_BAD_GATEWAY);
             uriBuilder.queryParam("message", "Cannot verify payment at this time ");

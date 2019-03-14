@@ -20,6 +20,7 @@ import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
+import exceptions.PaymentConfirmationException;
 import javassist.NotFoundException;
 import ninja.utils.NinjaProperties;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -138,7 +139,7 @@ public class RemittaService {
 
 
     @Transactional
-    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException, IllegalArgumentException {
+    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException, PaymentConfirmationException{
         for (RemittaNotification remittaNotification : remittaNotifications) {
 
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
@@ -178,7 +179,7 @@ public class RemittaService {
      * @return Boolean Value to make a notify decision
      * @throws ApiResponseException
      */
-    private RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException, IllegalArgumentException {
+    private RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException, PaymentConfirmationException {
 
 
         Boolean isTesting = ninjaProperties.isDev() || ninjaProperties.isTest();
@@ -206,7 +207,7 @@ public class RemittaService {
 
                 }else {
                     paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-                    throw new IllegalArgumentException("Payment cannot be confirmed ");
+                    throw new PaymentConfirmationException("Payment cannot be confirmed ");
                 }
 
 
@@ -227,7 +228,8 @@ public class RemittaService {
 
 
     @Transactional
-    public RemittaTransactionStatusPojo updatePaymentTransactionOnCardPay(PaymentTransaction paymentTransaction) throws NotFoundException, ApiResponseException {
+    public RemittaTransactionStatusPojo updatePaymentTransactionOnCardPay(PaymentTransaction paymentTransaction) throws NotFoundException,
+                                                                                                                        ApiResponseException, PaymentConfirmationException {
         if (paymentTransaction == null) {
             throw new NotFoundException("Payment Transaction with RRR cannot be found");
         }
