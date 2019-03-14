@@ -92,7 +92,7 @@ public class RemittaService {
         } else if (ninjaProperties.isTest()) {
             transactionId += "TS";
         }
-        String serviceTypeId = remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "4430731", Boolean.TRUE);
+        String serviceTypeId = remittaDao.getRemittaCredentials().getServiceTypeId();
 
         RemittaGenerateRequestRRRPojo requestData = new RemittaGenerateRequestRRRPojo();
         requestData.setServiceTypeId(serviceTypeId);
@@ -104,7 +104,6 @@ public class RemittaService {
         requestData.setDescription(request.getDescription());
 
 
-        System.out.println("Payload:::: " + requestData.toString());
 
         Call<RemittaRrrResponse> remittaRrrResponseCall = remittaApi
                 .postToGenerateRRR(requestData, remittaDao.generateAutorisationHeader(transactionId, serviceTypeId, requestData.getAmount()));
@@ -184,7 +183,7 @@ public class RemittaService {
 
         Boolean isTesting = ninjaProperties.isDev() || ninjaProperties.isTest();
 
-        Call<RemittaTransactionStatusPojo> transactionStatusResponse = remittaApi.getTransactionStatus(remittaDao.getSettingsValue(RemittaDao.REMITTA_MECHANT_ID, "657", true),
+        Call<RemittaTransactionStatusPojo> transactionStatusResponse = remittaApi.getTransactionStatus(remittaDao.getRemittaCredentials().getMerchantId(),
                 paymentTransaction.getProviderTransactionReference(),
                 remittaDao.generateHash(paymentTransaction.getProviderTransactionReference()));
 
@@ -245,6 +244,7 @@ public class RemittaService {
 
             if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {
 
+
                 Payer payer = remittaDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
                 RemittaNotification notification = new RemittaNotification();
                 notification.setRrr(paymentTransaction.getProviderTransactionReference());
@@ -254,10 +254,11 @@ public class RemittaService {
                 notification.setDebitdate(PaymentUtil.format(new Date(), "dd/MM/yyyy"));
                 notification.setBank("CARD");
                 notification.setBranch("CARD");
-                notification.setServiceTypeId(remittaDao.getSettingsValue(RemittaDao.CBS_REMITTA_SERVICE_TYPE_ID, "1234"));
+                notification.setServiceTypeId(remittaDao.getRemittaCredentials().getServiceTypeId());
                 notification.setPayerName(String.format("%s-%s", payer.getFirstName(), payer.getLastName()));
                 notification.setPayerPhoneNumber(payer.getPhoneNumber());
                 notification.setPayerEmail(payer.getEmail());
+
                 queueNotification(notification, paymentTransaction);
 
                 notificationService.sendPaymentNotification(10);

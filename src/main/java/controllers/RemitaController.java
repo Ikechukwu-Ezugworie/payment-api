@@ -37,6 +37,7 @@ import services.RemittaService;
 import utils.Constants;
 import utils.PaymentUtil;
 
+import javax.validation.Valid;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.sql.Timestamp;
@@ -64,7 +65,7 @@ public class RemitaController {
     ReverseRouter reverseRouter;
 
 
-    public Result doCreateTransaction(@JSR303Validation TransactionRequestPojo data, Validation validation) {
+    public Result doCreateTransaction(@JSR303Validation  @Valid  TransactionRequestPojo data, Validation validation) {
 
         ApiResponse<RemittaCreateTransactionResponse> apiResponse = new ApiResponse<>();
         if (validation.hasViolations()) {
@@ -75,7 +76,7 @@ public class RemitaController {
         //transactionRequestPojo.setTotalAmount(data.getAmount());
         data.setNotifyOnStatusChange(true);
         data.setPaymentProvider(PaymentProviderConstant.REMITA.value());
-        data.setPaymentChannel(PaymentChannelConstant.BANK.getValue()); // TODO Update after model update
+        data.setPaymentChannel(PaymentChannelConstant.BANK.getValue());
         try {
             PaymentTransaction paymentTransaction = remittaService.generateRemittaRRR(data);
             apiResponse.setMessage("Created a payment Transaction Successfully");
