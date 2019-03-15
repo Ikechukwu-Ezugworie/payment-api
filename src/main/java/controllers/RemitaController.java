@@ -1,7 +1,5 @@
 package controllers;
 
-import com.bw.payment.entity.Merchant;
-import com.bw.payment.entity.RemitaServiceCredentials;
 import com.google.common.collect.Lists;
 
 import com.bw.payment.entity.PaymentTransaction;
@@ -14,10 +12,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
-import exceptions.PaymentConfirmationException;
+import exceptions.RemitaPaymentConfirmationException;
 import extractors.ContentExtract;
 import extractors.IPAddress;
-import javassist.NotFoundException;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -66,7 +63,7 @@ public class RemitaController {
     ReverseRouter reverseRouter;
 
 
-    public Result doCreateTransaction(@JSR303Validation  @Valid  TransactionRequestPojo data, Validation validation) {
+    public Result doCreateTransaction(@JSR303Validation @Valid TransactionRequestPojo data, Validation validation) {
 
         ApiResponse<RemittaCreateTransactionResponse> apiResponse = new ApiResponse<>();
         if (validation.hasViolations()) {
@@ -121,7 +118,7 @@ public class RemitaController {
 
 
         try {
-            remittaService.updatePaymentTransaction(remittaNotifications);
+            remittaService.updatePaymentTransactionForBank(remittaNotifications);
             return Results.json().render(Constants.OK_MESSAGE);
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,7 +144,7 @@ public class RemitaController {
         data.setRrr(paymentTransaction.getProviderTransactionReference());
 
 
-        String responseUrl = reverseRouter.with(RemitaController::cardNotificationUrl).absolute(context).build();
+        String responseUrl = reverseRouter.with(RemitaController::notificationOnCardPay).absolute(context).build();
 
         System.out.println(responseUrl);
 
@@ -175,58 +172,89 @@ public class RemitaController {
     }
 
 
-    public Result cardNotificationUrl(@Param("RRR") String paymentReference) {
 
-        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
+    public Result getTransactionStatus(@PathParam("rrr") String rrr){
+        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(rrr);
 
-        UriBuilder uriBuilder = UriBuilder.fromPath(remittaDao.getRemittaCredentials().getMerchantRedirectUrl());
-        RemittaTransactionStatusPojo response = null;
+
+
+        ApiResponse<RemittaTransactionStatusPojo> response = new ApiResponse<>();
 
 
         try {
-            response = remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            uriBuilder.queryParam("status", "404");
-            uriBuilder.queryParam("message", "RRR cannot found");
+            remittaService.requestForPaymentTransactionStatus(paymentTransaction);
+        } catch (ApiResponseException e) {
+            response.setData(null);
+            response.setCode(HttpStatus.SC_EXPECTATION_FAILED);
+            response.setMessage("Cannot call Remita to confirm transaction");
+            return Results.ok().json().render(response);
+        } catch (RemitaPaymentConfirmationException e) {
+            response.setData(e.getResponseObject());
+            response.setCode(HttpStatus.SC_FORBIDDEN);
+            response.setMessage("Cannot confirm payment at this time");
+            return Results.ok().json().render(response);
+        }
+        return Results.internalServerError();
+    }
 
+
+    public Result confirmStatusForCard(@PathParam("rrr") String rrr) {
+
+        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(rrr);
+        ApiResponse<RemittaTransactionStatusPojo> response = new ApiResponse<>();
+
+        if(paymentTransaction == null){
+            response.setData(null);
+            response.setCode(HttpStatus.SC_NOT_FOUND);
+            response.setMessage(String.format("Payment transaction with RRR %s cannot be found", rrr));
+        }
+
+        try {
+            response.setData(remittaService.updatePaymentTransactionOnCardPay(paymentTransaction));
+            response.setCode(HttpStatus.SC_OK);
+            response.setMessage("Successful ");
+            return Results.ok().json().render(response);
+        } catch (ApiResponseException ex) {
+
+            response.setData(null);
+            response.setCode(HttpStatus.SC_FORBIDDEN);
+            response.setMessage("Cannot confirm payment at this time");
+            return Results.ok().json().render(response);
+
+        } catch (RemitaPaymentConfirmationException ex) {
+            response.setData(ex.getResponseObject());
+            response.setCode(HttpStatus.SC_FORBIDDEN);
+            response.setMessage("Payment cannot be confirmed");
+            return Results.ok().json().render(response);
+        }
+
+    }
+
+    public Result notificationOnCardPay(@Param("RRR") String paymentReference) {
+
+        UriBuilder uriBuilder = UriBuilder.fromPath(remittaDao.getRemittaCredentials().getMerchantRedirectUrl());
+        PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
+        RemittaTransactionStatusPojo response = null;
+
+
+
+        if (paymentTransaction == null) {
             URI uri = uriBuilder.build();
             String url = uri.toString();
-            System.out.println(url);
-            return Results.redirect(url);
-
-
-        }catch (PaymentConfirmationException ex){
-            ex.printStackTrace();
-            uriBuilder.queryParam("status", response.getStatus());
-            uriBuilder.queryParam("message", "Cannot verify payment at this time ");
-            URI uri = uriBuilder.build();
-            String url = uri.toString();
-            System.out.println(url);
-            return Results.redirect(url);
-        }catch (ApiResponseException e) {
-            e.printStackTrace();
-            uriBuilder.queryParam("status", HttpStatus.SC_BAD_GATEWAY);
-            uriBuilder.queryParam("message", "Cannot verify payment at this time ");
-            URI uri = uriBuilder.build();
-            String url = uri.toString();
-            System.out.println(url);
             return Results.redirect(url);
 
         }
-
-
 
         uriBuilder.queryParam("rrr", paymentTransaction.getProviderTransactionReference());
-        uriBuilder.queryParam("orderId", response.getOrderId());
-        uriBuilder.queryParam("invoiceRef", paymentTransaction.getMerchantTransactionReferenceId());
-        if (response.getStatusmessage() != null) {
-            uriBuilder.queryParam("message", response.getStatusmessage());
+
+        try {
+            remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
+        } catch (RemitaPaymentConfirmationException | ApiResponseException ex) {
+            ex.printStackTrace();
         }
-        uriBuilder.queryParam("status", response.getStatus());
+
         URI uri = uriBuilder.build();
         String url = uri.toString();
-        System.out.println(url);
         return Results.redirect(url);
 
     }

@@ -33,6 +33,8 @@ public class RemittaDao extends BaseDao {
         return getRemittaCredentials().getMerchantId();
     }
 
+
+
     private String getRemittaCustomerToken(String orderId, String serviceTypeId, BigDecimal totalAmount ){
         if(StringUtils.isBlank(orderId)  || StringUtils.isBlank(serviceTypeId) ){
             throw new IllegalArgumentException("Order Id cannot be null");

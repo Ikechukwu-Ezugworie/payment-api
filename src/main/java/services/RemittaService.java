@@ -1,10 +1,7 @@
 package services;
 
-import java.math.BigDecimal;
-
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -15,21 +12,17 @@ import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-import controllers.UssdController;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
-import exceptions.PaymentConfirmationException;
+import exceptions.RemitaPaymentConfirmationException;
 import javassist.NotFoundException;
 import ninja.utils.NinjaProperties;
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.joda.time.DateTimeUtils;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
 import pojo.remitta.*;
-import pojo.ussd.UssdNotification;
 import retrofit2.Call;
 import retrofit2.Response;
 import services.api.RemittaApi;
@@ -139,7 +132,7 @@ public class RemittaService {
 
 
     @Transactional
-    public PaymentTransaction updatePaymentTransaction(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException, PaymentConfirmationException{
+    public PaymentTransaction updatePaymentTransactionForBank(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException, RemitaPaymentConfirmationException {
         for (RemittaNotification remittaNotification : remittaNotifications) {
 
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
@@ -179,7 +172,7 @@ public class RemittaService {
      * @return Boolean Value to make a notify decision
      * @throws ApiResponseException
      */
-    private RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException, PaymentConfirmationException {
+    public RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException, RemitaPaymentConfirmationException {
 
 
         Boolean isTesting = ninjaProperties.isDev() || ninjaProperties.isTest();
@@ -206,7 +199,7 @@ public class RemittaService {
 
 
                 }else {
-                    throw new PaymentConfirmationException("Payment cannot be confirmed ");
+                    throw new RemitaPaymentConfirmationException(responseBody);
                 }
 
 
@@ -227,11 +220,8 @@ public class RemittaService {
 
 
     @Transactional
-    public RemittaTransactionStatusPojo updatePaymentTransactionOnCardPay(PaymentTransaction paymentTransaction) throws NotFoundException,
-                                                                                                                        ApiResponseException, PaymentConfirmationException {
-        if (paymentTransaction == null) {
-            throw new NotFoundException("Payment Transaction with RRR cannot be found");
-        }
+    public RemittaTransactionStatusPojo updatePaymentTransactionOnCardPay(PaymentTransaction paymentTransaction) throws ApiResponseException, RemitaPaymentConfirmationException {
+
 
         RemittaTransactionStatusPojo response = null;
 
@@ -265,6 +255,8 @@ public class RemittaService {
 
                 notificationService.sendPaymentNotification(10);
 
+            }else {
+                throw new RemitaPaymentConfirmationException(response);
             }
 
             paymentTransactionDao.updateObject(paymentTransaction);
