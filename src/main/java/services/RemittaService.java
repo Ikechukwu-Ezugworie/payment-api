@@ -224,6 +224,7 @@ public class RemittaService {
 
 
         RemittaTransactionStatusPojo response = null;
+        response = requestForPaymentTransactionStatus(paymentTransaction);
 
         if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
             paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
@@ -232,7 +233,7 @@ public class RemittaService {
             paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
 
-            response = requestForPaymentTransactionStatus(paymentTransaction);
+
 
             if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {
 
