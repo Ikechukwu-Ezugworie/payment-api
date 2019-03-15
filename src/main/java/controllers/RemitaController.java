@@ -172,17 +172,18 @@ public class RemitaController {
     }
 
 
-
-    public Result getTransactionStatus(@PathParam("rrr") String rrr){
+    public Result getTransactionStatus(@PathParam("rrr") String rrr) {
         PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(rrr);
-
-
 
         ApiResponse<RemittaTransactionStatusPojo> response = new ApiResponse<>();
 
-
         try {
-            remittaService.requestForPaymentTransactionStatus(paymentTransaction);
+            if (paymentTransaction.getPaymentChannel().equals(PaymentChannelConstant.MASTERCARD)) {
+                response.setData(remittaService.updatePaymentTransactionOnCardPay(paymentTransaction));
+            } else {
+                response.setData(remittaService.requestForPaymentTransactionStatus(paymentTransaction));
+            }
+
         } catch (ApiResponseException e) {
             response.setData(null);
             response.setCode(HttpStatus.SC_EXPECTATION_FAILED);
@@ -203,7 +204,7 @@ public class RemitaController {
         PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(rrr);
         ApiResponse<RemittaTransactionStatusPojo> response = new ApiResponse<>();
 
-        if(paymentTransaction == null){
+        if (paymentTransaction == null) {
             response.setData(null);
             response.setCode(HttpStatus.SC_NOT_FOUND);
             response.setMessage(String.format("Payment transaction with RRR %s cannot be found", rrr));
@@ -235,7 +236,6 @@ public class RemitaController {
         UriBuilder uriBuilder = UriBuilder.fromPath(remittaDao.getRemittaCredentials().getMerchantRedirectUrl());
         PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
         RemittaTransactionStatusPojo response = null;
-
 
 
         if (paymentTransaction == null) {

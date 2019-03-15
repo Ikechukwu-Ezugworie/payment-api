@@ -98,7 +98,6 @@ public class RemittaService {
         requestData.setDescription(request.getDescription());
 
 
-
         Call<RemittaRrrResponse> remittaRrrResponseCall = remittaApi
                 .postToGenerateRRR(requestData, remittaDao.generateAutorisationHeader(transactionId, serviceTypeId, requestData.getAmount()));
 
@@ -141,26 +140,28 @@ public class RemittaService {
                 throw new NotFoundException("Payment Transaction with RRR cannot be found");
             }
 
+            if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
+                RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction);
+                PaymentTransactionStatus status = paymentTransaction.getPaymentTransactionStatus();
 
-            RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction);
-            PaymentTransactionStatus status = paymentTransaction.getPaymentTransactionStatus();
 
+                if (response != null && (status.equals(PaymentTransactionStatus.PENDING) || status.equals(PaymentTransactionStatus.SUCCESSFUL))) {
+                    paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK);
+                    paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
 
-            if(response != null && (status.equals(PaymentTransactionStatus.PENDING)  || status.equals(PaymentTransactionStatus.SUCCESSFUL))){
-                paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK);
-                paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
+                    queueNotification(remittaNotification, paymentTransaction);
+                    notificationService.sendPaymentNotification(10);
 
-                queueNotification(remittaNotification, paymentTransaction);
-                notificationService.sendPaymentNotification(10);
+                }
+
+                paymentTransactionDao.updateObject(paymentTransaction);
 
             }
 
-            paymentTransactionDao.updateObject(paymentTransaction);
 
         }
 
         return null;
-
 
 
     }
@@ -168,6 +169,7 @@ public class RemittaService {
 
     /**
      * Method calls Remitta to request for a payment Status, This is called after banking notification or card Payment!!
+     *
      * @param paymentTransaction
      * @return Boolean Value to make a notify decision
      * @throws ApiResponseException
@@ -198,7 +200,7 @@ public class RemittaService {
                     }
 
 
-                }else {
+                } else {
                     throw new RemitaPaymentConfirmationException(responseBody);
                 }
 
@@ -256,7 +258,7 @@ public class RemittaService {
 
                 notificationService.sendPaymentNotification(10);
 
-            }else {
+            } else {
                 throw new RemitaPaymentConfirmationException(response);
             }
 
