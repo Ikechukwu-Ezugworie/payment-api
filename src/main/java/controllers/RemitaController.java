@@ -233,19 +233,17 @@ public class RemitaController {
 
     public Result notificationOnCardPay(@Param("RRR") String paymentReference) {
 
-        UriBuilder uriBuilder = UriBuilder.fromPath(remittaDao.getRemittaCredentials().getMerchantRedirectUrl());
+        String redirectUrl = remittaDao.getRemittaCredentials().getMerchantRedirectUrl() + "/" + paymentReference.trim();
         PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(paymentReference);
         RemittaTransactionStatusPojo response = null;
 
 
         if (paymentTransaction == null) {
-            URI uri = uriBuilder.build();
-            String url = uri.toString();
-            return Results.redirect(url);
+            return Results.redirect(redirectUrl);
 
         }
 
-        uriBuilder.queryParam("rrr", paymentTransaction.getProviderTransactionReference());
+
 
         try {
             remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
@@ -253,9 +251,8 @@ public class RemitaController {
             ex.printStackTrace();
         }
 
-        URI uri = uriBuilder.build();
-        String url = uri.toString();
-        return Results.redirect(url);
+
+        return Results.redirect(redirectUrl);
 
     }
 

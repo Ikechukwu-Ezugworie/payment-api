@@ -4,7 +4,6 @@
     <list default="true" id="ba312cf2-e994-4806-a22f-f6103168bcf0" name="Default" comment="fixed json">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controllers/RemitaController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/services/RemittaService.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -33,8 +32,8 @@
       <file leaf-file-name="RemitaController.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="879">
-              <caret line="201" column="35" selection-start-line="201" selection-start-column="35" selection-end-line="201" selection-end-column="35" />
+            <state relative-caret-position="29">
+              <caret line="250" column="33" lean-forward="true" selection-start-line="250" selection-start-column="33" selection-end-line="250" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -58,7 +57,7 @@
       <file leaf-file-name="RemittaService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1069">
+            <state relative-caret-position="2584">
               <caret line="224" column="40" selection-start-line="224" selection-start-column="40" selection-end-line="224" selection-end-column="40" />
               <folding>
                 <element signature="method#generateRemittaRRR#0;class#RemittaService#0" />
@@ -295,6 +294,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -406,9 +407,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="AndroidView" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -973,7 +972,8 @@
       <workItem from="1552403294036" duration="1413000" />
       <workItem from="1552444187930" duration="593000" />
       <workItem from="1552567709150" duration="17626000" />
-      <workItem from="1552662100284" duration="1332000" />
+      <workItem from="1552662100284" duration="2160000" />
+      <workItem from="1552715886516" duration="319000" />
     </task>
     <task id="LOCAL-00016" summary="model change">
       <created>1536076362389</created>
@@ -1322,7 +1322,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="705570000" />
+    <option name="totallyTimeSpent" value="706717000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1335,7 +1335,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010661" side_tool="true" weight="0.54139435" />
@@ -1350,20 +1349,20 @@
       <window_info id="UI Designer" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39978212" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32897604" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.49673203" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="bottom" id="Java Enterprise" order="7" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4989339" weight="0.54139435" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.54139435" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.3278867" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.195629" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49328858" visible="true" weight="0.195629" />
       <window_info anchor="right" id="Bean Validation" order="3" />
       <window_info id="Web" order="2" sideWeight="0.5067114" side_tool="true" weight="0.15733737" />
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.49673203" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info id="Persistence" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Database Console" order="13" weight="0.32897604" />
@@ -1824,7 +1823,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/services/RemittaService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1069">
+        <state relative-caret-position="2584">
           <caret line="224" column="40" selection-start-line="224" selection-start-column="40" selection-end-line="224" selection-end-column="40" />
           <folding>
             <element signature="method#generateRemittaRRR#0;class#RemittaService#0" />
@@ -1834,8 +1833,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controllers/RemitaController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="879">
-          <caret line="201" column="35" selection-start-line="201" selection-start-column="35" selection-end-line="201" selection-end-column="35" />
+        <state relative-caret-position="29">
+          <caret line="250" column="33" lean-forward="true" selection-start-line="250" selection-start-column="33" selection-end-line="250" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
