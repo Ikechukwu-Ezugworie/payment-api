@@ -243,15 +243,11 @@ public class RemitaController {
 
         }
 
-
-
         try {
             remittaService.updatePaymentTransactionOnCardPay(paymentTransaction);
         } catch (RemitaPaymentConfirmationException | ApiResponseException ex) {
             ex.printStackTrace();
         }
-
-
         return Results.redirect(redirectUrl);
 
     }

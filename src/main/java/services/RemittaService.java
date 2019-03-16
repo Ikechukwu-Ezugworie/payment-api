@@ -161,6 +161,7 @@ public class RemittaService {
 
         }
 
+        notificationService.sendPaymentNotification(10);
         return null;
 
 
@@ -217,6 +218,7 @@ public class RemittaService {
             throw new ApiResponseException(e.getMessage());
         }
 
+        notificationService.sendPaymentNotification(10);
         return null;
     }
 
@@ -262,10 +264,12 @@ public class RemittaService {
                 throw new RemitaPaymentConfirmationException(response);
             }
 
+
             paymentTransactionDao.updateObject(paymentTransaction);
         }
 
 
+        notificationService.sendPaymentNotification(10);
         return response;
 
 
