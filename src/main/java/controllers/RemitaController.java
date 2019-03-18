@@ -146,6 +146,7 @@ public class RemitaController {
 
         String responseUrl = reverseRouter.with(RemitaController::notificationOnCardPay).absolute(context).build();
 
+
         System.out.println(responseUrl);
 
         data.setResponseurl(responseUrl);

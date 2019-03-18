@@ -255,6 +255,7 @@ public class RemittaService {
                 notification.setPayerName(String.format("%s-%s", payer.getFirstName(), payer.getLastName()));
                 notification.setPayerPhoneNumber(payer.getPhoneNumber());
                 notification.setPayerEmail(payer.getEmail());
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
 
                 queueNotification(notification, paymentTransaction);
 
