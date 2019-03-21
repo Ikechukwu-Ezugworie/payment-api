@@ -48,7 +48,7 @@ public class Module extends AbstractModule {
     @Provides
     private WebPayApi getRetrofitApi() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ninjaProperties.getWithDefault("web.pay.base.url", "https://sandbox.interswitchng.com/"))
+                .baseUrl(ninjaProperties.getWithDefault("web.pay.base.url", "https://sandbox.interswitchng.com"))
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(PaymentUtil.getOkHttpClient(ninjaProperties))
                 .build();

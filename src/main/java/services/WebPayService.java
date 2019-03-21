@@ -137,7 +137,7 @@ public class WebPayService {
 
     @Transactional
     public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, WebPayPaymentDataDto webPayPaymentDataDto) {
-       return processPaymentData(paymentTransaction, webPayPaymentDataDto, true);
+        return processPaymentData(paymentTransaction, webPayPaymentDataDto, true);
     }
 
     @Transactional
@@ -149,10 +149,14 @@ public class WebPayService {
         }
         paymentTransaction.setProviderTransactionReference(webPayPaymentDataDto.getPaymentReference());
         paymentTransactionDao.updateObject(paymentTransaction);
-        if(notify){
+        if (notify) {
             queueNotification(webPayPaymentDataDto, paymentTransaction);
             notificationService.sendPaymentNotification(10);
         }
         return paymentTransaction;
+    }
+
+    public String getBaseUrl() {
+        return paymentService.getWebPayCredentials(merchant).getServiceBaseUrl();
     }
 }

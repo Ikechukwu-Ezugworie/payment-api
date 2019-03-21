@@ -28,7 +28,7 @@
 
                         <div class="col-md-4">
                             <div class="dashboard-breadcrumb">
-                                <a href="http://localhost:8081/online-payment" title="Go back to Your Payment Page">Online
+                                <a href="http://localhost:8080/online-payment" title="Go back to Your Payment Page">Online
                                     Payment Portal</a>
                                 &nbsp;>&nbsp;
                                 <span>Transaction Details</span>
@@ -85,7 +85,7 @@
                                         <#--</tr>-->
                                     </table>
                                 </div>
-                                <form name="webpay" action="https://sandbox.interswitchng.com/webpay/pay" method="post"
+                                <form name="webpay" action="${webpayBaseUrl!""}/collections/w/pay" method="post"
                                       class=" col-12">
                                     <input name="product_id" type="hidden" value="${data.productId}"/>
                                     <input name="pay_item_id" type="hidden" value="${data.paymentItemId}"/>

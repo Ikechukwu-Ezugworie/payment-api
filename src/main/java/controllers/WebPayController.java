@@ -133,6 +133,7 @@ public class WebPayController {
         logger.info("webPayTransactionRequestPojo is " + webPayTransactionRequestPojo);
 
         return Results.html()
+                .render("webpayBaseUrl",webPayService.getBaseUrl())
                 .render("data", webPayTransactionRequestPojo)
                 .render("transactionData", fullPaymentTransactionDetailsAsPojo);
     }

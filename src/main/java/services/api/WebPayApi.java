@@ -9,7 +9,7 @@ import retrofit2.http.*;
  */
 public interface WebPayApi {
 
-    @GET("/webpay/api/v1/gettransaction.json")
+    @GET("/collections/api/v1/gettransaction.json")
     Call<WebPayPaymentDataDto> getTransactionStatus(@Query("productid") String productId,
                                                     @Query("amount") Long amount,
                                                     @Query("transactionreference") String transactionReference,
