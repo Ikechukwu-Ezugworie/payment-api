@@ -17,6 +17,7 @@
     <properties>
         <ninja.version>6.2.2</ninja.version>
         <jetty.version>9.3.15.v20161220</jetty.version>
+        <querydsl.version>4.2.1</querydsl.version>
     </properties>
 
     <repositories>
@@ -37,6 +38,30 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.devappliance.qdslhbmplugin</groupId>
+                <artifactId>querydsl-hbm-maven-plugin</artifactId>
+                <version>1.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                        <version>4.3.8.Final</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>qdsl</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--<hibernateConfigFile>${basedir}/src/main/resources/BWDataConfig.xml</hibernateConfigFile>-->
+                    <targetFolder>target/generated-sources/java/queryDsl</targetFolder>
                 </configuration>
             </plugin>
             <plugin>
@@ -266,6 +291,18 @@
             <groupId>com.googlecode.libphonenumber</groupId>
             <artifactId>libphonenumber</artifactId>
             <version>7.7.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+            <version>${querydsl.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>org.hibernate</groupId>-->

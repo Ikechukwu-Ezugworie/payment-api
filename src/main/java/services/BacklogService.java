@@ -48,7 +48,7 @@ public class BacklogService {
             try (Response response = client.newCall(request).execute()) {
                 String s = response.body().string();
 
-                logger.info("<== BACKLOG ID {} responded with code {} and body {}", rawDump.getId(), response.code(), s);
+//                logger.info("<== BACKLOG ID {} responded with code {} and body {}", rawDump.getId(), response.code(), s);
             } catch (Exception e) {
                 e.printStackTrace();
             }

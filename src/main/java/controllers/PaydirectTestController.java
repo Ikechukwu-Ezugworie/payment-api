@@ -60,7 +60,7 @@ public class PaydirectTestController {
 
     public Result doTest(@Param("custRef") String custRef, @Param("merchRef") String merchRef, Context context) {
         if (StringUtils.isBlank(custRef)) {
-            return Results.badRequest().json().render("errorMessage", "Customer reference cannot be empty");
+            return Results.badRequest().json().render("errorMessage", "FWCustomerDto reference cannot be empty");
         }
 //        if (StringUtils.isBlank(merchRef)) {
 //            return Results.badRequest().json().render("errorMessage", "Merchant reference cannot be empty");
@@ -257,7 +257,7 @@ public class PaydirectTestController {
     }
 
     public static class PaymentData {
-        @NotBlank(message = "Customer reference cannot be blank")
+        @NotBlank(message = "FWCustomerDto reference cannot be blank")
         private String custRef;
         private String itemCode;
         @NotBlank(message = "Amount cannot be blank")

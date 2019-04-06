@@ -64,9 +64,9 @@ public class PrototypeController {
 //                return Results.badRequest().json();
 ////                String key = type.equalsIgnoreCase("ar") ? "poa" : type.equalsIgnoreCase("rin") ? "directCapture" : "";
 ////                if (key.equalsIgnoreCase("poa")) {
-////                    context.getFlashScope().error("Customer not found. Enter RIN or Phone number instead");
+////                    context.getFlashScope().error("FWCustomerDto not found. Enter RIN or Phone number instead");
 ////                } else if (key.equalsIgnoreCase("directCapture")) {
-////                    context.getFlashScope().error("Customer not found. Enter Direct capture details");
+////                    context.getFlashScope().error("FWCustomerDto not found. Enter Direct capture details");
 ////                }
 ////                return Results.badRequest().json().render(key, "true");
 //            } else {
@@ -183,9 +183,9 @@ public class PrototypeController {
             if (customerInformationResponse == null || customerInformationResponse.getCustomers().getCustomers().get(0).getStatus() == PayDirectService.CUSTOMER_INVALID) {
                 String key = type.equalsIgnoreCase("ar") ? "poa" : type.equalsIgnoreCase("rin") ? "directCapture" : "";
                 if (key.equalsIgnoreCase("poa")) {
-                    context.getFlashScope().error("Customer not found. Enter RIN or Phone number instead");
+                    context.getFlashScope().error("FWCustomerDto not found. Enter RIN or Phone number instead");
                 } else if (key.equalsIgnoreCase("directCapture")) {
-                    context.getFlashScope().error("Customer not found. Enter Direct capture details");
+                    context.getFlashScope().error("FWCustomerDto not found. Enter Direct capture details");
                 }
                 return Results.html().render(key, "true");
             } else {

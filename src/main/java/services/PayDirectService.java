@@ -114,8 +114,7 @@ public class PayDirectService {
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-
-            logger.info("<== customer validation to url {} responded with code {} and body {}", merchant.getLookupUrl(), response.code(), s);
+//            logger.info("<== customer validation to url {} responded with code {} and body {}", merchant.getLookupUrl(), response.code(), s);
 
             if (response.isSuccessful()) {
                 Type type = new TypeToken<ApiResponse<EndSystemCustomerValidationResponse>>() {
@@ -224,7 +223,7 @@ public class PayDirectService {
                     PaymentResponsePojo responsePojo = new PaymentResponsePojo();
                     responsePojo.setPaymentLogId(payment.getPaymentLogId());
                     responsePojo.setStatus(NOTIFICATION_REJECTED);
-                    responsePojo.setStatusMessage("Customer reference is invalid");
+                    responsePojo.setStatusMessage("FWCustomerDto reference is invalid");
 
                     paymentNotificationResponsePojo.getPayments().addPayment(responsePojo);
 

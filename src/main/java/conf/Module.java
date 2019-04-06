@@ -25,6 +25,7 @@ import ninja.utils.NinjaProperties;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import services.api.EndSystemApi;
 import services.api.WebPayApi;
 import utils.CronSchedule;
 import utils.PaymentUtil;
@@ -53,5 +54,15 @@ public class Module extends AbstractModule {
                 .client(PaymentUtil.getOkHttpClient(ninjaProperties))
                 .build();
         return retrofit.create(WebPayApi.class);
+    }
+
+    @Provides
+    private EndSystemApi getEndSystemApi() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://localhost:8080")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(PaymentUtil.getOkHttpClient(ninjaProperties))
+                .build();
+        return retrofit.create(EndSystemApi.class);
     }
 }

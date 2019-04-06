@@ -34,6 +34,29 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>com.devappliance.qdslhbmplugin</groupId>
+        <artifactId>querydsl-hbm-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>qdsl</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.3.8.Final</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <targetFolder>target/generated-sources/java/queryDsl</targetFolder>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>1.3.1</version>
         <executions>
@@ -196,6 +219,7 @@
   <properties>
     <ninja.version>6.2.2</ninja.version>
     <jetty.version>9.3.15.v20161220</jetty.version>
+    <querydsl.version>4.2.1</querydsl.version>
   </properties>
 </project>
 

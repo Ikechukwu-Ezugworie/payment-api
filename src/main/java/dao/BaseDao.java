@@ -4,6 +4,8 @@ import com.bw.payment.entity.Setting;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.jpa.impl.JPAQuery;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -70,6 +72,10 @@ public class BaseDao {
         } catch (NoResultException | NonUniqueResultException ignore) {
             return 0;
         }
+    }
+
+    public <E> JPAQuery<E> startJPAQuery(EntityPath<E> entityPath) {
+        return new JPAQuery<E>(entityManagerProvider.get()).from(entityPath);
     }
 
     <T> long getCount(TypedQuery<T> tTypedQuery) {

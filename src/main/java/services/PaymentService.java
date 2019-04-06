@@ -1,11 +1,11 @@
 package services;
 
-import com.bw.payment.entity.Merchant;
-import com.bw.payment.entity.RemitaServiceCredentials;
-import com.bw.payment.entity.WebPayServiceCredentials;
+import com.bw.payment.entity.*;
 import com.google.inject.Inject;
+import com.querydsl.jpa.impl.JPAQuery;
 import dao.BaseDao;
 import dao.MerchantDao;
+import ninja.jpa.UnitOfWork;
 
 import java.util.List;
 
@@ -53,5 +53,14 @@ public class PaymentService {
 
     public Merchant getMerchant() {
         return this.merchantDao.getFirstMerchant();
+    }
+
+    @UnitOfWork
+    public FlutterWaveServiceCredentials getFlutterWaveServiceCredential(Merchant merchant) {
+        JPAQuery<FlutterWaveServiceCredentials> flutterWaveServiceCredentialsJPAQuery = baseDao.startJPAQuery(QFlutterWaveServiceCredentials.flutterWaveServiceCredentials);
+        if (merchant != null) {
+            flutterWaveServiceCredentialsJPAQuery.where(QFlutterWaveServiceCredentials.flutterWaveServiceCredentials.merchant.eq(merchant));
+        }
+        return flutterWaveServiceCredentialsJPAQuery.fetchFirst();
     }
 }

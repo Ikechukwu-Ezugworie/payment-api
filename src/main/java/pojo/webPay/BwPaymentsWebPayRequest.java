@@ -20,7 +20,7 @@ public class BwPaymentsWebPayRequest {
     private String payerName;
     @NotBlank (message = "Payer email cannot be empty")
     private String payerEmail;
-    @NotBlank (message = "Customer reference cannot be empty")
+    @NotBlank (message = "FWCustomerDto reference cannot be empty")
     private String customerReference;
     @NotBlank (message = "Payment ID cannot be empty")
     private String paymentItemId;
