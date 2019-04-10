@@ -1,4 +1,4 @@
-package pojo.flutterWave.api;
+package pojo.flutterWave.api.request;
 
 /*
  * Created by Gibah Joseph on Apr, 2019
@@ -6,20 +6,27 @@ package pojo.flutterWave.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.hibernate.validator.constraints.NotBlank;
 import pojo.flutterWave.FWMetaDto;
 
 import java.util.List;
 
 public class FWSubAccountRequestDto {
 
+    public static final String SPLIT_PERCENTAGE = "percentage";
+    public static final String SPLIT_FLAT = "flat";
+
     @SerializedName("account_bank")
     @Expose
+    @NotBlank(message = "Account bank cannot be empty")
     private String accountBank;
     @SerializedName("account_number")
     @Expose
+    @NotBlank(message = "Account number cannot be empty")
     private String accountNumber;
     @SerializedName("business_name")
     @Expose
+    @NotBlank(message = "Business name cannot be empty")
     private String businessName;
     @SerializedName("business_email")
     @Expose
@@ -32,13 +39,42 @@ public class FWSubAccountRequestDto {
     private String businessContactMobile;
     @SerializedName("business_mobile")
     @Expose
+    @NotBlank(message = "Business mobile cannot be empty")
     private String businessMobile;
     @SerializedName("meta")
     @Expose
     private List<FWMetaDto> meta;
     @SerializedName("seckey")
     @Expose
+    @NotBlank(message = "Sec key cannot be empty")
     private String seckey;
+    @SerializedName("split_type")
+    @Expose
+    @NotBlank(message = "Split type cannot be empty")
+
+    private String splitType;
+    @SerializedName("split_value")
+    @Expose
+    @NotBlank(message = "Split value cannot be empty")
+    private String splitValue;
+
+    public String getSplitType() {
+        return splitType;
+    }
+
+    public FWSubAccountRequestDto setSplitType(String splitType) {
+        this.splitType = splitType;
+        return this;
+    }
+
+    public String getSplitValue() {
+        return splitValue;
+    }
+
+    public FWSubAccountRequestDto setSplitValue(String splitValue) {
+        this.splitValue = splitValue;
+        return this;
+    }
 
     public String getAccountBank() {
         return accountBank;

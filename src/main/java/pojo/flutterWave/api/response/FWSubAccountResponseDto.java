@@ -1,4 +1,4 @@
-package pojo.flutterWave.api.request.response;
+package pojo.flutterWave.api.response;
 
 /*
  * Created by Gibah Joseph on Apr, 2019

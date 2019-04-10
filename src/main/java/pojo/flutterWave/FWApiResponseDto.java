@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 /*
  * Created by Gibah Joseph on Apr, 2019
  */
-public class FWTransactionResponseDto {
+public class FWApiResponseDto<T> {
 
     @SerializedName("status")
     @Expose
@@ -16,7 +16,7 @@ public class FWTransactionResponseDto {
     private String message;
     @SerializedName("data")
     @Expose
-    private FWTransactionResponseDataDto data;
+    private T data;
 
     public String getStatus() {
         return status;
@@ -34,12 +34,12 @@ public class FWTransactionResponseDto {
         this.message = message;
     }
 
-    public FWTransactionResponseDataDto getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(FWTransactionResponseDataDto data) {
+    public FWApiResponseDto<T> setData(T data) {
         this.data = data;
+        return this;
     }
-
 }
