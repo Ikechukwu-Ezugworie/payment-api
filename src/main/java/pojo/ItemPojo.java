@@ -8,20 +8,20 @@ import javax.validation.constraints.NotNull;
  * CREATED BY GIBAH
  */
 public class ItemPojo {
-    @NotBlank(message = "validation.not.blank")
+    @NotBlank(message = "Item pojo name cannot be blank")
     private String name;
-    @NotBlank(message = "validation.not.blank")
+    @NotBlank(message = "ItemId name cannot be blank")
     private String itemId;
-    @NotNull(message = "validation.not.blank")
+    @NotNull(message = "Quantity cannot be blank")
     private Integer quantity;
-    @NotNull(message = "validation.not.blank")
+    @NotNull(message = "PriceInKobo cannot be blank")
     private Long priceInKobo;
     private Long taxInKobo;
-    @NotNull(message = "validation.not.blank")
+    @NotNull(message = "SubTotal cannot be blank")
     private Long subTotalInKobo;
-    @NotNull(message = "validation.not.blank")
+    @NotNull(message = "TotalInKobo cannot be blank")
     private Long totalInKobo;
-    @NotBlank(message = "validation.not.blank")
+    @NotBlank(message = "description cannot be blank")
     private String description;
     private String status;
     private Long id;

@@ -1,0 +1,183 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+<@layout.myLayout "RemitaPay">
+<div style="width: 100%;  background: #636363; color: white; text-align: end;padding: 2px 16px; font-size: 10px"><span><strong>Contact Support:</strong>
+    +234 814 990 6585 | cae@byteworks.com.ng</span></div>
+<div class="g-bg-white">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-2 col-md-8 col-lg-2">
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center g-color-main text-uppercase g-text-underline--none--hover">
+                  <span class="g-color-text g-font-size-35 g-line-height-0_7 mr-4">
+                      <img class="g-width-260" src="/assets/images/ncbs.png">
+                  </span>
+                    <!--<img class="g-hidden-sm-down" src="/assets/img/logo/ncbs-logo.png" style="height:40px; margin-top:-4px; margin-bottom:-4px">-->
+                </a>
+                <!-- End Logo -->
+            </div>
+        </div>
+    </div>
+</div>
+<#--
+<div class="row">-->
+    <#--
+</div>-->
+<br><br>
+
+<nav class=" navbar navbar-expand-lg g-bg-primary g-brd-primary-dark-v1 g-pa-0 site-toolbar"
+     style="background: #2Dc565; height: 15px"></nav>
+<!-- Start Form Area -->
+<section class="featured-area">
+    <div class="container" style="padding: 20px;border: 2px solid #28a74540;border-radius: 10px;">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="mt-10">
+                    <!-- Notifications -->
+
+                    <#--
+                    <div class="alert alert-warning">
+                        <a href="#" class="close" data-dismiss="alert">&times;</a>
+                        <strong><i class="fa fa-info-circle"></i></strong> Find payment details below.
+                    </div>
+                    -->
+                    <!-- End Notifications -->
+                </div>
+                <div class="">
+                    <div class="sub-header border-bottom-b1" fxLayout="row wrap">
+                        <h4 style="color: #229250">
+                            Order Details
+                        </h4>
+                        <span fxFlex="1 1 auto"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="dashboard-breadcrumb">
+                            <a href="http://localhost:8081/online-payment" title="Go back to Your Payment Page">Online
+                                Payment Portal</a>
+                            &nbsp;>&nbsp;
+                            <span>Transaction Details</span>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="alert alert-warning text-center">
+                    <b></b>
+                </div>
+                <div class="col-md-8 offset-md-2 card mt-5">
+
+                    <div class="row m-5">
+
+                        <div class="col-md-6">
+                            <div>Remitta Payment Reference: <span style="color: green"> ${data.rrr} </span></div>
+                            <div>Total Amount: <span> ₦ ${data.amount}</span>
+                            </div>
+                            <div>Payment Provider:<span> Remitta </span>
+                            </div>
+                            <div>Order Id:<span> ${data.paymentTransactionReference} </span>
+                            </div>
+                            <br/>
+                        </div>
+                        <div class="col-12">
+
+                            <table class="table table-sm table-bordered table-striped ">
+                                <thead class="thead-light" style="background: #044471;color: #fff;">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Service</th>
+                                    <th scope="col">Code</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Unit Price</th>
+                                    <th scope="col">Amount</th>
+                                </tr>
+                                <!---->
+                                </thead>
+                                <!---->
+                                <!---->
+                                <tbody>
+                                </tbody>
+                                <tbody>
+                                <#list  data.items as item>
+                                <tr>
+                                    <td scope="col"> ${item?index + 1}</td>
+                                    <td scope="col">${item.name}</td>
+                                    <td scope="col">${item.itemId}</td>
+                                    <td scope="col">${item.quantity}</td>
+                                    <td scope="col">${item.pricePerItem}</td>
+                                    <td scope="col">${item.totalAmount}</td>
+                                </tr>
+                                </#list>
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+                        <form action="${data.remittaFormActionUrl}" name="SubmitRemitaForm"
+                              method="POST">
+                            <input name="merchantId" value="${data.merchantId}" type="hidden">
+                            <input name="hash" value="${data.hash}" type="hidden">
+                            <input name="rrr" value="${data.rrr}" type="hidden">
+                            <input name="responseurl" value="${data.responseurl}" type="hidden">
+                            <button class="btn btn-sm btn-primary g-color-white mb-1 float-right"
+                                    type="submit"
+                                    name="submit_btn"
+                                    style="background: #666ee8">Make payment
+                            </button>
+                        </form>
+
+                    </div>
+                    <div class="modal-header">
+
+                        <h4 class="text-center">
+                            <img src="${contextPath!""}/assets/images/remittaPaymentOption.png" width="300px"/></h4>  <h4
+                            class="text-center"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<br><br>
+
+<div id="footer">
+    <footer class="position-footer-top"
+            style="padding-top: 20px;
+    border-top: 2px solid #28a745;
+    background-color: #f7f7f7">
+        <div class="g-bg-gray-light-v5 ">
+            <div class="container g-pt-30">
+                <div class="row align-items-center mt-footerxlg-25">
+                    <div class="col-md-8 text-center text-md-left g-mb-md-30">
+                        <!-- Logo -->
+                        <a class="g-text-underline--none--hover mr-4" href="index.html">
+                            <img class="g-width-100" src="/assets/images/byteone_logo.png" alt="Logo">
+                        </a>
+                        <!-- End Logo -->
+                        <p class="d-inline-block align-middle g-font-size-13 mb-0">&#169; Copyright 2019. National
+                            Identity Management Commission. All Rights Reserved.</p>
+
+                        <p class="g-font-size-13 mb-0">
+                            <span>Support Contact: +234 814 990 6585 | Email: cae@byteworks.com.ng </span>
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 g-mb-30 text-right">
+                        <div class="d-inline-block  ml-0 mr-2">
+                            <p>GET IN TOUCH:&nbsp;
+                                <i class="fa fa-envelope g-color-text "></i> <span
+                                        class=""> FOR HELP: INFO@NIMC.GOV.NG </span>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+
+</@layout.myLayout>

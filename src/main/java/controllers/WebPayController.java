@@ -2,6 +2,7 @@ package controllers;
 
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.entity.RawDump;
+import com.bw.payment.entity.WebPayServiceCredentials;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
@@ -155,7 +156,7 @@ public class WebPayController {
                     entityManager.merge(rawDump);
                 });
             }
-            URIBuilder b = new URIBuilder(paymentService.getWebPayCredentials(null).getMerchantRedirectUrl());
+            URIBuilder b = new URIBuilder(paymentService.getProviderCredentials(WebPayServiceCredentials.class,null).getMerchantRedirectUrl());
             webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
             if (paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
                 b.addParameter("status", "successful");

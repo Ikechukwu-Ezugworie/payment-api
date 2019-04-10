@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 /*
@@ -24,6 +25,7 @@ public class RemittaNotification {
     private String payerPhoneNumber;
     private String payerEmail;
     private String type;
+    private String dateRequested;
     private List<Object> customFieldData = null;
 
     public String getRrr() {
@@ -41,6 +43,7 @@ public class RemittaNotification {
     public void setChannel(String channel) {
         this.channel = channel;
     }
+
 
     public BigDecimal getAmount() {
         return amount;
@@ -147,4 +150,12 @@ public class RemittaNotification {
         this.customFieldData = customFieldData;
     }
 
+    public String getDateRequested() {
+        return dateRequested;
+    }
+
+    public RemittaNotification setDateRequested(String dateRequested) {
+        this.dateRequested = dateRequested;
+        return this;
+    }
 }

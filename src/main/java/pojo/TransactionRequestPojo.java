@@ -7,6 +7,8 @@ import pojo.flutterWave.SplitDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,20 +22,20 @@ public class TransactionRequestPojo {
     private String lastUpdated;
     private String providerTransactionReference;
     private String merchantTransactionReferenceId;
-    @NotNull(message = "validation.not.null")
+    @NotNull
     private Long amountInKobo;
     private Boolean notifyOnStatusChange = false;
     private String notificationUrl;
-    @NotBlank(message = "validation.not.null")
-    @PaymentProvider
+//    @NotBlank(message = "validation.not.null")
+//    @PaymentProvider
     private String paymentProvider;
-    @NotBlank(message = "validation.not.null")
-    @PaymentChannel
+//    @NoBlank(message = "validation.not.null")
+////    @PaytmentChannel
     private String paymentChannel;
     private String serviceTypeId;
     private MerchantRequestPojo merchant;
     private String paymentTransactionStatus;
-    @NotNull(message = "validation.not.null")
+    @NotNull
     @Valid
     private PayerPojo payer;
     @Valid
@@ -44,6 +46,17 @@ public class TransactionRequestPojo {
     private String customerTransactionReference;
     private List<SplitDto> split;
     private String currencyCode = "NGN";
+    private String description;
+    private BigDecimal amountPaid;
+
+    public BigDecimal getAmountPaid() {
+        return amountPaid;
+    }
+
+    public TransactionRequestPojo setAmountPaid(BigDecimal amountPaid) {
+        this.amountPaid = amountPaid;
+        return this;
+    }
 
     public String getCurrencyCode() {
         return currencyCode;
@@ -219,6 +232,15 @@ public class TransactionRequestPojo {
 
     public void setCustomerTransactionReference(String customerTransactionReference) {
         this.customerTransactionReference = customerTransactionReference;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public TransactionRequestPojo setDescription(String description) {
+        this.description = description;
+        return this;
     }
 
     public List<SplitDto> getSplit() {

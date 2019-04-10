@@ -17,6 +17,9 @@
 
 package conf;
 
+import Adapters.GsonPConverterFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
@@ -26,6 +29,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import services.api.EndSystemApi;
+import services.api.RemittaApi;
 import services.api.WebPayApi;
 import utils.CronSchedule;
 import utils.PaymentUtil;
@@ -47,7 +51,7 @@ public class Module extends AbstractModule {
     }
 
     @Provides
-    private WebPayApi getRetrofitApi() {
+    private WebPayApi getInterswitchBaseRefrofitApi() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ninjaProperties.getWithDefault("web.pay.base.url", "https://sandbox.interswitchng.com"))
                 .addConverterFactory(GsonConverterFactory.create())
@@ -64,5 +68,17 @@ public class Module extends AbstractModule {
                 .client(PaymentUtil.getOkHttpClient(ninjaProperties))
                 .build();
         return retrofit.create(EndSystemApi.class);
+    }
+
+    @Provides
+    private RemittaApi getRemitterBaseRetrofitApi() {
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ninjaProperties.getWithDefault("remitta.base.url", "https://remitademo.net"))
+                .addConverterFactory(new GsonPConverterFactory(new Gson()))
+                .client(PaymentUtil.getOkHttpClient(ninjaProperties))
+                .build();
+        return retrofit.create(RemittaApi.class);
     }
 }

@@ -46,15 +46,15 @@ public class PaymentService {
     @Inject
     protected TicketIdSequence ticketIdSequence;
 
-    public WebPayServiceCredentials getWebPayCredentials(Merchant merchant) {
+    public <T> T getProviderCredentials(Class<T> tClass, Merchant merchant) {
         if (merchant == null) {
-            List<WebPayServiceCredentials> allRecords = baseDao.getAllRecords(WebPayServiceCredentials.class);
+            List<T> allRecords = baseDao.getAllRecords(tClass);
             if (allRecords.size() > 0) {
                 return allRecords.get(0);
             }
             return null;
         }
-        return baseDao.getUniqueRecordByProperty(WebPayServiceCredentials.class, "merchant", merchant);
+        return baseDao.getUniqueRecordByProperty(tClass, "merchant", merchant);
     }
 
     public RemitaServiceCredentials getRemitaCredentials(Merchant merchant) {
@@ -68,16 +68,6 @@ public class PaymentService {
         return baseDao.getUniqueRecordByProperty(RemitaServiceCredentials.class, "merchant", merchant);
     }
 
-    public <T> T getProviderCredentials(Class<T> tClass, Merchant merchant) {
-        if (merchant == null) {
-            List<T> allRecords = baseDao.getAllRecords(tClass);
-            if (allRecords.size() > 0) {
-                return allRecords.get(0);
-            }
-            return null;
-        }
-        return baseDao.getUniqueRecordByProperty(tClass, "merchant", merchant);
-    }
 
     public Merchant getMerchant() {
         return this.merchantDao.getFirstMerchant();

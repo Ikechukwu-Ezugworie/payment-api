@@ -84,7 +84,6 @@ public class SetupService {
             merchantRequestPojo.setPaydirectMerchantReference("- NOT CONFIGURED -");
             merchantRequestPojo.setLookupUrl("- NOT CONFIGURED -");
             merchantRequestPojo.setNotificationUrl("- NOT CONFIGURED -");
-
             merchant = merchantDao.createMerchant(merchantRequestPojo);
         }
         createWebPayCredentials(merchant);
@@ -110,8 +109,30 @@ public class SetupService {
         }
     }
 
+
+
+
+    private void createRemittaCredentials(Merchant merchant) {
+        RemitaServiceCredentials credentials = paymentService.getProviderCredentials(RemitaServiceCredentials.class, merchant);
+
+        if (credentials == null) {
+            System.out.println("credentials are null");
+            RemitaServiceCredentials data = new RemitaServiceCredentials();
+            data.setApiKey(Constants.NOT_CONFIGURED);
+            data.setMerchantId(Constants.NOT_CONFIGURED);
+            data.setBaseUrl(Constants.NOT_CONFIGURED);
+            data.setServiceTypeId(Constants.NOT_CONFIGURED);
+            data.setMerchant(merchant);
+            baseDao.saveObject(data);
+            data.setMerchantId("1234");
+
+        }
+
+    }
+
+
     private void createWebPayCredentials(Merchant merchant) {
-        WebPayServiceCredentials webPayServiceCredentials = paymentService.getWebPayCredentials(merchant);
+        WebPayServiceCredentials webPayServiceCredentials = paymentService.getProviderCredentials(WebPayServiceCredentials.class, merchant);
 
         if (webPayServiceCredentials == null) {
             webPayServiceCredentials = new WebPayServiceCredentials();

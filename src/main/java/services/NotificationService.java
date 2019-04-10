@@ -1,6 +1,7 @@
 package services;
 
 import com.bw.payment.entity.NotificationQueue;
+import com.bw.payment.entity.RemitaServiceCredentials;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;

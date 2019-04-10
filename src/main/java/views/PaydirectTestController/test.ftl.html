@@ -1,6 +1,5 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
 <@layout.myLayout "Interswitch">
-
 <div class="container mt-5 mb-5 card col-md-10">
     <form class="row m-5" action="" method="post">
     <#--<#if (flash.error)??>-->
@@ -150,7 +149,7 @@
                 </tr>
                 <tr>
                     <th style="width: 30%;">Amount (&#8358;)</th>
-                    <td id="amountPaid">N/A</td>
+                    <td id="totalAmount">N/A</td>
                 </tr>
             </table>
         </div>
@@ -261,7 +260,7 @@
                 console.log('<== ' + details.transactionId);
                 $("#transactionId").text(details.transactionId);
                 $("#ppr").text(details.providerTransactionReference);
-                $("#amountPaid").text(details.amountPaidInKobo / 100);
+                $("#totalAmount").text(details.amountPaidInKobo / 100);
             },
             error: function (xhr, status) {
                 $("#paying").hide();

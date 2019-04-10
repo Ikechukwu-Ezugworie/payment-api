@@ -24,6 +24,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * CREATED BY GIBAH
@@ -181,6 +182,7 @@ public class PaymentTransactionDao extends BaseDao {
         return uniqueResultOrNull(entityManager.createQuery(clientCriteriaQuery));
 
     }
+
 
     public PaymentTransaction getPaymentTransactionByPaymentProviderReference(String providerReference) {
 
