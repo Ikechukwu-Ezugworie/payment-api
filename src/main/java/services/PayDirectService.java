@@ -328,7 +328,7 @@ public class PayDirectService {
 //                break;
 //            }
 
-            PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
+            PaymentTransaction paymentTransaction = paymentTransactionService.createTransaction(transactionRequestPojo, null, null);
             if (rawDump != null) {
                 rawDump.setPaymentTransaction(paymentTransaction);
                 paymentTransactionService.dump(rawDump);

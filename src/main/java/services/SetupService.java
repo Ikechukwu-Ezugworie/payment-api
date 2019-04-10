@@ -1,11 +1,12 @@
 package services;
 
-import com.bw.payment.entity.Merchant;
-import com.bw.payment.entity.RemitaServiceCredentials;
-import com.bw.payment.entity.WebPayServiceCredentials;
+import com.bw.payment.entity.*;
+import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import com.querydsl.jpa.impl.JPAQuery;
 import dao.BaseDao;
+import dao.CurrencyDao;
 import dao.MerchantDao;
 import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
@@ -23,14 +24,16 @@ import java.util.Properties;
 public class SetupService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private BaseDao baseDao;
+    private CurrencyDao currencyDao;
     private MerchantDao merchantDao;
     private NinjaProperties ninjaProperties;
     private PaymentService paymentService;
     private TransactionTemplate transactionTemplate;
 
     @Inject
-    public SetupService(BaseDao baseDao, MerchantDao merchantDao, NinjaProperties ninjaProperties, PaymentService paymentService, TransactionTemplate transactionTemplate) {
+    public SetupService(BaseDao baseDao, CurrencyDao currencyDao, MerchantDao merchantDao, NinjaProperties ninjaProperties, PaymentService paymentService, TransactionTemplate transactionTemplate) {
         this.baseDao = baseDao;
+        this.currencyDao = currencyDao;
         this.merchantDao = merchantDao;
         this.ninjaProperties = ninjaProperties;
         this.paymentService = paymentService;
@@ -52,6 +55,25 @@ public class SetupService {
         }
         createInterswitchWhitelist();
         createDefaultMerchant();
+        createDefaultCurrency();
+    }
+
+    private void createDefaultCurrency() {
+//        JPAQuery<Currency> currencyJPAQuery = baseDao.startJPAQuery(QCurrency.currency);
+//        currencyJPAQuery//.where(QCurrency.currency.code.eq("NGN"))
+//                .where(QCurrency.currency.status.eq(GenericStatusConstant.ACTIVE));
+//        System.out.println(currencyJPAQuery.toString());
+//        Currency currency = currencyJPAQuery.fetchFirst();
+
+
+        Currency currency = currencyDao.findByCode("NGN", GenericStatusConstant.ACTIVE);
+        if (currency == null) {
+            currency = new Currency();
+            currency.setName("Nigerian Naira");
+            currency.setCode("NGN");
+            currency.setStatus(GenericStatusConstant.ACTIVE);
+            baseDao.saveObject(currency);
+        }
     }
 
     private void createDefaultMerchant() {
@@ -67,6 +89,25 @@ public class SetupService {
         }
         createWebPayCredentials(merchant);
         createRemitaCredentials(merchant);
+        createFWCredentials(merchant);
+    }
+
+    private void createFWCredentials(Merchant merchant) {
+        FlutterWaveServiceCredentials flutterWaveServiceCredentials = paymentService.getProviderCredentials(FlutterWaveServiceCredentials.class, merchant);
+
+        if (flutterWaveServiceCredentials == null) {
+            flutterWaveServiceCredentials = new FlutterWaveServiceCredentials();
+            flutterWaveServiceCredentials.setMerchantRedirectUrl("_ NOT CONFIGURED _");
+            flutterWaveServiceCredentials.setApiKey("_ NOT CONFIGURED _");
+            flutterWaveServiceCredentials.setSecretKey("_ NOT CONFIGURED _");
+            flutterWaveServiceCredentials.setBaseUrl("_ NOT CONFIGURED _");
+            flutterWaveServiceCredentials.setMerchant(merchant);
+
+            FlutterWaveServiceCredentials finalFlutterWaveServiceCredentials = flutterWaveServiceCredentials;
+            transactionTemplate.execute(entityManager -> {
+                entityManager.persist(finalFlutterWaveServiceCredentials);
+            });
+        }
     }
 
     private void createWebPayCredentials(Merchant merchant) {

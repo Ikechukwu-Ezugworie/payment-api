@@ -1,6 +1,7 @@
 <#import "../layout/defaultLayout.ftl.html" as layout>
 <@layout.myLayout "BytePay">
     <#include "../layout/header.ftl.html"/>
+    <script src="https://api.ravepay.co/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
     <#--<div class="row">-->
 
     <#--</div>-->
@@ -21,15 +22,14 @@
                          </div>-->
                         <!-- End Notifications -->
                     </div>
-                    <div class="">
+                    <div class="row">
                         <div class="col-md-8">
-                            <h2 style="color: darkgreen"> WEB PAY </h2>
+                            <div><h2 style="color: darkgreen"> BW PAY </h2></div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="dashboard-breadcrumb">
-                                <a href="http://localhost:8080/online-payment" title="Go back to Your Payment Page">Online
-                                    Payment Portal</a>
+                                <a href="http://localhost:8080/online-payment" title="Go back to Your Payment Page">Online Payment Portal</a>
                                 &nbsp;>&nbsp;
                                 <span>Transaction Details</span>
                             </div>
@@ -85,6 +85,9 @@
                                         <#--</tr>-->
                                     </table>
                                 </div>
+                                <form>
+                                    <button type="button" onClick="payWithRave()">Proceed</button>
+                                </form>
                                 <#--<form name="webpay" action="${webpayBaseUrl!""}/collections/w/pay" method="post"-->
                                       <#--class=" col-12">-->
                                     <#--<input name="product_id" type="hidden" value="${data.productId}"/>-->
@@ -118,5 +121,40 @@
 
     <br><br>
 
+    <script>
+        var API_publicKey = "";
+
+        function payWithRave() {
+            var x = getpaidSetup({
+                PBFPubKey: API_publicKey,
+                customer_email: "user@example.com",
+                amount: 2000,
+                customer_phone: "234099940409",
+                currency: "NGN",
+                txref: "rave-123456",
+                meta: [{
+                    metaname: "flightID",
+                    metavalue: "AP1234"
+                }],
+                onclose: function() {
+
+                },
+                callback: function(response) {
+                    var txref = response.tx.txRef; // collect txRef returned and pass to a 					server page to complete status check.
+                    console.log("This is the response returned after a charge", response);
+                    if (
+                        response.tx.chargeResponseCode == "00" ||
+                        response.tx.chargeResponseCode == "0"
+                    ) {
+                       window.location.href=response.tx.redirectUrl+'?status=success'
+                    } else {
+                        // redirect to a failure page.
+                    }
+
+                    x.close(); // use this to close the modal immediately after payment.
+                }
+            });
+        }
+    </script>
 
 </@layout.myLayout>

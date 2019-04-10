@@ -1,5 +1,6 @@
 package services.api;
 
+import pojo.TransactionRequestPojo;
 import pojo.flutterWave.FWEndsystemTransactionRequestDto;
 import pojo.flutterWave.FlutterWaveValidationResponseDto;
 import pojo.webPay.WebPayPaymentDataDto;
@@ -12,5 +13,5 @@ import retrofit2.http.*;
 public interface EndSystemApi {
 
     @POST
-    Call<FlutterWaveValidationResponseDto> validateFlutterWavePayment(@Url String url, @Body FWEndsystemTransactionRequestDto transactionRequestDto);
+    Call<TransactionRequestPojo> validateFlutterWavePayment(@Url String url, @Body FWEndsystemTransactionRequestDto transactionRequestDto);
 }

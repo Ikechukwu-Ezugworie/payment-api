@@ -11,6 +11,7 @@ import pojo.ItemPojo;
 import pojo.PayerPojo;
 import pojo.PaymentTransactionFilterRequestDto;
 import pojo.TransactionRequestPojo;
+import pojo.flutterWave.SplitDto;
 import pojo.payDirect.paymentNotification.request.Payment;
 import services.sequence.PayerIdSequence;
 import services.sequence.TicketIdSequence;
@@ -31,9 +32,6 @@ import java.util.List;
 public class PaymentTransactionDao extends BaseDao {
 
     @Inject
-    protected TransactionIdSequence transactionIdSequence;
-
-    @Inject
     protected PayerIdSequence payerIdSequence;
     @Inject
     protected TicketIdSequence ticketIdSequence;
@@ -41,92 +39,6 @@ public class PaymentTransactionDao extends BaseDao {
     protected MerchantDao merchantDao;
     @Inject
     private NinjaProperties ninjaProperties;
-
-
-    @Transactional
-    public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant, String transactionId) {
-        if (StringUtils.isBlank(transactionId)) {
-            transactionId = transactionIdSequence.getNext();
-        }
-
-        if (merchant == null) {
-            merchant = merchantDao.getAllRecords(Merchant.class).get(0);
-        }
-
-        PaymentTransaction paymentTransaction = new PaymentTransaction();
-        if (ninjaProperties.isDev()) {
-            paymentTransaction.setTransactionId("DEV" + transactionId);
-        } else if (ninjaProperties.isTest()) {
-            paymentTransaction.setTransactionId("TEST" + transactionId);
-        } else {
-            paymentTransaction.setTransactionId(transactionId);
-
-        }
-        paymentTransaction.setDateCreated(PaymentUtil.nowToTimeStamp());
-        paymentTransaction.setMerchantTransactionReferenceId(request.getMerchantTransactionReferenceId());
-        paymentTransaction.setAmountInKobo(request.getAmountInKobo());
-        paymentTransaction.setAmountPaidInKobo(0L);
-        paymentTransaction.setPaymentProvider(PaymentProviderConstant.fromValue(request.getPaymentProvider()));
-        if (StringUtils.isNotBlank(request.getPaymentChannel())) {
-            paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
-        }
-
-        paymentTransaction.setServiceTypeId(request.getServiceTypeId());
-        paymentTransaction.setMerchant(merchant);
-        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-        paymentTransaction.setCustomerTransactionReference(request.getCustomerTransactionReference());
-
-        System.out.println("<=== cref" + request.getCustomerTransactionReference());
-
-        Payer payer = new Payer();
-        payer.setPayerId(payerIdSequence.getNext());
-        payer.setFirstName(request.getPayer().getFirstName());
-        payer.setLastName(request.getPayer().getLastName());
-        payer.setEmail(request.getPayer().getEmail());
-        payer.setPhoneNumber(request.getPayer().getPhoneNumber());
-//        payer.setAddress(request.getPayer().getAddress());
-
-        saveObject(payer);
-
-        paymentTransaction.setPayer(payer);
-        saveObject(paymentTransaction);
-
-        if (request.getItems() != null) {
-            for (ItemPojo itemPojo : request.getItems()) {
-                Item item = new Item();
-                item.setName(itemPojo.getName());
-                item.setItemId(itemPojo.getItemId());
-                item.setQuantity(itemPojo.getQuantity());
-                item.setPriceInKobo(itemPojo.getPriceInKobo());
-                item.setTaxInKobo(itemPojo.getTaxInKobo());
-                item.setSubTotalInKobo(itemPojo.getSubTotalInKobo());
-                item.setTotalInKobo(itemPojo.getTotalInKobo());
-                item.setDescription(itemPojo.getDescription());
-                item.setStatus(GenericStatusConstant.ACTIVE);
-
-                saveObject(item);
-
-                PaymentTransactionItem paymentTransactionItem = new PaymentTransactionItem();
-                paymentTransactionItem.setItem(item);
-                paymentTransactionItem.setPaymentTransaction(paymentTransaction);
-                saveObject(paymentTransactionItem);
-
-            }
-        }
-
-        PaymentRequestLog paymentTransactionRequestLog = new PaymentRequestLog();
-        paymentTransactionRequestLog.setRequestDump(PaymentUtil.toJSON(request));
-        paymentTransactionRequestLog.setDateCreated(PaymentUtil.nowToTimeStamp());
-        paymentTransactionRequestLog.setPaymentTransaction(paymentTransaction);
-
-        saveObject(paymentTransactionRequestLog);
-
-        return paymentTransaction;
-    }
-
-    public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
-        return createTransaction(request, merchant, null);
-    }
 
     public List<Item> getPaymentTransactionItems(Long id, GenericStatusConstant status) {
         Query q = entityManagerProvider.get().createQuery("select x from Item x, PaymentTransactionItem pi where pi.paymentTransaction.id=:id and x.id=pi.item.id" +

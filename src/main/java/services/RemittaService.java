@@ -65,7 +65,7 @@ public class RemittaService {
             transactionRequestPojo.setNotifyOnStatusChange(false);
             transactionRequestPojo.setNotificationUrl("");
 
-            PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null, null);
+            PaymentTransaction paymentTransaction = paymentTransactionService.createTransaction(transactionRequestPojo, null, null);
 
             if (paymentTransaction == null) {
                 return null;

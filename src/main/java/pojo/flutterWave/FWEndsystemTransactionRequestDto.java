@@ -1,20 +1,35 @@
 package pojo.flutterWave;
 
+import javax.validation.constraints.NotNull;
+
 /*
  * Created by Gibah Joseph on Apr, 2019
  */
 public class FWEndsystemTransactionRequestDto {
     private String accountCode;
-    private String apiKey;
-    private String transactionReference;
-    private Long amountInKobo;
     private String hash;
+    private String transactionReference;
+    private String customerReference;
+    //  NGN USD EUR GBP
+    private String currencyCode;
+    private Double amount;
     private String redirectUrl;
     private String customerName;
+    @NotNull
     private String customerEmail;
+    @NotNull
     private String customerPhone;
     private String customerFirstname;
     private String customerLastname;
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public FWEndsystemTransactionRequestDto setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+        return this;
+    }
 
     public String getAccountCode() {
         return accountCode;
@@ -22,15 +37,6 @@ public class FWEndsystemTransactionRequestDto {
 
     public FWEndsystemTransactionRequestDto setAccountCode(String accountCode) {
         this.accountCode = accountCode;
-        return this;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public FWEndsystemTransactionRequestDto setApiKey(String apiKey) {
-        this.apiKey = apiKey;
         return this;
     }
 
@@ -43,12 +49,21 @@ public class FWEndsystemTransactionRequestDto {
         return this;
     }
 
-    public Long getAmountInKobo() {
-        return amountInKobo;
+    public String getCustomerReference() {
+        return customerReference;
     }
 
-    public FWEndsystemTransactionRequestDto setAmountInKobo(Long amountInKobo) {
-        this.amountInKobo = amountInKobo;
+    public FWEndsystemTransactionRequestDto setCustomerReference(String customerReference) {
+        this.customerReference = customerReference;
+        return this;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public FWEndsystemTransactionRequestDto setAmount(Double amount) {
+        this.amount = amount;
         return this;
     }
 

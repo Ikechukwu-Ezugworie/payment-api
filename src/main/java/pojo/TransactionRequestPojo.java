@@ -3,10 +3,10 @@ package pojo;
 import constraints.PaymentChannel;
 import constraints.PaymentProvider;
 import org.hibernate.validator.constraints.NotBlank;
+import pojo.flutterWave.SplitDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +42,17 @@ public class TransactionRequestPojo {
     private String transactionValidationUrl;
     private boolean instantTransaction = false;
     private String customerTransactionReference;
+    private List<SplitDto> split;
+    private String currencyCode = "NGN";
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public TransactionRequestPojo setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+        return this;
+    }
 
     public Long getId() {
         return id;
@@ -208,5 +219,22 @@ public class TransactionRequestPojo {
 
     public void setCustomerTransactionReference(String customerTransactionReference) {
         this.customerTransactionReference = customerTransactionReference;
+    }
+
+    public List<SplitDto> getSplit() {
+        return split;
+    }
+
+    public TransactionRequestPojo setSplit(List<SplitDto> split) {
+        this.split = split;
+        return this;
+    }
+
+    public TransactionRequestPojo addSplit(SplitDto split) {
+        if (this.split == null) {
+            this.split = new ArrayList<>();
+        }
+        this.split.add(split);
+        return this;
     }
 }

@@ -61,6 +61,16 @@ public class Routes implements ApplicationRoutes {
         router.POST().route(String.format("%s/webpay/notification", urlPrefix)).with(WebPayController::paymentCompleted);
         router.GET().route(String.format("%s/webpay/transaction/status", urlPrefix)).with(WebPayController::requeryTransaction);
 
+        /////////////////////////////////////////////////////////////////////
+        // FLUTTERWAVE
+        ////////////////////////////////////////////////////////////////////
+        router.GET().route(String.format("%s/rave/test", urlPrefix)).with(FlutterWaveController::test);
+        router.POST().route(String.format("%s/payment/start", urlPrefix)).with(FlutterWaveController::paymentPage);
+        router.GET().route(String.format("%s/rave/verify", urlPrefix)).with(FlutterWaveController::getTransaction);
+        router.GET().route(String.format("%s/rave/complete", urlPrefix)).with(FlutterWaveController::paymentCompleted);
+//        router.POST().route(String.format("%s/webpay/notification", urlPrefix)).with(WebPayController::paymentCompleted);
+//        router.GET().route(String.format("%s/webpay/transaction/status", urlPrefix)).with(WebPayController::requeryTransaction);
+
 
         /////////////////////////////////////////////////////////////////////
         //  PAYMENT TRANSACTION

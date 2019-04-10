@@ -7,7 +7,6 @@ import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import com.querydsl.jpa.impl.JPAQuery;
 import controllers.WebPayController;
 import dao.PaymentTransactionDao;
 import ninja.Context;
@@ -214,19 +213,19 @@ public class FlutterWaveService {
         return fwPaymentRequestDto;
     }
 
-    @UnitOfWork
     public PaymentTransaction getPaymentTransactionByMerchantRef(String mRef) {
-        QPaymentTransaction paymentTransaction = QPaymentTransaction.paymentTransaction;
-        JPAQuery<PaymentTransaction> paymentTransactionJPAQuery = paymentTransactionDao.startJPAQuery(paymentTransaction);
-        List<PaymentTransaction> paymentTransactions = paymentTransactionJPAQuery.where(paymentTransaction.merchantTransactionReferenceId.equalsIgnoreCase(mRef))
-                .where(paymentTransaction.paymentProvider.eq(PaymentProviderConstant.FLUTTERWAVE))
-                .fetch();
-        if (paymentTransactions.isEmpty()) {
-            return null;
-        }
-        if (paymentTransactions.size() > 1) {
-            throw new IllegalArgumentException("More than one result");
-        }
-        return paymentTransactions.get(0);
+//        QPaymentTransaction paymentTransaction = QPaymentTransaction.paymentTransaction;
+//        JPAQuery<PaymentTransaction> paymentTransactionJPAQuery = paymentTransactionDao.startJPAQuery(paymentTransaction);
+//        List<PaymentTransaction> paymentTransactions = paymentTransactionJPAQuery.where(paymentTransaction.merchantTransactionReferenceId.equalsIgnoreCase(mRef))
+//                .where(paymentTransaction.paymentProvider.eq(PaymentProviderConstant.FLUTTERWAVE))
+//                .fetch();
+//        if (paymentTransactions.isEmpty()) {
+//            return null;
+//        }
+//        if (paymentTransactions.size() > 1) {
+//            throw new IllegalArgumentException("More than one result");
+//        }
+//        return paymentTransactions.get(0);
+        return null;
     }
 }

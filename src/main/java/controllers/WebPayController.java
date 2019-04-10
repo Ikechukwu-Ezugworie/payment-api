@@ -88,7 +88,7 @@ public class WebPayController {
         transactionRequestPojo.setItems(Arrays.asList(item));
         transactionRequestPojo.setInstantTransaction(true);
 
-        PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null);
+        PaymentTransaction paymentTransaction = paymentTransactionService.createTransaction(transactionRequestPojo, null);
 
         RawDump rawDump = new RawDump();
         rawDump.setRequest(payload);

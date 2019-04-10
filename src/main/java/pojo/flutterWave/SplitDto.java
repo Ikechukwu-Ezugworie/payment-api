@@ -5,8 +5,9 @@ package pojo.flutterWave;
  */
 public class SplitDto {
     private String identifier;
-    private String ratio;
-    private Long amountInKobo;
+    private Double ratio;
+    //    private Long amountInKobo;
+    private String code;
 
     public String getIdentifier() {
         return identifier;
@@ -17,21 +18,21 @@ public class SplitDto {
         return this;
     }
 
-    public String getRatio() {
+    public Double getRatio() {
         return ratio;
     }
 
-    public SplitDto setRatio(String ratio) {
+    public SplitDto setRatio(Double ratio) {
         this.ratio = ratio;
         return this;
     }
 
-    public Long getAmountInKobo() {
-        return amountInKobo;
+    public String getCode() {
+        return code;
     }
 
-    public SplitDto setAmountInKobo(Long amountInKobo) {
-        this.amountInKobo = amountInKobo;
+    public SplitDto setCode(String code) {
+        this.code = code;
         return this;
     }
 }

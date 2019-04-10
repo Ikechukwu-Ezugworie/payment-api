@@ -3,17 +3,22 @@ package services;
 import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentChannelConstant;
+import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import dao.CurrencyDao;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
 import pojo.Ticket;
 import pojo.TransactionRequestPojo;
+import pojo.flutterWave.SplitDto;
 import services.sequence.PayerIdSequence;
 import services.sequence.TransactionIdSequence;
 import utils.Constants;
@@ -42,6 +47,8 @@ public class PaymentTransactionService {
     private ReverseRouter reverseRouter;
     @Inject
     private QuickTellerService quickTellerService;
+    @Inject
+    CurrencyDao currencyDao;
 
     @Inject
     public PaymentTransactionService(PaymentTransactionDao paymentTransactionDao, MerchantDao merchantDao, NinjaProperties ninjaProperties) {
@@ -116,7 +123,7 @@ public class PaymentTransactionService {
 //            case NIBBS:
 //                break;
 //        }
-        return paymentTransactionDao.createTransaction(request, merchant);
+        return createTransaction(request, merchant);
     }
 
 //    private void validateInterswitchTransactionRequest(TransactionRequestPojo request, Merchant merchant) throws IllegalArgumentException {
@@ -163,5 +170,103 @@ public class PaymentTransactionService {
     @Transactional
     public void updateDump(RawDump rawDump) {
         paymentTransactionDao.updateObject(rawDump);
+    }
+
+
+    @Transactional
+    public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant, String transactionId) {
+        if (StringUtils.isBlank(transactionId)) {
+            transactionId = transactionIdSequence.getNext();
+        }
+
+        if (merchant == null) {
+            merchant = merchantDao.getAllRecords(Merchant.class).get(0);
+        }
+
+        PaymentTransaction paymentTransaction = new PaymentTransaction();
+        if (ninjaProperties.isDev()) {
+            paymentTransaction.setTransactionId("DEV" + transactionId);
+        } else if (ninjaProperties.isTest()) {
+            paymentTransaction.setTransactionId("TEST" + transactionId);
+        } else {
+            paymentTransaction.setTransactionId(transactionId);
+
+        }
+        paymentTransaction.setDateCreated(PaymentUtil.nowToTimeStamp());
+        paymentTransaction.setMerchantTransactionReferenceId(request.getMerchantTransactionReferenceId());
+        paymentTransaction.setAmountInKobo(request.getAmountInKobo());
+        paymentTransaction.setAmountPaidInKobo(0L);
+        paymentTransaction.setPaymentProvider(PaymentProviderConstant.fromValue(request.getPaymentProvider()));
+        if (StringUtils.isNotBlank(request.getPaymentChannel())) {
+            paymentTransaction.setPaymentChannel(PaymentChannelConstant.fromValue(request.getPaymentChannel()));
+        }
+
+        paymentTransaction.setServiceTypeId(request.getServiceTypeId());
+        paymentTransaction.setMerchant(merchant);
+        paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
+        paymentTransaction.setCustomerTransactionReference(request.getCustomerTransactionReference());
+
+        Payer payer = new Payer();
+        payer.setPayerId(payerIdSequence.getNext());
+        payer.setFirstName(request.getPayer().getFirstName());
+        payer.setLastName(request.getPayer().getLastName());
+        payer.setEmail(request.getPayer().getEmail());
+        payer.setPhoneNumber(request.getPayer().getPhoneNumber());
+//        payer.setAddress(request.getPayer().getAddress());
+
+        paymentTransactionDao.saveObject(payer);
+
+        paymentTransaction.setPayer(payer);
+        Currency currency = currencyDao.findByCode(request.getCurrencyCode(), GenericStatusConstant.ACTIVE);
+        paymentTransaction.setCurrency(currency);
+
+        paymentTransactionDao.saveObject(paymentTransaction);
+        if (request.getItems() != null) {
+            for (ItemPojo itemPojo : request.getItems()) {
+                Item item = new Item();
+                item.setName(itemPojo.getName());
+                item.setItemId(itemPojo.getItemId());
+                item.setQuantity(itemPojo.getQuantity());
+                item.setPriceInKobo(itemPojo.getPriceInKobo());
+                item.setTaxInKobo(itemPojo.getTaxInKobo());
+                item.setSubTotalInKobo(itemPojo.getSubTotalInKobo());
+                item.setTotalInKobo(itemPojo.getTotalInKobo());
+                item.setDescription(itemPojo.getDescription());
+                item.setStatus(GenericStatusConstant.ACTIVE);
+
+                paymentTransactionDao.saveObject(item);
+
+                PaymentTransactionItem paymentTransactionItem = new PaymentTransactionItem();
+                paymentTransactionItem.setItem(item);
+                paymentTransactionItem.setPaymentTransaction(paymentTransaction);
+                paymentTransactionDao.saveObject(paymentTransactionItem);
+
+            }
+        }
+
+        PaymentRequestLog paymentTransactionRequestLog = new PaymentRequestLog();
+        paymentTransactionRequestLog.setRequestDump(PaymentUtil.toJSON(request));
+        paymentTransactionRequestLog.setDateCreated(PaymentUtil.nowToTimeStamp());
+        paymentTransactionRequestLog.setPaymentTransaction(paymentTransaction);
+
+        paymentTransactionDao.saveObject(paymentTransactionRequestLog);
+
+        if (request.getSplit() != null) {
+            for (SplitDto splitDto : request.getSplit()) {
+                TransactionSplit transactionSplit = new TransactionSplit();
+                transactionSplit.setCode(splitDto.getCode());
+                transactionSplit.setRatio(splitDto.getRatio());
+                transactionSplit.setMerchantIdentifier(splitDto.getIdentifier());
+                transactionSplit.setPaymentTransaction(paymentTransaction);
+
+                paymentTransactionDao.saveObject(transactionSplit);
+            }
+        }
+
+        return paymentTransaction;
+    }
+
+    public PaymentTransaction createTransaction(TransactionRequestPojo request, Merchant merchant) {
+        return createTransaction(request, merchant, null);
     }
 }
