@@ -56,6 +56,8 @@ public class UssdService {
 
     @Inject
     NotificationService notificationService;
+    @Inject
+    private PaymentTransactionService paymentTransactionService;
 
 
     @Transactional
@@ -105,7 +107,7 @@ public class UssdService {
         }
 
 
-        PaymentTransaction createdPaymentTransaction = paymentTransactionDao.createTransaction(paymentTransaction, transactionId);
+        PaymentTransaction createdPaymentTransaction = paymentTransactionService.createTransaction(paymentTransaction,null, transactionId);
         createdPaymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
         createdPaymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
         paymentTransactionDao.updateObject(createdPaymentTransaction);

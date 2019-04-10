@@ -157,6 +157,6 @@ public class WebPayService {
     }
 
     public String getBaseUrl() {
-        return paymentService.getWebPayCredentials(merchant).getServiceBaseUrl();
+        return paymentService.getProviderCredentials(WebPayServiceCredentials.class,merchant).getServiceBaseUrl();
     }
 }

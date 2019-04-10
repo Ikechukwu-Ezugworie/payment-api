@@ -1,11 +1,10 @@
 package services;
 
-import com.bw.payment.entity.*;
+import com.bw.payment.entity.Merchant;
+import com.bw.payment.entity.NotificationQueue;
+import com.bw.payment.entity.Payer;
+import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.GenericStatusConstant;
-
-import java.io.IOException;
-import java.math.BigInteger;
-
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
@@ -22,7 +21,10 @@ import ninja.utils.NinjaProperties;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
-import pojo.remitta.*;
+import pojo.remitta.RemittaGenerateRequestRRRPojo;
+import pojo.remitta.RemittaNotification;
+import pojo.remitta.RemittaRrrResponse;
+import pojo.remitta.RemittaTransactionStatusPojo;
 import retrofit2.Call;
 import retrofit2.Response;
 import services.api.RemittaApi;
@@ -32,6 +34,8 @@ import services.sequence.TransactionIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
 
+import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
@@ -126,7 +130,7 @@ public class RemittaService {
             throw new ApiResponseException(e.getMessage());
         }
 
-        return paymentTransactionDao.createTransaction(request, transactionId);
+        return paymentTransactionService.createTransaction(request, null, transactionId);
     }
 
 
@@ -236,7 +240,6 @@ public class RemittaService {
             paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountInKobo());
             paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
-
 
 
             if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {

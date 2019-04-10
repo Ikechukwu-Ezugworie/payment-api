@@ -66,30 +66,6 @@ public class FlutterWaveService {
         this.ninjaProperties = ninjaProperties;
     }
 
-    public WebPayTransactionRequestPojo createWebPayRequest(PaymentTransaction paymentTransaction, Context context) {
-        WebPayTransactionRequestPojo webPayTransactionRequestPojo = new WebPayTransactionRequestPojo();
-        webPayTransactionRequestPojo.setAmount(paymentTransaction.getAmountInKobo());
-        webPayTransactionRequestPojo.setCustomerId(paymentTransaction.getCustomerTransactionReference());
-        webPayTransactionRequestPojo.setTransactionReference(paymentTransaction.getTransactionId());
-        for (Item paymentTransactionItem : paymentTransactionDao.getPaymentTransactionItems(paymentTransaction.getId(), GenericStatusConstant.ACTIVE)) {
-            webPayTransactionRequestPojo.setPaymentItemId(Integer.valueOf(paymentTransactionItem.getItemId()));
-        }
-        webPayTransactionRequestPojo.setProductId(Integer.valueOf(paymentTransaction.getServiceTypeId()));
-        webPayTransactionRequestPojo.setSiteRedirectUrl(reverseRouter.with(WebPayController::paymentCompleted).absolute(context).build());
-        if (paymentTransaction.getPayer() != null) {
-            Payer payer = paymentTransactionDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
-            webPayTransactionRequestPojo.setCustomerName(PaymentUtil.getFormattedFullName(payer.getFirstName(), payer.getLastName()));
-        }
-
-        String mac = paymentService.getWebPayCredentials(merchant).getMacKey();
-
-        logger.info("mac key is " + mac);
-        webPayTransactionRequestPojo.computeHash(mac);
-
-        return webPayTransactionRequestPojo;
-
-    }
-
     @Transactional
     public void queueNotification(FWTransactionResponseDto paymentPojo, PaymentTransaction paymentTransaction) {
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
