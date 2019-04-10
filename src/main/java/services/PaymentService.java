@@ -1,25 +1,19 @@
 package services;
 
-import com.bw.payment.entity.*;
+import com.bw.payment.entity.Currency;
+import com.bw.payment.entity.FlutterWaveServiceCredentials;
+import com.bw.payment.entity.Merchant;
+import com.bw.payment.entity.RemitaServiceCredentials;
 import com.bw.payment.enumeration.GenericStatusConstant;
-import com.bw.payment.enumeration.PaymentChannelConstant;
-import com.bw.payment.enumeration.PaymentProviderConstant;
-import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
 import dao.BaseDao;
 import dao.CurrencyDao;
 import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import ninja.utils.NinjaProperties;
-import org.apache.commons.lang3.StringUtils;
-import pojo.ItemPojo;
-import pojo.TransactionRequestPojo;
-import pojo.flutterWave.SplitDto;
 import services.sequence.PayerIdSequence;
 import services.sequence.TicketIdSequence;
 import services.sequence.TransactionIdSequence;
-import utils.PaymentUtil;
 
 import java.util.List;
 
@@ -74,12 +68,7 @@ public class PaymentService {
     }
 
     public FlutterWaveServiceCredentials getFlutterWaveServiceCredential(Merchant merchant) {
-//        JPAQuery flutterWaveServiceCredentialsJPAQuery = baseDao.startJPAQuery(QFlutterWaveServiceCredentials.flutterWaveServiceCredentials);
-//        if (merchant != null) {
-//            flutterWaveServiceCredentialsJPAQuery.where(QFlutterWaveServiceCredentials.flutterWaveServiceCredentials.merchant.eq(merchant));
-//        }
-//        return flutterWaveServiceCredentialsJPAQuery.fetchFirst();
-        return null;
+        return getProviderCredentials(FlutterWaveServiceCredentials.class, merchant);
     }
 
     public Currency findByCode(String code) {

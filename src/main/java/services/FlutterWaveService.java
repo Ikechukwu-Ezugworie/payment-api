@@ -1,25 +1,19 @@
 package services;
 
 import com.bw.payment.entity.*;
-import com.bw.payment.enumeration.GenericStatusConstant;
-import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import controllers.WebPayController;
 import dao.PaymentTransactionDao;
 import ninja.Context;
 import ninja.ReverseRouter;
-import ninja.jpa.UnitOfWork;
 import ninja.utils.NinjaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.flutterWave.*;
-import pojo.webPay.WebPayPaymentDataDto;
-import pojo.webPay.WebPayTransactionRequestPojo;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -67,10 +61,10 @@ public class FlutterWaveService {
     }
 
     @Transactional
-    public void queueNotification(FWTransactionResponseDto paymentPojo, PaymentTransaction paymentTransaction) {
+    public void queueNotification(FWApiResponseDto<FWTransactionResponseDataDto> paymentPojo, PaymentTransaction paymentTransaction) {
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
         FWTransactionDto fwTransactionDto = paymentPojo.getData().getFWTransactionDto();
-        TransactionNotificationPojo<FWTransactionResponseDto> transactionNotificationPojo = new TransactionNotificationPojo<>();
+        TransactionNotificationPojo<FWApiResponseDto> transactionNotificationPojo = new TransactionNotificationPojo<>();
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
@@ -102,14 +96,14 @@ public class FlutterWaveService {
         paymentTransactionDao.saveObject(notificationQueue);
     }
 
-    public FWTransactionResponseDto getPaymentData(PaymentTransaction paymentTransaction) {
+    public FWApiResponseDto getPaymentData(PaymentTransaction paymentTransaction) {
         FWPaymentVerificationRequestDto paymentVerificationRequestDto = new FWPaymentVerificationRequestDto();
         paymentVerificationRequestDto.setTransactionReference(paymentTransaction.getTransactionId());
         paymentVerificationRequestDto.setSecretKey(paymentService.getFlutterWaveServiceCredential(null).getSecretKey());
-        Call<FWTransactionResponseDto> transactionStatus = getApiCaller().getTransactionStatus(paymentVerificationRequestDto);
+        Call<FWApiResponseDto<FWTransactionResponseDataDto>> transactionStatus = getApiCaller().getTransactionStatus(paymentVerificationRequestDto);
         logger.info("===> Verifying payment from FW ::: {} ::: {}", transactionStatus.request().url(), paymentTransaction.getCustomerTransactionReference());
         try {
-            Response<FWTransactionResponseDto> response = transactionStatus.execute();
+            Response<FWApiResponseDto<FWTransactionResponseDataDto>> response = transactionStatus.execute();
             if (response.code() == 200) {
                 return response.body();
             }
@@ -121,14 +115,14 @@ public class FlutterWaveService {
     }
 
     @Transactional
-    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, FWTransactionResponseDto fwTransactionResponseDto) {
-        return processPaymentData(paymentTransaction, fwTransactionResponseDto, true);
+    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, FWApiResponseDto fwApiResponseDto) {
+        return processPaymentData(paymentTransaction, fwApiResponseDto, true);
     }
 
     @Transactional
-    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, FWTransactionResponseDto fwTransactionResponseDto, boolean notify) {
-        if (fwTransactionResponseDto.getStatus().equalsIgnoreCase("successful")) {
-            paymentTransaction.setAmountPaidInKobo(fwTransactionResponseDto.getData().getFWTransactionDto().getAmount());
+    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, FWApiResponseDto<FWTransactionResponseDataDto> fwApiResponseDto, boolean notify) {
+        if (fwApiResponseDto.getStatus().equalsIgnoreCase("successful")) {
+            paymentTransaction.setAmountPaidInKobo(fwApiResponseDto.getData().getFWTransactionDto().getAmount());
             if(paymentTransaction.getAmountPaidInKobo()>=paymentTransaction.getAmountInKobo()){
                 paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
             }else{
@@ -137,10 +131,10 @@ public class FlutterWaveService {
         } else {
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.FAILED);
         }
-        paymentTransaction.setProviderTransactionReference(fwTransactionResponseDto.getData().getFWTransactionDto().getFlwRef());
+        paymentTransaction.setProviderTransactionReference(fwApiResponseDto.getData().getFWTransactionDto().getFlwRef());
         paymentTransactionDao.updateObject(paymentTransaction);
         if (notify) {
-            queueNotification(fwTransactionResponseDto, paymentTransaction);
+            queueNotification(fwApiResponseDto, paymentTransaction);
             notificationService.sendPaymentNotification(10);
         }
         return paymentTransaction;

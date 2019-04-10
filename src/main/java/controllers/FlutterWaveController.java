@@ -1,5 +1,4 @@
 package controllers;
-import com.google.common.collect.Lists;
 
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentChannelConstant;
@@ -17,6 +16,8 @@ import ninja.Results;
 import ninja.ReverseRouter;
 import ninja.params.Param;
 import ninja.params.PathParam;
+import ninja.validation.JSR303Validation;
+import ninja.validation.Validation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -25,7 +26,13 @@ import pojo.ApiResponse;
 import pojo.PayerPojo;
 import pojo.PaymentTransactionFilterResponseDto;
 import pojo.TransactionRequestPojo;
-import pojo.flutterWave.*;
+import pojo.flutterWave.FWApiResponseDto;
+import pojo.flutterWave.FWEndsystemTransactionRequestDto;
+import pojo.flutterWave.FWPaymentRequestDto;
+import pojo.flutterWave.FWPaymentVerificationRequestDto;
+import pojo.flutterWave.api.request.FWSubAccountRequestDto;
+import pojo.flutterWave.api.request.FWSubAccountUpdateRequestDto;
+import pojo.flutterWave.api.response.FWSubAccountResponseDto;
 import retrofit2.Response;
 import services.*;
 import services.api.EndSystemApi;
@@ -61,83 +68,62 @@ public class FlutterWaveController {
     @Inject
     private ReverseRouter reverseRouter;
 
+    public Result createSubAccount(@JSR303Validation FWSubAccountRequestDto fwSubAccountRequestDto, Validation validation) {
+        if (validation.hasViolations()) {
+            FWApiResponseDto fwApiResponseDto = new FWApiResponseDto();
+            fwApiResponseDto.setStatus("400");
+            fwApiResponseDto.setMessage(validation.getViolations().iterator().next().getDefaultMessage());
 
-//    public Result requestPayment(@ContentExtract String payload, @IPAddress String ipAddress) {
-//        logger.info("====> {} ", payload);
-//        transactionTemplate.execute(entityManager -> {
-//            RawDump rawDump=new RawDump();
-//            rawDump.setRequest(payload);
-//            rawDump.setDateCreated(Timestamp.from(Instant.now()));
-//            rawDump.setPaymentProvider(PaymentProviderConstant.FLUTTERWAVE);
-//            rawDump.setPaymentChannel(PaymentChannelConstant.CARD);
-//            rawDump.setDescription("REQUEST_FROM_EXTERNAL_SYSTEM");
-//            rawDump.setRequestIp(ipAddress);
-//
-//            entityManager.persist(rawDump);
-//        });
-//        FWEndsystemTransactionRequestDto data = new Gson().fromJson(payload, FWEndsystemTransactionRequestDto.class);
-//        Set<ConstraintViolation<FWEndsystemTransactionRequestDto>> constraintViolations = javax.validation.Validation.buildDefaultValidatorFactory().getValidator().validate(data);
-//
-//        if (!constraintViolations.isEmpty()) {
-//            for (ConstraintViolation<FWEndsystemTransactionRequestDto> constraintViolation : constraintViolations) {
-//                ApiResponse apiResponse = new ApiResponse();
-//                apiResponse.setCode(400);
-//                apiResponse.setMessage(constraintViolation.getMessage());
-//                return Results.ok().json().render(apiResponse);
-//            }
-//        }
-//        TransactionRequestPojo transactionRequestPojo = new TransactionRequestPojo();
-//        transactionRequestPojo.setAmountInKobo(data.getAmountInKobo());
-//        transactionRequestPojo.setNotifyOnStatusChange(true);
-//        transactionRequestPojo.setNotificationUrl(data.getRedirectUrl());
-//        transactionRequestPojo.setPaymentProvider(PaymentProviderConstant.FLUTTERWAVE.getValue());
-//        transactionRequestPojo.setPaymentChannel(PaymentChannelConstant.CARD.getValue());
-////        transactionRequestPojo.setServiceTypeId(data.getProductId());
-//        transactionRequestPojo.setCustomerTransactionReference(data.getTransactionReference());
-//        PayerPojo payer = new PayerPojo();
-//        payer.setFirstName(data.getCustomerFirstname());
-//        payer.setLastName(data.getCustomerLastname());
-//        payer.setEmail(data.getCustomerEmail());
-//        transactionRequestPojo.setPayer(payer);
-//
-////        ItemPojo item = new ItemPojo();
-////        item.setItemId(data.getPaymentItemId());
-////        item.setName("WEBPAY ITEM");
-////        item.setPriceInKobo(data.getAmount());
-////        item.setTotalInKobo(data.getAmount());
-////        item.setSubTotalInKobo(data.getAmount());
-////        transactionRequestPojo.setItems(Arrays.asList(item));
-////        transactionRequestPojo.setInstantTransaction(true);
-//
-//        PaymentTransaction paymentTransaction = paymentTransactionDao.createTransaction(transactionRequestPojo, null);
-//
-//        RawDump rawDump = new RawDump();
-//        rawDump.setRequest(payload);
-//        rawDump.setDateCreated(new Timestamp(new java.util.Date().getTime()));
-//        rawDump.setPaymentProvider(PaymentProviderConstant.INTERSWITCH);
-//        rawDump.setPaymentChannel(PaymentChannelConstant.WEBPAY);
-//        rawDump.setDescription("PAYMENT REQUEST");
-//        rawDump.setRequestIp(ipAddress);
-//        rawDump.setPaymentTransaction(paymentTransaction);
-//
-//        transactionTemplate.execute((entityManager) -> {
-//            entityManager.persist(rawDump);
-//        });
-//
-//        ApiResponse<Map> apiResponse = new ApiResponse<>();
-//        Map<String, String> res = new HashMap<>();
-//        res.put("transactionId", paymentTransaction.getTransactionId());
-//        apiResponse.setData(res);
-//        apiResponse.setCode(200);
-//        return Results.ok().json().render(apiResponse);
-//    }
+            return Results.badRequest().json().render(fwApiResponseDto);
+        }
+        try {
+            String secretKey = paymentService.getFlutterWaveServiceCredential(null).getSecretKey();
+            fwSubAccountRequestDto.setSeckey(secretKey);
+            Response<FWApiResponseDto<FWSubAccountResponseDto>> response = flutterWaveService.getApiCaller().createSubAccount(fwSubAccountRequestDto).execute();
+            if (response.isSuccessful()) {
+                return Results.json().status(response.code()).render(response.body());
+            } else {
+                return Results.json().status(response.code()).render(response.errorBody().string());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Results.internalServerError().json();
+    }
 
 
-    public Result paymentPage(@IPAddress String ipAddress, Context context){
-        try{
+    public Result updateSubAccount(@JSR303Validation FWSubAccountUpdateRequestDto fwSubAccountUpdateRequestDto, Validation validation) {
+        if (validation.hasViolations()) {
+            FWApiResponseDto fwApiResponseDto = new FWApiResponseDto();
+            fwApiResponseDto.setStatus("400");
+            fwApiResponseDto.setMessage(validation.getViolations().iterator().next().getDefaultMessage());
+
+            return Results.badRequest().json().render(fwApiResponseDto);
+        }
+        try {
+//            String secretKey = paymentService.getFlutterWaveServiceCredential(null).getSecretKey();
+//            fwSubAccountUpdateRequestDto.setSeckey(secretKey);
+            Response<FWApiResponseDto<FWSubAccountResponseDto>> response = flutterWaveService.getApiCaller().updateSubAccount(fwSubAccountUpdateRequestDto).execute();
+            if (response.isSuccessful()) {
+                return Results.json().status(response.code()).render(response.body());
+            } else {
+                return Results.json().status(response.code()).render(response.errorBody().string());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Results.internalServerError().json();
+    }
+
+
+    public Result paymentPage(@IPAddress String ipAddress, Context context) {
+        try {
             FWEndsystemTransactionRequestDto data = new FWEndsystemTransactionRequestDto();
             data.setAccountCode(context.getParameter("accountCode"));
             data.setTransactionReference(context.getParameter("paymentRetrievalReference"));
+            data.setMerchantTransactionReferenceId(context.getParameter("paymentRetrievalReference"));
             data.setHash(context.getParameter("hash"));
             data.setRedirectUrl(context.getParameter("redirectUrl"));
             data.setCustomerEmail(context.getParameter("customerEmail"));
@@ -156,10 +142,10 @@ public class FlutterWaveController {
 
             String endSystemUrl = paymentService.getFlutterWaveServiceCredential(null).getBaseUrl();
             Response<TransactionRequestPojo> response = endSystemApi.validateFlutterWavePayment(endSystemUrl, data).execute();
-            if(!response.isSuccessful()){
-                if(response.code()==400)
-                return Results.html()
-                        .render("error", "Bad request");
+            if (!response.isSuccessful()) {
+                if (response.code() == 400)
+                    return Results.html()
+                            .render("error", "Bad request");
             }
 
             TransactionRequestPojo transactionRequestPojo = response.body();
@@ -188,18 +174,18 @@ public class FlutterWaveController {
 //        }
 
 //            transactionRequestPojo = new TransactionRequestPojo();
-            transactionRequestPojo.setAmountInKobo(PaymentUtil.getAmountInKobo(new BigDecimal(1000)));
-            transactionRequestPojo.setNotifyOnStatusChange(true);
-            transactionRequestPojo.setNotificationUrl("http://google.com");
-            transactionRequestPojo.setPaymentProvider(PaymentProviderConstant.FLUTTERWAVE.getValue());
-            transactionRequestPojo.setPaymentChannel(PaymentChannelConstant.CARD.getValue());
-//        transactionRequestPojo.setServiceTypeId(data.getProductId());
-            transactionRequestPojo.setCustomerTransactionReference(data.getTransactionReference());
-            PayerPojo payer = new PayerPojo();
-            payer.setFirstName("JOHN");
-            payer.setLastName("DOE");
-            payer.setEmail(data.getCustomerEmail());
-            transactionRequestPojo.setPayer(payer);
+//            transactionRequestPojo.setAmountInKobo(PaymentUtil.getAmountInKobo(new BigDecimal(1000)));
+//            transactionRequestPojo.setNotifyOnStatusChange(true);
+//            transactionRequestPojo.setNotificationUrl("http://google.com");
+//            transactionRequestPojo.setPaymentProvider(PaymentProviderConstant.FLUTTERWAVE.getValue());
+//            transactionRequestPojo.setPaymentChannel(PaymentChannelConstant.CARD.getValue());
+////        transactionRequestPojo.setServiceTypeId(data.getProductId());
+//            transactionRequestPojo.setCustomerTransactionReference(data.getTransactionReference());
+//            PayerPojo payer = new PayerPojo();
+//            payer.setFirstName("JOHN");
+//            payer.setLastName("DOE");
+//            payer.setEmail(data.getCustomerEmail());
+//            transactionRequestPojo.setPayer(payer);
 
 //        ItemPojo item = new ItemPojo();
 //        item.setItemId(data.getPaymentItemId());
@@ -210,7 +196,7 @@ public class FlutterWaveController {
 //        transactionRequestPojo.setItems(Arrays.asList(item));
 //        transactionRequestPojo.setInstantTransaction(true);
 
-            PaymentTransaction paymentTransaction =paymentTransactionService.createTransaction(transactionRequestPojo, null);
+            PaymentTransaction paymentTransaction = paymentTransactionService.createTransaction(transactionRequestPojo, null);
 
             if (paymentTransaction == null) {
                 return Results.ok().html().render("error", "Transaction not found");
@@ -230,7 +216,7 @@ public class FlutterWaveController {
                     .render("data", fwPaymentRequestDto)
                     .render("transactionData", fullPaymentTransactionDetailsAsPojo);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return Results.html()
                     .render("error", e.getMessage());
@@ -247,8 +233,8 @@ public class FlutterWaveController {
 
         String prr = paymentTransaction.getMerchantTransactionReferenceId();
         try {
-            FWTransactionResponseDto fwTransactionResponseDto = flutterWaveService.getPaymentData(paymentTransaction);
-            paymentTransaction = flutterWaveService.processPaymentData(paymentTransaction, fwTransactionResponseDto, true);
+            FWApiResponseDto fwApiResponseDto = flutterWaveService.getPaymentData(paymentTransaction);
+            paymentTransaction = flutterWaveService.processPaymentData(paymentTransaction, fwApiResponseDto, true);
 
             URIBuilder b = new URIBuilder(rUrl);
             b.addParameter("prr", prr);
@@ -274,8 +260,8 @@ public class FlutterWaveController {
             return Results.notFound().json().render(apiResponse);
         }
         try {
-            FWTransactionResponseDto fwTransactionResponseDto = flutterWaveService.getPaymentData(paymentTransaction);
-            paymentTransaction = flutterWaveService.processPaymentData(paymentTransaction, fwTransactionResponseDto, true);
+            FWApiResponseDto fwApiResponseDto = flutterWaveService.getPaymentData(paymentTransaction);
+            paymentTransaction = flutterWaveService.processPaymentData(paymentTransaction, fwApiResponseDto, true);
 
             PaymentTransactionFilterResponseDto data = PaymentTransactionFilterResponseDto.from(paymentTransaction);
             data.setAdditionalData(null);
@@ -304,8 +290,8 @@ public class FlutterWaveController {
             return Results.notFound().json().render(apiResponse);
         }
         try {
-            FWTransactionResponseDto fwTransactionResponseDto = flutterWaveService.getPaymentData(paymentTransaction);
-            paymentTransaction = flutterWaveService.processPaymentData(paymentTransaction, fwTransactionResponseDto, true);
+            FWApiResponseDto fwApiResponseDto = flutterWaveService.getPaymentData(paymentTransaction);
+            paymentTransaction = flutterWaveService.processPaymentData(paymentTransaction, fwApiResponseDto, true);
 
             apiResponse.setData(PaymentTransactionFilterResponseDto.from(paymentTransaction));
             apiResponse.setCode(200);

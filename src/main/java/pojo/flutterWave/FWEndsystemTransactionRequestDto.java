@@ -10,6 +10,7 @@ public class FWEndsystemTransactionRequestDto {
     private String hash;
     private String transactionReference;
     private String customerReference;
+    private String merchantTransactionReferenceId;
     //  NGN USD EUR GBP
     private String currencyCode;
     private Double amount;
@@ -64,6 +65,15 @@ public class FWEndsystemTransactionRequestDto {
 
     public FWEndsystemTransactionRequestDto setAmount(Double amount) {
         this.amount = amount;
+        return this;
+    }
+
+    public String getMerchantTransactionReferenceId() {
+        return merchantTransactionReferenceId;
+    }
+
+    public FWEndsystemTransactionRequestDto setMerchantTransactionReferenceId(String merchantTransactionReferenceId) {
+        this.merchantTransactionReferenceId = merchantTransactionReferenceId;
         return this;
     }
 

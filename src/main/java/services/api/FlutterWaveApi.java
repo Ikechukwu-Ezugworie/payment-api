@@ -1,8 +1,11 @@
 package services.api;
 
 import pojo.flutterWave.FWPaymentVerificationRequestDto;
-import pojo.flutterWave.FWTransactionResponseDto;
-import pojo.webPay.WebPayPaymentDataDto;
+import pojo.flutterWave.FWApiResponseDto;
+import pojo.flutterWave.FWTransactionResponseDataDto;
+import pojo.flutterWave.api.request.FWSubAccountRequestDto;
+import pojo.flutterWave.api.request.FWSubAccountUpdateRequestDto;
+import pojo.flutterWave.api.response.FWSubAccountResponseDto;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -12,5 +15,11 @@ import retrofit2.http.*;
 public interface FlutterWaveApi {
 
     @POST("flwv3-pug/getpaidx/api/v2/verify")
-    Call<FWTransactionResponseDto> getTransactionStatus(@Body FWPaymentVerificationRequestDto fwPaymentVerificationRequestDto);
+    Call<FWApiResponseDto<FWTransactionResponseDataDto>> getTransactionStatus(@Body FWPaymentVerificationRequestDto fwPaymentVerificationRequestDto);
+
+    @POST("v2/gpx/subaccounts/create")
+    Call<FWApiResponseDto<FWSubAccountResponseDto>> createSubAccount(@Body FWSubAccountRequestDto fwSubAccountRequestDto);
+
+    @POST("v2/gpx/subaccounts/edit")
+    Call<FWApiResponseDto<FWSubAccountResponseDto>> updateSubAccount(@Body FWSubAccountUpdateRequestDto fwSubAccountUpdateRequestDto);
 }
