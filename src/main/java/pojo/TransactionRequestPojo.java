@@ -1,13 +1,9 @@
 package pojo;
 
-import constraints.PaymentChannel;
-import constraints.PaymentProvider;
-import org.hibernate.validator.constraints.NotBlank;
 import pojo.flutterWave.SplitDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -258,5 +254,35 @@ public class TransactionRequestPojo {
         }
         this.split.add(split);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"TransactionRequestPojo\":{"
+                + "                        \"id\":\"" + id + "\""
+                + ",                         \"transactionId\":\"" + transactionId + "\""
+                + ",                         \"dateCreated\":\"" + dateCreated + "\""
+                + ",                         \"lastUpdated\":\"" + lastUpdated + "\""
+                + ",                         \"providerTransactionReference\":\"" + providerTransactionReference + "\""
+                + ",                         \"merchantTransactionReferenceId\":\"" + merchantTransactionReferenceId + "\""
+                + ",                         \"amountInKobo\":\"" + amountInKobo + "\""
+                + ",                         \"notifyOnStatusChange\":\"" + notifyOnStatusChange + "\""
+                + ",                         \"notificationUrl\":\"" + notificationUrl + "\""
+                + ",                         \"paymentProvider\":\"" + paymentProvider + "\""
+                + ",                         \"paymentChannel\":\"" + paymentChannel + "\""
+                + ",                         \"serviceTypeId\":\"" + serviceTypeId + "\""
+                + ",                         \"merchant\":" + merchant
+                + ",                         \"paymentTransactionStatus\":\"" + paymentTransactionStatus + "\""
+                + ",                         \"payer\":" + payer
+                + ",                         \"items\":" + items
+                + ",                         \"validateTransaction\":\"" + validateTransaction + "\""
+                + ",                         \"transactionValidationUrl\":\"" + transactionValidationUrl + "\""
+                + ",                         \"instantTransaction\":\"" + instantTransaction + "\""
+                + ",                         \"customerTransactionReference\":\"" + customerTransactionReference + "\""
+                + ",                         \"split\":" + split
+                + ",                         \"currencyCode\":\"" + currencyCode + "\""
+                + ",                         \"description\":\"" + description + "\""
+                + ",                         \"amountPaid\":\"" + amountPaid + "\""
+                + "}}";
     }
 }

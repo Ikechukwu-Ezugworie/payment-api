@@ -3,10 +3,12 @@ package pojo.flutterWave;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.StringJoiner;
+
 /*
  * Created by Gibah Joseph on Apr, 2019
  */
-public class FWApiResponseDto<T> {
+public class FWApiResponseDto {
 
     @SerializedName("status")
     @Expose
@@ -16,7 +18,7 @@ public class FWApiResponseDto<T> {
     private String message;
     @SerializedName("data")
     @Expose
-    private T data;
+    private FWTransactionDto data;
 
     public String getStatus() {
         return status;
@@ -34,12 +36,20 @@ public class FWApiResponseDto<T> {
         this.message = message;
     }
 
-    public T getData() {
+    public FWTransactionDto getData() {
         return data;
     }
 
-    public FWApiResponseDto<T> setData(T data) {
+    public void setData(FWTransactionDto data) {
         this.data = data;
-        return this;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", FWApiResponseDto.class.getSimpleName() + "[", "]")
+                .add("status='" + status + "'")
+                .add("message='" + message + "'")
+                .add("data=" + data)
+                .toString();
     }
 }

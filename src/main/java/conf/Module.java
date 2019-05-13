@@ -19,7 +19,6 @@ package conf;
 
 import Adapters.GsonPConverterFactory;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
@@ -50,6 +49,7 @@ public class Module extends AbstractModule {
         bind(CronSchedule.class);
     }
 
+
     @Provides
     private WebPayApi getInterswitchBaseRefrofitApi() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -63,7 +63,7 @@ public class Module extends AbstractModule {
     @Provides
     private EndSystemApi getEndSystemApi() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost:8080")
+                .baseUrl("")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(PaymentUtil.getOkHttpClient(ninjaProperties))
                 .build();

@@ -1,6 +1,6 @@
 package pojo.flutterWave;
 
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
 
 /*
  * Created by Gibah Joseph on Apr, 2019
@@ -14,11 +14,12 @@ public class FWEndsystemTransactionRequestDto {
     //  NGN USD EUR GBP
     private String currencyCode;
     private Double amount;
+    private Double amountInKobo;
     private String redirectUrl;
     private String customerName;
-    @NotNull
+    @NotBlank(message = "Required Customer Email")
     private String customerEmail;
-    @NotNull
+    @NotBlank(message = "Required Customer Phone")
     private String customerPhone;
     private String customerFirstname;
     private String customerLastname;
@@ -138,5 +139,13 @@ public class FWEndsystemTransactionRequestDto {
     public FWEndsystemTransactionRequestDto setCustomerLastname(String customerLastname) {
         this.customerLastname = customerLastname;
         return this;
+    }
+
+    public Double getAmountInKobo() {
+        return amountInKobo;
+    }
+
+    public void setAmountInKobo(Double amountInKobo) {
+        this.amountInKobo = amountInKobo;
     }
 }

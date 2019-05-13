@@ -1,5 +1,7 @@
 package services.api;
 
+import okhttp3.ResponseBody;
+import pojo.ApiResponse;
 import pojo.TransactionRequestPojo;
 import pojo.flutterWave.FWEndsystemTransactionRequestDto;
 import pojo.flutterWave.FlutterWaveValidationResponseDto;
@@ -12,6 +14,6 @@ import retrofit2.http.*;
  */
 public interface EndSystemApi {
 
-    @POST
-    Call<TransactionRequestPojo> validateFlutterWavePayment(@Url String url, @Body FWEndsystemTransactionRequestDto transactionRequestDto);
+    @POST("booking/detail")
+    Call<ApiResponse<TransactionRequestPojo>> validateFlutterWavePayment(@Body FWEndsystemTransactionRequestDto transactionRequestDto);
 }

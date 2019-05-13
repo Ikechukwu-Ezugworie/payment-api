@@ -15,11 +15,11 @@ import retrofit2.http.*;
 public interface FlutterWaveApi {
 
     @POST("flwv3-pug/getpaidx/api/v2/verify")
-    Call<FWApiResponseDto<FWTransactionResponseDataDto>> getTransactionStatus(@Body FWPaymentVerificationRequestDto fwPaymentVerificationRequestDto);
+    Call<FWApiResponseDto> getTransactionStatus(@Body FWPaymentVerificationRequestDto fwPaymentVerificationRequestDto);
 
     @POST("v2/gpx/subaccounts/create")
-    Call<FWApiResponseDto<FWSubAccountResponseDto>> createSubAccount(@Body FWSubAccountRequestDto fwSubAccountRequestDto);
+    Call<FWApiResponseDto> createSubAccount(@Body FWSubAccountRequestDto fwSubAccountRequestDto);
 
     @POST("v2/gpx/subaccounts/edit")
-    Call<FWApiResponseDto<FWSubAccountResponseDto>> updateSubAccount(@Body FWSubAccountUpdateRequestDto fwSubAccountUpdateRequestDto);
+    Call<FWApiResponseDto> updateSubAccount(@Body FWSubAccountUpdateRequestDto fwSubAccountUpdateRequestDto);
 }

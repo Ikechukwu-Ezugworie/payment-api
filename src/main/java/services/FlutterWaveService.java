@@ -1,6 +1,9 @@
 package services;
 
-import com.bw.payment.entity.*;
+import com.bw.payment.entity.FlutterWaveServiceCredentials;
+import com.bw.payment.entity.Merchant;
+import com.bw.payment.entity.NotificationQueue;
+import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -24,6 +27,8 @@ import services.sequence.NotificationIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
@@ -61,16 +66,16 @@ public class FlutterWaveService {
     }
 
     @Transactional
-    public void queueNotification(FWApiResponseDto<FWTransactionResponseDataDto> paymentPojo, PaymentTransaction paymentTransaction) {
+    public void queueNotification(FWApiResponseDto paymentPojo, PaymentTransaction paymentTransaction) {
         Merchant merchant = paymentTransactionDao.getRecordById(Merchant.class, paymentTransaction.getMerchant().getId());
-        FWTransactionDto fwTransactionDto = paymentPojo.getData().getFWTransactionDto();
+        FWTransactionDto fwTransactionDto = paymentPojo.getData();
         TransactionNotificationPojo<FWApiResponseDto> transactionNotificationPojo = new TransactionNotificationPojo<>();
         transactionNotificationPojo.setStatus(paymentTransaction.getPaymentTransactionStatus().getValue());
         transactionNotificationPojo.setTransactionId(paymentTransaction.getTransactionId());
         transactionNotificationPojo.setDatePaymentReceived(PaymentUtil.format(Timestamp.from(Instant.now()), Constants.ISO_DATE_TIME_FORMAT));
         transactionNotificationPojo.setReceiptNumber(fwTransactionDto.getOrderRef());
-        transactionNotificationPojo.setAmountPaidInKobo(fwTransactionDto.getAmount());
-        transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue() + "_" + paymentTransaction.getPaymentChannel().getValue());
+        transactionNotificationPojo.setAmountPaidInKobo(new BigDecimal(fwTransactionDto.getAmount()).setScale(2, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).longValueExact());
+        transactionNotificationPojo.setPaymentProvider(paymentTransaction.getPaymentProvider().getValue());
         transactionNotificationPojo.setPaymentProviderTransactionId(paymentTransaction.getProviderTransactionReference());
         transactionNotificationPojo.setPaymentDate(fwTransactionDto.getCreatedAt());
 //        transactionNotificationPojo.setSettlementDate(paymentPojo.getSettlementDate());
@@ -100,10 +105,12 @@ public class FlutterWaveService {
         FWPaymentVerificationRequestDto paymentVerificationRequestDto = new FWPaymentVerificationRequestDto();
         paymentVerificationRequestDto.setTransactionReference(paymentTransaction.getTransactionId());
         paymentVerificationRequestDto.setSecretKey(paymentService.getFlutterWaveServiceCredential(null).getSecretKey());
-        Call<FWApiResponseDto<FWTransactionResponseDataDto>> transactionStatus = getApiCaller().getTransactionStatus(paymentVerificationRequestDto);
+        Call<FWApiResponseDto> transactionStatus = getApiCaller().getTransactionStatus(paymentVerificationRequestDto);
         logger.info("===> Verifying payment from FW ::: {} ::: {}", transactionStatus.request().url(), paymentTransaction.getCustomerTransactionReference());
         try {
-            Response<FWApiResponseDto<FWTransactionResponseDataDto>> response = transactionStatus.execute();
+            Response<FWApiResponseDto> response = transactionStatus.execute();
+            logger.info(" ====> Response Code {}", response.code());
+            logger.info(" ====> Response body {}", response.body());
             if (response.code() == 200) {
                 return response.body();
             }
@@ -120,9 +127,13 @@ public class FlutterWaveService {
     }
 
     @Transactional
-    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, FWApiResponseDto<FWTransactionResponseDataDto> fwApiResponseDto, boolean notify) {
-        if (fwApiResponseDto.getStatus().equalsIgnoreCase("successful")) {
-            paymentTransaction.setAmountPaidInKobo(fwApiResponseDto.getData().getFWTransactionDto().getAmount());
+    public PaymentTransaction processPaymentData(PaymentTransaction paymentTransaction, FWApiResponseDto fwApiResponseDto, boolean notify) {
+        logger.info("===> Response {}", fwApiResponseDto.getData().toString());
+        logger.info(fwApiResponseDto.getStatus());
+        logger.info("===> Transaction Id: {}", paymentTransaction.getTransactionId());
+        if (fwApiResponseDto.getStatus().equalsIgnoreCase("success")) {
+            paymentTransaction.setAmountPaidInKobo(new BigDecimal(fwApiResponseDto.getData().getAmount()).setScale(2, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).longValueExact());
+
             if(paymentTransaction.getAmountPaidInKobo()>=paymentTransaction.getAmountInKobo()){
                 paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
             }else{
@@ -131,7 +142,7 @@ public class FlutterWaveService {
         } else {
             paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.FAILED);
         }
-        paymentTransaction.setProviderTransactionReference(fwApiResponseDto.getData().getFWTransactionDto().getFlwRef());
+        paymentTransaction.setProviderTransactionReference(fwApiResponseDto.getData().getFlwRef());
         paymentTransactionDao.updateObject(paymentTransaction);
         if (notify) {
             queueNotification(fwApiResponseDto, paymentTransaction);
@@ -173,7 +184,7 @@ public class FlutterWaveService {
         fwPaymentRequestDto.setPayButtonText("PROCEED");
         fwPaymentRequestDto.setCustomTitle("BWPAY");
         fwPaymentRequestDto.setCustomDescription("YPAY WIRH");
-        fwPaymentRequestDto.setRedirectUrl("");
+        fwPaymentRequestDto.setRedirectUrl(request.getRedirectUrl());
 //        fwPaymentRequestDto.setCustomLogo("");
         HashMap<String, Object> meta = Maps.newHashMap();
         meta.put("accountId", request.getAccountCode());

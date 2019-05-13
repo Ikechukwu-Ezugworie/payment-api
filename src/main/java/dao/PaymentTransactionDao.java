@@ -189,6 +189,12 @@ public class PaymentTransactionDao extends BaseDao {
         return getUniqueRecordByProperty(PaymentTransaction.class, "providerTransactionReference", providerReference);
     }
 
+    public PaymentTransaction getByMerchantTransactionReference(String merchantTransactionReference) {
+
+        return getUniqueRecordByProperty(PaymentTransaction.class, "merchantTransactionReferenceId", merchantTransactionReference);
+
+    }
+
     public List<PaymentTransaction> getPendingPaymentTransactions(PaymentProviderConstant paymentProvider, PaymentChannelConstant paymentChannel, Integer batch) {
         EntityManager entityManager = entityManagerProvider.get();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

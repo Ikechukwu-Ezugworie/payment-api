@@ -4,6 +4,8 @@ package pojo.flutterWave;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.StringJoiner;
+
 public class FWResponseDataDto {
 
     @SerializedName("responsecode")
@@ -29,4 +31,11 @@ public class FWResponseDataDto {
         this.responsemessage = responsemessage;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", FWResponseDataDto.class.getSimpleName() + "[", "]")
+                .add("responsecode='" + responsecode + "'")
+                .add("responsemessage='" + responsemessage + "'")
+                .toString();
+    }
 }

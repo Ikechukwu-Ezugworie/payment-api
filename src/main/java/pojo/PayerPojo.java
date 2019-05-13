@@ -72,4 +72,17 @@ public class PayerPojo {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return "{\"PayerPojo\":{"
+                + "                        \"id\":\"" + id + "\""
+                + ",                         \"payerId\":\"" + payerId + "\""
+                + ",                         \"firstName\":\"" + firstName + "\""
+                + ",                         \"lastName\":\"" + lastName + "\""
+                + ",                         \"email\":\"" + email + "\""
+                + ",                         \"phoneNumber\":\"" + phoneNumber + "\""
+                + ",                         \"address\":\"" + address + "\""
+                + "}}";
+    }
 }

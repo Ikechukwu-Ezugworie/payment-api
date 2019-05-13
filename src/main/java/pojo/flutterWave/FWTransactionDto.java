@@ -32,16 +32,16 @@ public class FWTransactionDto {
     private String cycle;
     @SerializedName("amount")
     @Expose
-    private Long amount;
+    private Double amount;
     @SerializedName("charged_amount")
     @Expose
-    private Long chargedAmount;
+    private Double chargedAmount;
     @SerializedName("appfee")
     @Expose
-    private Long appfee;
+    private Double appfee;
     @SerializedName("merchantfee")
     @Expose
-    private Long merchantfee;
+    private Double merchantfee;
     @SerializedName("merchantbearsfee")
     @Expose
     private Long merchantbearsfee;
@@ -182,36 +182,45 @@ public class FWTransactionDto {
         this.cycle = cycle;
     }
 
-    public Long getAmount() {
+
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Long amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
-    public Long getChargedAmount() {
+    public Double getChargedAmount() {
         return chargedAmount;
     }
 
-    public void setChargedAmount(Long chargedAmount) {
+    public void setChargedAmount(Double chargedAmount) {
         this.chargedAmount = chargedAmount;
     }
 
-    public Long getAppfee() {
+    public Double getAppfee() {
         return appfee;
     }
 
-    public void setAppfee(Long appfee) {
+    public void setAppfee(Double appfee) {
         this.appfee = appfee;
     }
 
-    public Long getMerchantfee() {
+    public Double getMerchantfee() {
         return merchantfee;
     }
 
-    public void setMerchantfee(Long merchantfee) {
+    public void setMerchantfee(Double merchantfee) {
         this.merchantfee = merchantfee;
+    }
+
+    public String getiP() {
+        return iP;
+    }
+
+    public void setiP(String iP) {
+        this.iP = iP;
     }
 
     public Long getMerchantbearsfee() {

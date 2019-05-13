@@ -38,7 +38,7 @@ public class NotificationService {
     private void processPendingNotifications(Integer batchSize) {
         int maxRetry = paymentTransactionDao.getMaxRetryCount();
         List<NotificationQueue> notificationQueues = paymentTransactionDao.getPendingNotifications(batchSize, maxRetry);
-        logger.info("<==== fetched payment notifications : " + notificationQueues.size());
+//        logger.info("<==== fetched payment notifications : " + notificationQueues.size());
         for (NotificationQueue notificationQueue : notificationQueues) {
             doNotification(notificationQueue);
         }
