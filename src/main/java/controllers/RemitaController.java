@@ -36,8 +36,6 @@ import utils.Constants;
 import utils.PaymentUtil;
 
 import javax.validation.Valid;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -181,7 +179,7 @@ public class RemitaController {
             if (paymentTransaction.getPaymentChannel().equals(PaymentChannelConstant.MASTERCARD)) {
                 response.setData(remittaService.updatePaymentTransactionOnCardPay(paymentTransaction));
             } else {
-                response.setData(remittaService.requestForPaymentTransactionStatus(paymentTransaction));
+                response.setData(remittaService.requestForPaymentTransactionStatus(paymentTransaction, paymentTransaction.getAmountPaidInKobo()));
             }
 
         } catch (ApiResponseException e) {

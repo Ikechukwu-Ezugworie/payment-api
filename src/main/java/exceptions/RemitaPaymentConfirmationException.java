@@ -6,6 +6,7 @@ public class RemitaPaymentConfirmationException extends Exception {
     RemittaTransactionStatusPojo response;
 
 
+
     public RemitaPaymentConfirmationException(String message) {
         super(message);
     }
