@@ -22,7 +22,7 @@ public class RemittaNotification {
     private String payerEmail;
     private String type;
     private String dateRequested;
-    private List<Object> customFieldData;
+    private List<RemittaCustomFieldData> customFieldData;
 
     public String getRrr() {
         return rrr;
@@ -138,12 +138,13 @@ public class RemittaNotification {
         this.type = type;
     }
 
-    public List<Object> getCustomFieldData() {
+    public List<RemittaCustomFieldData> getCustomFieldData() {
         return customFieldData;
     }
 
-    public void setCustomFieldData(List<Object> customFieldData) {
+    public RemittaNotification setCustomFieldData(List<RemittaCustomFieldData> customFieldData) {
         this.customFieldData = customFieldData;
+        return this;
     }
 
     public String getDateRequested() {
