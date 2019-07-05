@@ -20,6 +20,8 @@ import exceptions.RemitaPaymentConfirmationException;
 import javassist.NotFoundException;
 import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pojo.MerchantRequestPojo;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
@@ -52,6 +54,9 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class RemittaService {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
     @Inject
     private MerchantDao merchantDao;
     @Inject
@@ -187,7 +192,7 @@ public class RemittaService {
 
             if (paymentTransaction == null) {
                 paymentTransaction = createTransactionRequestForPaymentTransaction(remittaNotification);
-                System.out.println("Logger " + new Gson().toJson(paymentTransaction));
+                logger.info("Payment transaction==> {} " + new Gson().toJson(paymentTransaction));
             }
 
             if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
@@ -385,7 +390,7 @@ public class RemittaService {
         Optional<RemittaCustomFieldData> val = Optional.empty();
 
 
-        System.out.println("Notification " + new Gson().toJson(remittaNotification.getCustomFieldData()));
+        logger.info("Notification {}{}{}{} " + new Gson().toJson(remittaNotification.getCustomFieldData()));
         if (remittaNotification.getCustomFieldData() != null && !remittaNotification.getCustomFieldData().isEmpty()) {
             return remittaNotification.getCustomFieldData().stream()
                     .filter(customField -> customField.getDescription().equalsIgnoreCase(customDataTag.trim()) && StringUtils.isNotBlank(customField.getColval()))
