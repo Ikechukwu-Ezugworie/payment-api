@@ -117,7 +117,7 @@ public class RemitaController {
         List<RemittaNotification> remittaNotifications = new Gson().fromJson(payload, new TypeToken<List<RemittaNotification>>() {
         }.getType());
 
-        String remitta_ip_validation = remittaDao.getSettingsValue("REMITTA_IP_VALIDATION", Boolean.TRUE.toString(), true);
+        String remitta_ip_validation = remittaDao.getSettingsValue("REMITTA_IP_VALIDATION", Boolean.FALSE.toString(), true);
         Boolean verifyIp = Boolean.valueOf(remitta_ip_validation);
 
 
