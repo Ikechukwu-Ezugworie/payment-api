@@ -36,8 +36,6 @@ import utils.Constants;
 import utils.PaymentUtil;
 
 import javax.validation.Valid;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -146,7 +144,6 @@ public class RemitaController {
 
         String responseUrl = reverseRouter.with(RemitaController::notificationOnCardPay).absolute(context).build();
 
-        System.out.println(responseUrl);
 
         data.setResponseurl(responseUrl);
         data.setRemittaFormActionUrl(remittaDao.getSettingsValue("REMITTA_CARD_URL", "https://remitademo.net/remita/ecomm/finalize.reg"));
@@ -164,7 +161,6 @@ public class RemitaController {
 
         }).collect(Collectors.toList()));
 
-        System.out.println("Data + " + data);
 
         return Results.html().render("data", data);
 
@@ -181,7 +177,7 @@ public class RemitaController {
             if (paymentTransaction.getPaymentChannel().equals(PaymentChannelConstant.MASTERCARD)) {
                 response.setData(remittaService.updatePaymentTransactionOnCardPay(paymentTransaction));
             } else {
-                response.setData(remittaService.requestForPaymentTransactionStatus(paymentTransaction));
+                response.setData(remittaService.requestForPaymentTransactionStatus(paymentTransaction, paymentTransaction.getAmountPaidInKobo()));
             }
 
         } catch (ApiResponseException e) {
@@ -262,7 +258,7 @@ public class RemitaController {
 
     public Result performTestNotification(@ContentExtract String requestData) {
 
-        System.out.println("{}{}{}{}Data " + requestData);
+
 
         RemittaDummyNotificationPojo request = new Gson().fromJson(requestData, new TypeToken<RemittaDummyNotificationPojo>() {
         }.getType());

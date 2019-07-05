@@ -1,10 +1,6 @@
 package pojo.remitta;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 /*
@@ -26,7 +22,7 @@ public class RemittaNotification {
     private String payerEmail;
     private String type;
     private String dateRequested;
-    private List<Object> customFieldData = null;
+    private List<RemittaCustomFieldData> customFieldData;
 
     public String getRrr() {
         return rrr;
@@ -142,12 +138,13 @@ public class RemittaNotification {
         this.type = type;
     }
 
-    public List<Object> getCustomFieldData() {
+    public List<RemittaCustomFieldData> getCustomFieldData() {
         return customFieldData;
     }
 
-    public void setCustomFieldData(List<Object> customFieldData) {
+    public RemittaNotification setCustomFieldData(List<RemittaCustomFieldData> customFieldData) {
         this.customFieldData = customFieldData;
+        return this;
     }
 
     public String getDateRequested() {

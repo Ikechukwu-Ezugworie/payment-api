@@ -11,6 +11,13 @@ public class RemittaTransactionStatusPojo {
     private String transactiontime;
     private String orderId;
 
+
+    public RemittaTransactionStatusPojo(String statusmessage, String status, String RRR) {
+        this.statusmessage = statusmessage;
+        this.status = status;
+        this.RRR = RRR;
+    }
+
     public String getStatusmessage() {
         return statusmessage;
     }
