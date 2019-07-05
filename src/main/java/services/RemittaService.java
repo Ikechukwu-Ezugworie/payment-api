@@ -17,7 +17,6 @@ import dao.PaymentTransactionDao;
 import dao.RemittaDao;
 import exceptions.ApiResponseException;
 import exceptions.RemitaPaymentConfirmationException;
-import javassist.NotFoundException;
 import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -184,31 +183,41 @@ public class RemittaService {
 
 
     @Transactional
-    public PaymentTransaction updatePaymentTransactionForBank(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException, RemitaPaymentConfirmationException {
+    public PaymentTransaction updatePaymentTransactionForBank(List<RemittaNotification> remittaNotifications, Boolean isIpNotification) throws ApiResponseException, RemitaPaymentConfirmationException {
         for (RemittaNotification remittaNotification : remittaNotifications) {
 
 
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
 
-            if (paymentTransaction == null) {
+            if (paymentTransaction == null && isIpNotification) {
                 paymentTransaction = createTransactionRequestForPaymentTransaction(remittaNotification);
                 logger.info("Payment transaction==> {} " + new Gson().toJson(paymentTransaction));
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
+                paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK);
+                paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
+                paymentTransactionDao.saveObject(paymentTransaction);
+                queueNotification(remittaNotification, paymentTransaction);
+                notificationService.sendPaymentNotification(10);
+                return paymentTransaction;
+
+
             }
 
+
             if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
+
+
                 RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction, PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
                 PaymentTransactionStatus status = paymentTransaction.getPaymentTransactionStatus();
 
-
-                if (response != null && (status.equals(PaymentTransactionStatus.PENDING)
-                        || status.equals(PaymentTransactionStatus.SUCCESSFUL))) {
+                if (response != null && (status.equals(PaymentTransactionStatus.PENDING) || status.equals(PaymentTransactionStatus.SUCCESSFUL))) {
                     paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK);
                     paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
-
+                    paymentTransactionDao.updateObject(paymentTransaction);
                     queueNotification(remittaNotification, paymentTransaction);
                     notificationService.sendPaymentNotification(10);
+                    return paymentTransaction;
 
-                    paymentTransactionDao.updateObject(paymentTransaction);
 
                 }
 
