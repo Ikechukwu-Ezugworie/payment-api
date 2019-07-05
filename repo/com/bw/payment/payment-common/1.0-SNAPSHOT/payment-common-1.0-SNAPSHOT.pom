@@ -5,5 +5,5 @@
   <groupId>com.bw.payment</groupId>
   <artifactId>payment-common</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <description>POM was created from install:install-file</description>
+  <DESCRIPTION>POM was created from install:install-file</DESCRIPTION>
 </project>

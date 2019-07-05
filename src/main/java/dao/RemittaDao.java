@@ -1,9 +1,6 @@
 package dao;
 
-import com.bw.payment.entity.Item;
-import com.bw.payment.entity.PaymentTransaction;
-import com.bw.payment.entity.PaymentTransactionItem;
-import com.bw.payment.entity.RemitaServiceCredentials;
+import com.bw.payment.entity.*;
 import com.google.gson.Gson;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -20,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class RemittaDao extends BaseDao {
+
 
     Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 

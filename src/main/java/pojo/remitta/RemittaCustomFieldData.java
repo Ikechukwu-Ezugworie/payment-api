@@ -6,9 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RemittaCustomFieldData {
-    @SerializedName(value = "DESCRIPTION", alternate = {"description"})
+    public static String CUSTOMER_REFERENCE = "CUSTOMER_REFERENCE";
+    @SerializedName(value="DESCRIPTION", alternate={"description"})
     private String description;
-    @SerializedName(value = "COLVAL", alternate = {"colval"})
+    @SerializedName(value="COLVAL", alternate={"colval"})
     private String colval;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
