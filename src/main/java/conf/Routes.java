@@ -98,6 +98,7 @@ public class Routes implements ApplicationRoutes {
         // TEST ROUTES
         if (!ninjaProperties.isProd()) {
 
+
             /////////////////////////Test Remita  ////////////////////////
             router.GET().route(String.format("%s/api/v1/payments/remitta/test/notify",urlPrefix)).with(RemitaController::showRemittaBankTestSandBoxNotificationView);
             router.POST().route(String.format("%s/api/v1/payments/remitta/bank/sand-box/notify",urlPrefix)).with(RemitaController::performTestNotification);
