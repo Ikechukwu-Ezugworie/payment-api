@@ -4,7 +4,6 @@ import com.bw.payment.entity.*;
 import com.bw.payment.enumeration.GenericStatusConstant;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import com.querydsl.jpa.impl.JPAQuery;
 import dao.BaseDao;
 import dao.CurrencyDao;
 import dao.MerchantDao;

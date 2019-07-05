@@ -12,7 +12,8 @@ import dao.MerchantDao;
 import dao.PaymentTransactionDao;
 import ninja.ReverseRouter;
 import ninja.utils.NinjaProperties;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.StringUtils;
 import pojo.ItemPojo;
 import pojo.PayerPojo;
@@ -24,10 +25,7 @@ import services.sequence.TransactionIdSequence;
 import utils.Constants;
 import utils.PaymentUtil;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * CREATED BY GIBAH
@@ -193,6 +191,7 @@ public class PaymentTransactionService {
 
         }
         paymentTransaction.setDateCreated(PaymentUtil.nowToTimeStamp());
+        paymentTransaction.setProviderTransactionReference(request.getProviderTransactionReference());
         paymentTransaction.setMerchantTransactionReferenceId(request.getMerchantTransactionReferenceId());
         paymentTransaction.setAmountInKobo(request.getAmountInKobo());
         paymentTransaction.setAmountPaidInKobo(0L);

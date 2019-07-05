@@ -8,6 +8,7 @@ import com.bw.payment.enumeration.GenericStatusConstant;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
 import com.bw.payment.enumeration.PaymentTransactionStatus;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -18,13 +19,14 @@ import exceptions.ApiResponseException;
 import exceptions.RemitaPaymentConfirmationException;
 import javassist.NotFoundException;
 import ninja.utils.NinjaProperties;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pojo.MerchantRequestPojo;
 import pojo.PayerPojo;
 import pojo.TransactionNotificationPojo;
 import pojo.TransactionRequestPojo;
-import pojo.remitta.RemittaGenerateRequestRRRPojo;
-import pojo.remitta.RemittaNotification;
-import pojo.remitta.RemittaRrrResponse;
-import pojo.remitta.RemittaTransactionStatusPojo;
+import pojo.remitta.*;
 import retrofit2.Call;
 import retrofit2.Response;
 import services.api.RemittaApi;
@@ -40,6 +42,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +54,9 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class RemittaService {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
     @Inject
     private MerchantDao merchantDao;
     @Inject
@@ -64,6 +70,7 @@ public class RemittaService {
 
     @Inject
     private RemittaApi remittaApi;
+
 
     @Inject
     private PayerIdSequence payerIdSequence;
@@ -79,17 +86,49 @@ public class RemittaService {
 
 
     @Transactional
+    public PaymentTransaction createTransactionRequestForPaymentTransaction(RemittaNotification remittaNotification) {
+
+
+        Optional<RemittaCustomFieldData> optionalCustomerReference = getCustomData(remittaNotification, remittaDao.getSettingsValue(RemittaCustomFieldData.CUSTOMER_REFERENCE, "gprr", Boolean.TRUE));
+        TransactionRequestPojo request = new TransactionRequestPojo();
+        request.setAmountPaid(remittaNotification.getAmount());
+        request.setDateCreated(Timestamp.from(Instant.now()).toString());
+        request.setLastUpdated(Timestamp.from(Instant.now()).toString());
+        request.setAmountInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
+        request.setNotifyOnStatusChange(Boolean.TRUE);
+        request.setMerchant(new MerchantRequestPojo());
+        request.setPaymentProvider(PaymentProviderConstant.REMITA.getValue());
+
+
+        if (!optionalCustomerReference.isPresent()) {
+            request.setCustomerTransactionReference("--N/A--");
+        }
+        optionalCustomerReference
+                .ifPresent(reference -> request.setCustomerTransactionReference(reference.getColval()));
+
+
+        PayerPojo payerPojo = new PayerPojo();
+        payerPojo.setFirstName(remittaNotification.getPayerName());
+        payerPojo.setEmail(remittaNotification.getPayerEmail());
+        payerPojo.setPhoneNumber(remittaNotification.getPayerPhoneNumber());
+        request.setPayer(payerPojo);
+        request.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING.getValue());
+        request.setProviderTransactionReference(remittaNotification.getRrr());
+        request.setPaymentChannel(PaymentChannelConstant.BANK.getValue());
+
+        return paymentTransactionService.createTransaction(request, null, getTransactionId());
+
+
+    }
+
+
+    @Transactional
     public PaymentTransaction generateRemittaRRR(TransactionRequestPojo request) throws ApiResponseException {
 
 
         // Try to Generate an RRR
 
-        String transactionId = transactionIdSequence.getNext();
-        if (ninjaProperties.isDev()) {
-            transactionId += "DV";
-        } else if (ninjaProperties.isTest()) {
-            transactionId += "TS";
-        }
+        String transactionId = getTransactionId();
         String serviceTypeId = remittaDao.getRemittaCredentials().getServiceTypeId();
 
         RemittaGenerateRequestRRRPojo requestData = new RemittaGenerateRequestRRRPojo();
@@ -133,32 +172,46 @@ public class RemittaService {
         return paymentTransactionService.createTransaction(request, null, transactionId);
     }
 
+    private String getTransactionId() {
+        String transactionId = transactionIdSequence.getNext();
+        if (ninjaProperties.isDev()) {
+            transactionId += "DV";
+        } else if (ninjaProperties.isTest()) {
+            transactionId += "TS";
+        }
+        return transactionId;
+    }
+
 
     @Transactional
     public PaymentTransaction updatePaymentTransactionForBank(List<RemittaNotification> remittaNotifications) throws NotFoundException, ApiResponseException, RemitaPaymentConfirmationException {
         for (RemittaNotification remittaNotification : remittaNotifications) {
 
+
             PaymentTransaction paymentTransaction = remittaDao.getPaymentTrnsactionByRRR(remittaNotification.getRrr());
 
             if (paymentTransaction == null) {
-                throw new NotFoundException("Payment Transaction with RRR cannot be found");
+                paymentTransaction = createTransactionRequestForPaymentTransaction(remittaNotification);
+                logger.info("Payment transaction==> {} " + new Gson().toJson(paymentTransaction));
             }
 
             if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
-                RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction);
+                RemittaTransactionStatusPojo response = requestForPaymentTransactionStatus(paymentTransaction, PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
                 PaymentTransactionStatus status = paymentTransaction.getPaymentTransactionStatus();
 
 
-                if (response != null && (status.equals(PaymentTransactionStatus.PENDING) || status.equals(PaymentTransactionStatus.SUCCESSFUL))) {
+                if (response != null && (status.equals(PaymentTransactionStatus.PENDING)
+                        || status.equals(PaymentTransactionStatus.SUCCESSFUL))) {
                     paymentTransaction.setPaymentChannel(PaymentChannelConstant.BANK);
                     paymentTransaction.setAmountPaidInKobo(PaymentUtil.getAmountInKobo(remittaNotification.getAmount()));
 
                     queueNotification(remittaNotification, paymentTransaction);
                     notificationService.sendPaymentNotification(10);
 
+                    paymentTransactionDao.updateObject(paymentTransaction);
+
                 }
 
-                paymentTransactionDao.updateObject(paymentTransaction);
 
             }
 
@@ -176,10 +229,11 @@ public class RemittaService {
      * Method calls Remitta to request for a payment Status, This is called after banking notification or card Payment!!
      *
      * @param paymentTransaction
+     * @param amountPaidInKobo
      * @return Boolean Value to make a notify decision
      * @throws ApiResponseException
      */
-    public RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction) throws ApiResponseException, RemitaPaymentConfirmationException {
+    public RemittaTransactionStatusPojo requestForPaymentTransactionStatus(PaymentTransaction paymentTransaction, Long amountPaidInKobo) throws ApiResponseException, RemitaPaymentConfirmationException {
 
 
         Boolean isTesting = ninjaProperties.isDev() || ninjaProperties.isTest();
@@ -198,7 +252,7 @@ public class RemittaService {
 
                 if (isTesting || responseBody.getStatus().equalsIgnoreCase("01") || responseBody.getStatus().equalsIgnoreCase("00")) {
 
-                    if (paymentTransaction.getAmountPaidInKobo() < paymentTransaction.getAmountInKobo()) {
+                    if (amountPaidInKobo < paymentTransaction.getAmountInKobo()) {
                         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PARTIAL);
                     } else {
                         paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.SUCCESSFUL);
@@ -227,23 +281,33 @@ public class RemittaService {
     }
 
 
+    /**
+     * For card payment, to have a SUCCESSFUL payment transaction status, amountPaid === amountInKobo
+     * This is because card does not allow partial payment.
+     *
+     * @param paymentTransaction
+     * @return
+     * @throws ApiResponseException
+     * @throws RemitaPaymentConfirmationException
+     */
     @Transactional
     public RemittaTransactionStatusPojo updatePaymentTransactionOnCardPay(PaymentTransaction paymentTransaction) throws ApiResponseException, RemitaPaymentConfirmationException {
 
 
         RemittaTransactionStatusPojo response = null;
-        response = requestForPaymentTransactionStatus(paymentTransaction);
+        response = requestForPaymentTransactionStatus(paymentTransaction, paymentTransaction.getAmountInKobo());
 
         if (!paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
-            paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
-            paymentTransaction.setPaymentChannel(PaymentChannelConstant.MASTERCARD); // TODO update after model update
-            paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountInKobo());
-            paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
-            paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
 
 
             if (response != null && (response.getStatus().equalsIgnoreCase("01") || response.getStatus().equalsIgnoreCase("00"))) {
 
+
+                paymentTransaction.setPaymentProvider(PaymentProviderConstant.REMITA);
+                paymentTransaction.setPaymentChannel(PaymentChannelConstant.MASTERCARD); // TODO update after model update
+                paymentTransaction.setAmountPaidInKobo(paymentTransaction.getAmountInKobo()); // /
+                paymentTransaction.setLastUpdated(Timestamp.from(Instant.now()));
+                paymentTransaction.setPaymentTransactionStatus(PaymentTransactionStatus.PENDING);
 
                 Payer payer = remittaDao.getRecordById(Payer.class, paymentTransaction.getPayer().getId());
                 RemittaNotification notification = new RemittaNotification();
@@ -319,6 +383,21 @@ public class RemittaService {
 
 
         paymentTransactionDao.saveObject(notificationQueue);
+    }
+
+    private Optional<RemittaCustomFieldData> getCustomData(RemittaNotification remittaNotification, String customDataTag) {
+
+        Optional<RemittaCustomFieldData> val = Optional.empty();
+
+
+        logger.info("Notification {}{}{}{} " + new Gson().toJson(remittaNotification.getCustomFieldData()));
+        if (remittaNotification.getCustomFieldData() != null && !remittaNotification.getCustomFieldData().isEmpty()) {
+            return remittaNotification.getCustomFieldData().stream()
+                    .filter(customField -> customField.getDescription().equalsIgnoreCase(customDataTag.trim()) && StringUtils.isNotBlank(customField.getColval()))
+                    .findFirst();
+        }
+
+        return val;
     }
 
 

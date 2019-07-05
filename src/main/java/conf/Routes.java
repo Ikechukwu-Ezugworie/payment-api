@@ -139,7 +139,7 @@ public class Routes implements ApplicationRoutes {
 //            ///////////////////////////////////////////////////////////////////////
 //            router.GET().route(String.format("%s/api/v1/transactions", urlPrefix)).with(PaymentTransactionController::getPaymentTransactionDetails);
 //            router.GET().route(String.format("%s/api/v1/transactions/{transactionId}/status", urlPrefix)).with(PaymentTransactionController::getPaymentTransactionStatus);
-//            router.POST().route(String.format("%s/api/v1/transactions", urlPrefix)).with(PaymentTransactionController::createPaymentTransaction);
+//            router.POST().route(String.format("%s/api/v1/transactions", urlPrefix)).with(PaymentTransactionController::createTransactionRequestForPaymentTransaction);
 //            router.GET().route(String.format("%s/api/v1/transactions/tickets/{transactionId}", urlPrefix)).with(PaymentTransactionController::getPaymentTransactionTicket);
 //
 //            router.POST().route(String.format("%s/api/v1/transactions/ticket/new", urlPrefix)).with(PaymentTransactionController::createTicketForNewTransaction);
