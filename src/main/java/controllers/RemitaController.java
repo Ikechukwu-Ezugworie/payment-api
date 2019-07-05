@@ -144,7 +144,6 @@ public class RemitaController {
 
         String responseUrl = reverseRouter.with(RemitaController::notificationOnCardPay).absolute(context).build();
 
-        System.out.println(responseUrl);
 
         data.setResponseurl(responseUrl);
         data.setRemittaFormActionUrl(remittaDao.getSettingsValue("REMITTA_CARD_URL", "https://remitademo.net/remita/ecomm/finalize.reg"));
@@ -162,7 +161,6 @@ public class RemitaController {
 
         }).collect(Collectors.toList()));
 
-        System.out.println("Data + " + data);
 
         return Results.html().render("data", data);
 
@@ -260,7 +258,7 @@ public class RemitaController {
 
     public Result performTestNotification(@ContentExtract String requestData) {
 
-        System.out.println("{}{}{}{}Data " + requestData);
+
 
         RemittaDummyNotificationPojo request = new Gson().fromJson(requestData, new TypeToken<RemittaDummyNotificationPojo>() {
         }.getType());
