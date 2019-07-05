@@ -21,11 +21,13 @@ import java.util.stream.Collectors;
 public class RemittaDao extends BaseDao {
 
 
+    private static final String IP_WHITELIST_DELIMITER = ",";
     Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     public static String REMITTA_MECHANT_ID = "REMITTA_MERCHANT_ID";
     public static String CBS_REMITTA_SERVICE_TYPE_ID = "CBS_REMITTA_SERVICE_TYPE_ID";
     public static String REMITTA_API_KEY = "REMITTA_API_KEY";
+    public static String REMITTA_WHITELIST_IP = "REMITTA_WHITELIST_IP";
 
 
     public String getMerchantId() {
@@ -110,5 +112,6 @@ public class RemittaDao extends BaseDao {
     public RemitaServiceCredentials getRemittaCredentials() {
         return getAllRecords(RemitaServiceCredentials.class).get(0);
     }
+
 
 }

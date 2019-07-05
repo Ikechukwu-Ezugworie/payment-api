@@ -1,7 +1,6 @@
 package services;
 
 import com.bw.payment.entity.NotificationQueue;
-import com.bw.payment.entity.RemitaServiceCredentials;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -15,8 +14,9 @@ import utils.PaymentUtil;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Created by Gibah Joseph on Sep, 2018
@@ -26,13 +26,14 @@ public class NotificationService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private PaymentTransactionDao paymentTransactionDao;
-    private static ExecutorService notificationService = Executors.newSingleThreadExecutor();
     private OkHttpClient client;
+    private ThreadPoolExecutor notificationExecutorService;
 
     @Inject
     public NotificationService(PaymentTransactionDao paymentTransactionDao, NinjaProperties ninjaProperties) {
         this.paymentTransactionDao = paymentTransactionDao;
         this.client = PaymentUtil.getOkHttpClient(ninjaProperties);
+        this.notificationExecutorService = new ThreadPoolExecutor(1, 1, 2, TimeUnit.SECONDS, new SynchronousQueue<>(), new ThreadPoolExecutor.DiscardPolicy());
     }
 
     private void processPendingNotifications(Integer batchSize) {
@@ -66,8 +67,8 @@ public class NotificationService {
 
     public void sendPaymentNotification(Integer batchSize) {
         Integer finalBatchSize = batchSize == null ? 50 : batchSize;
-        // todo:::::: remove comment
-        notificationService.execute(() -> processPendingNotifications(finalBatchSize));
+
+        notificationExecutorService.execute(() -> processPendingNotifications(finalBatchSize));
     }
 
     @Transactional
@@ -82,9 +83,9 @@ public class NotificationService {
     @Dispose
     private void cleanUp() {
         logger.info("<=== cleaning up notification queue");
-        if (notificationService != null) {
-            notificationService.shutdownNow();
-            notificationService = null;
+        if (notificationExecutorService != null) {
+            notificationExecutorService.shutdownNow();
+            notificationExecutorService = null;
         }
     }
 }

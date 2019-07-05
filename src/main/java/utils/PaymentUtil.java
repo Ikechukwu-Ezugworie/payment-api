@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import ninja.Context;
 import ninja.utils.NinjaProperties;
 import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.StringUtils;
@@ -847,7 +848,8 @@ public class PaymentUtil {
 //        String payload = "{ \"merchantTransactionReferenceId\": \"000000012\", \"amountInKobo\": 5000000, \"paymentProvider\": \"INTERSWITCH\", \"paymentChannel\": \"PAYDIRECT\", \"payer\": { \"firstName\": \"JOhn\", \"lastName\": \"Doe\", \"email\": \"jdoe@gmail.com\", \"phoneNumber\": \"01212023023\" } }";
 //        System.out.println(generateDigest("M0000003" + "de769088d33a77b20a874b3fbace7e12" + payload, Constants.SHA_512_ALGORITHM_NAME));
 
-        System.out.println(getHash("3", Constants.SHA_512_ALGORITHM_NAME)); ;
+        System.out.println(getHash("3", Constants.SHA_512_ALGORITHM_NAME));
+        ;
     }
 
     public static String getFirstNameFromFullName(String customerName) {
@@ -870,6 +872,50 @@ public class PaymentUtil {
         return "";
     }
 
+
+    public static Boolean isValidWhiteListIp(Context context, String whitelist, Boolean isDev) {
+
+        String requestIp = "";
+        if (isDev) {
+            return true;
+        }
+
+        requestIp = context.getHeader("x-forwarded-for");
+
+
+
+        if (StringUtils.isBlank(requestIp)) {
+            return false;
+        }
+
+
+        if (StringUtils.isBlank(whitelist)) {
+            return false;
+        }
+
+        if (!isDev) {
+            System.out.println("White lIST IS " + whitelist);
+            if ("ALL".equalsIgnoreCase(whitelist.trim())) {
+                return true;
+            }
+        }
+
+        if (whitelist.contains(",")) {
+            String[] ips = whitelist.split(",");
+            for (String ip : ips) {
+
+                if (requestIp.equalsIgnoreCase(ip)) {
+                    return true;
+                }
+            }
+        } else {
+            if (whitelist.equalsIgnoreCase(requestIp)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 
 }

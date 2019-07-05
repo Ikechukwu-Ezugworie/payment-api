@@ -1,11 +1,10 @@
 package controllers;
 
-import com.google.common.collect.Lists;
-
 import com.bw.payment.entity.PaymentTransaction;
 import com.bw.payment.entity.RawDump;
 import com.bw.payment.enumeration.PaymentChannelConstant;
 import com.bw.payment.enumeration.PaymentProviderConstant;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -21,6 +20,7 @@ import ninja.Results;
 import ninja.ReverseRouter;
 import ninja.params.Param;
 import ninja.params.PathParam;
+import ninja.utils.NinjaProperties;
 import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 import org.apache.http.HttpStatus;
@@ -56,6 +56,9 @@ public class RemitaController {
 
     @Inject
     RemittaDao remittaDao;
+
+    @Inject
+    NinjaProperties ninjaProperties;
 
     @Inject
     ReverseRouter reverseRouter;
@@ -101,7 +104,8 @@ public class RemitaController {
     }
 
 
-    public Result doRemittaNotification(@ContentExtract String payload, @IPAddress String ipAddress) {
+    public Result doRemittaNotification(@ContentExtract String payload, @IPAddress String ipAddress, Context context) {
+
         RawDump rawDump = new RawDump();
         rawDump.setRequest(payload);
         rawDump.setDateCreated(Timestamp.from(Instant.now()));
@@ -110,13 +114,27 @@ public class RemitaController {
         rawDump.setRequestIp(ipAddress);
         paymentTransactionService.dump(rawDump);
 
-
         List<RemittaNotification> remittaNotifications = new Gson().fromJson(payload, new TypeToken<List<RemittaNotification>>() {
         }.getType());
 
+        String remitta_ip_validation = remittaDao.getSettingsValue("REMITTA_IP_VALIDATION", Boolean.FALSE.toString(), true);
+        Boolean verifyIp = Boolean.valueOf(remitta_ip_validation);
+
+
+        if (verifyIp) {
+            Boolean isIpVerified = PaymentUtil
+                    .isValidWhiteListIp(context, remittaDao.getSettingsValue("REMITTA_WHITELIST_IP", "ALL", true), ninjaProperties.isDev());
+
+
+            if (!isIpVerified) {
+                return Results.badRequest().render(HttpStatus.SC_UNAUTHORIZED).json();
+            }
+
+        }
+
 
         try {
-            remittaService.updatePaymentTransactionForBank(remittaNotifications);
+            remittaService.updatePaymentTransactionForBank(remittaNotifications, verifyIp);
             return Results.json().render(Constants.OK_MESSAGE);
         } catch (Exception e) {
             e.printStackTrace();
@@ -256,8 +274,7 @@ public class RemitaController {
     }
 
 
-    public Result performTestNotification(@ContentExtract String requestData) {
-
+    public Result performTestNotification(@ContentExtract String requestData, Context context) {
 
 
         RemittaDummyNotificationPojo request = new Gson().fromJson(requestData, new TypeToken<RemittaDummyNotificationPojo>() {
@@ -295,7 +312,7 @@ public class RemitaController {
 
         String payload = new Gson().toJson(data);
 
-        return doRemittaNotification(payload, "127.0.0.1");
+        return doRemittaNotification(payload, "127.0.0.1", context);
 
 
     }
