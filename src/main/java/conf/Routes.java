@@ -42,38 +42,30 @@ public class Routes implements ApplicationRoutes {
         }
 
 
-        ///////////////////////////////////////////////////////////////////////
-        // Interswitch
-        ///////////////////////////////////////////////////////////////////////
+        ////////////////
+        //  Interswitch
+        ///////////////
         router.POST().route(String.format("%s/api/v1/payments/interswitch/paydirect", urlPrefix)).with(PayDirectController::doPayDirectRequest);
         router.GET().route(String.format("%s/payments/interswitch/paydirect/monitor", urlPrefix)).with(PayDirectController::monitor);
 
-        //////////////////////////////////////////////////////////////////////
+        ///////////
         //  Remitta
-        //////////////////////////////////////////////////////////////////////
+        ///////////
         router.POST().route(String.format("%s/api/v1/payments/remitta/generateRrr", urlPrefix)).with(RemitaController::doCreateTransaction);
-
         router.POST().route(String.format("%s/api/v1/payments/remitta/notify", urlPrefix)).with(RemitaController::doRemittaNotification);
-
         router.GET().route(String.format("%s/api/v1/payments/remitta/card/{rrr}/make-payment",urlPrefix)).with(RemitaController::makePaymentWithCard);
         router.GET().route(String.format("%s/api/v1/payments/remitta/card/re-direct",urlPrefix)).with(RemitaController::notificationOnCardPay);
         router.GET().route(String.format("%s/api/v1/payments/remitta/card/{rrr}/confirm-status",urlPrefix)).with(RemitaController::confirmStatusForCard);
-
-
         router.GET().route(String.format("%s/api/v1/payments/remitta/payment-status",urlPrefix)).with(RemitaController::getTransactionStatus);
 
-        /////////////////////////Test Remita  ////////////////////////
-        router.GET().route(String.format("%s/api/v1/payments/remitta/test/notify",urlPrefix)).with(RemitaController::showRemittaBankTestSandBoxNotificationView);
-        router.POST().route(String.format("%s/api/v1/payments/remitta/bank/sand-box/notify",urlPrefix)).with(RemitaController::performTestNotification);
-
-
-        //USSD
+        /////////
+        //  USSD
+        ////////
         router.POST().route(String.format("%s/api/v1/payments/ussd/notify", urlPrefix)).with(UssdController::doUssdNotification);
 
-
-        /////////////////////////////////////////////////////////////////////
-        // WEBPAY
-        ////////////////////////////////////////////////////////////////////
+        ///////////
+        //  WEBPAY
+        //////////
         router.POST().route(String.format("%s/webpay", urlPrefix)).with(WebPayController::doCreateTransaction);
         router.GET().route(String.format("%s/webpay", urlPrefix)).with(WebPayController::paymentPage);
         router.POST().route(String.format("%s/webpay/notification", urlPrefix)).with(WebPayController::paymentCompleted);
@@ -88,8 +80,6 @@ public class Routes implements ApplicationRoutes {
         router.GET().route(String.format("%s/rave/complete/{tRef}", urlPrefix)).with(FlutterWaveController::paymentCompleted);
         router.POST().route(String.format("%s/rave/subaccount", urlPrefix)).with(FlutterWaveController::createSubAccount);
         router.POST().route(String.format("%s/rave/subaccount/edit", urlPrefix)).with(FlutterWaveController::updateSubAccount);
-//        router.POST().route(String.format("%s/webpay/notification", urlPrefix)).with(WebPayController::paymentCompleted);
-//        router.GET().route(String.format("%s/webpay/transaction/status", urlPrefix)).with(WebPayController::requeryTransaction);
 
 
         /////////////////////////////////////////////////////////////////////
@@ -107,6 +97,10 @@ public class Routes implements ApplicationRoutes {
 
         // TEST ROUTES
         if (!ninjaProperties.isProd()) {
+
+            /////////////////////////Test Remita  ////////////////////////
+            router.GET().route(String.format("%s/api/v1/payments/remitta/test/notify",urlPrefix)).with(RemitaController::showRemittaBankTestSandBoxNotificationView);
+            router.POST().route(String.format("%s/api/v1/payments/remitta/bank/sand-box/notify",urlPrefix)).with(RemitaController::performTestNotification);
 
             ///////////////////////////////////////////////////////////////////////
             // Notifications controller

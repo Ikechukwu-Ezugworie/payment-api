@@ -113,7 +113,7 @@
                                         <#--</tr>-->
                                     </table>
                                 </div>
-                                <form name="webpay" action="${webpayBaseUrl!""}/collections/w/pay" method="post"
+                                <form name="webpay" action="${webpayPaymentUrl!""}" method="post"
                                       class=" col-12">
                                     <input name="product_id" type="hidden" value="${data.productId}"/>
                                     <input name="pay_item_id" type="hidden" value="${data.paymentItemId}"/>
