@@ -16,6 +16,7 @@ import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
+import ninja.utils.NinjaProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -52,12 +53,14 @@ public class WebPayController {
     private PaymentService paymentService;
     @Inject
     private TransactionTemplate transactionTemplate;
-
+    @Inject
+    private NinjaProperties ninjaProperties;
 
     public Result doCreateTransaction(@ContentExtract String payload, @IPAddress String ipAddress) {
         logger.info("====> {} ", payload);
         BwPaymentsWebPayRequest data = new Gson().fromJson(payload, BwPaymentsWebPayRequest.class);
-        Set<ConstraintViolation<BwPaymentsWebPayRequest>> constraintViolations = javax.validation.Validation.buildDefaultValidatorFactory().getValidator().validate(data);
+        Set<ConstraintViolation<BwPaymentsWebPayRequest>> constraintViolations = javax.validation
+                .Validation.buildDefaultValidatorFactory().getValidator().validate(data);
 
         if (!constraintViolations.isEmpty()) {
             for (ConstraintViolation<BwPaymentsWebPayRequest> constraintViolation : constraintViolations) {
@@ -109,6 +112,7 @@ public class WebPayController {
         res.put("transactionId", paymentTransaction.getTransactionId());
         apiResponse.setData(res);
         apiResponse.setCode(200);
+
         return Results.ok().json().render(apiResponse);
     }
 
@@ -133,14 +137,16 @@ public class WebPayController {
 
         logger.info("webPayTransactionRequestPojo is " + webPayTransactionRequestPojo);
 
+        String webpaypath=webPayService.getBaseUrl()+ninjaProperties.getWithDefault("webpay.payment.path", "/collections/w/pay");
         return Results.html()
-                .render("webpayBaseUrl",webPayService.getBaseUrl())
+                .render("webpayPaymentUrl", webpaypath)
                 .render("data", webPayTransactionRequestPojo)
                 .render("transactionData", fullPaymentTransactionDetailsAsPojo);
     }
 
     public Result paymentCompleted(WebPayTransactionResponsePojo data, @IPAddress String ipAddress, Context context) {
 
+        logger.info("Web pay trans response pojo ===> {}", new Gson().toJson(data));
         PaymentTransaction paymentTransaction = paymentTransactionService.getPaymentTransactionByTransactionId(data.getTxnref());
         RawDump rawDump = transactionTemplate.execute(entityManager -> {
             return paymentTransactionDao.getUniqueRecordByProperty(RawDump.class, "paymentTransaction", paymentTransaction);
@@ -156,7 +162,8 @@ public class WebPayController {
                     entityManager.merge(rawDump);
                 });
             }
-            URIBuilder b = new URIBuilder(paymentService.getProviderCredentials(WebPayServiceCredentials.class,null).getMerchantRedirectUrl());
+            URIBuilder b = new URIBuilder(paymentService.getProviderCredentials(WebPayServiceCredentials.class, null)
+                    .getMerchantRedirectUrl());
             webPayService.processPaymentData(paymentTransaction, webPayPaymentDataDto);
             if (paymentTransaction.getPaymentTransactionStatus().equals(PaymentTransactionStatus.SUCCESSFUL)) {
                 b.addParameter("status", "successful");
