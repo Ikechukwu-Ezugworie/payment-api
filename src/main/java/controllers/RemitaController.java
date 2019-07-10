@@ -127,6 +127,9 @@ public class RemitaController {
 
 
             if (!isIpVerified) {
+                rawDump.setDescription("Un Authorised Request");
+                rawDump.setResponse("401");
+                paymentTransactionService.dump(rawDump);
                 return Results.badRequest().render(HttpStatus.SC_UNAUTHORIZED).json();
             }
 
@@ -134,10 +137,18 @@ public class RemitaController {
 
 
         try {
-            remittaService.updatePaymentTransactionForBank(remittaNotifications, verifyIp);
+
+            PaymentTransaction paymentTransaction = remittaService.updatePaymentTransactionForBank(remittaNotifications, verifyIp);
+            rawDump.setDescription("Successful Request");
+            rawDump.setResponse("200");
+            rawDump.setPaymentTransaction(paymentTransaction);
+            paymentTransactionService.dump(rawDump);
             return Results.json().render(Constants.OK_MESSAGE);
         } catch (Exception e) {
             e.printStackTrace();
+            rawDump.setDescription(e.getMessage());
+            rawDump.setResponse(e.getMessage());
+            paymentTransactionService.dump(rawDump);
             return Results.json().render(Constants.NOT_OK_MESSAGE);
         }
 
